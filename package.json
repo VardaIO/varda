@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/Elvenisboy/varda/issues"
   },
-  "homepage": "https://github.com/Elvenisboy/varda#readme"
+  "homepage": "https://github.com/Elvenisboy/varda#readme",
+  "dependencies": {
+    "grpc": "^1.8.0",
+    "linvodb3": "^3.25.1"
+  }
 }
