@@ -40,6 +40,8 @@ class Client {
                     resolve(response)
                 }
             }
+            // params can send message to server 
+            // useage: {'name': 'varda'}
             params = params || {}
             if (this.clients[serviceName] && this.clients[serviceName][name]) {
                 this.clients[serviceName][name](params, callback)
