@@ -1,6 +1,7 @@
 const rpc = require('grpc')
 const fs = require('fs')
 const path = require('path')
+const _ = require('lodash')
 
 class Server {
     constructor(ip, port) {
@@ -34,11 +35,10 @@ class Server {
     runServer() {
         const server = new rpc.Server()
 
-        R.forEach((serviceName) => {
+        _.forEach(_.keys(this.services),(serviceName) => {
             const service = this.services[serviceName]
             server.addService(service, this.functions[serviceName])
-        }, R.keys(this.services))
-
+        })
         server.bind(`${this.ip}:${this.port}`, rpc.ServerCredentials.createInsecure())
         server.start()
     }

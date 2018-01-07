@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package peerState;
+ 
+service peerState {
+    rpc PingPong (pingRequest) returns (pingReply) {}
+}
+
+message pingRequest {
+    string message = 1;
+}
+
+message pingReply {
+    string message = 1;
+}
