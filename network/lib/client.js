@@ -1,5 +1,5 @@
 const rpc = require('grpc')
-const fs = require('fs')
+const fs = require('fs-extra')
 const path = require('path')
 
 class Client {
@@ -9,30 +9,31 @@ class Client {
         this.clients = {}
     }
     autoRun(protoDir) {
-        fs.readdir(protoDir, (err, files) => {
-            if (err) {
-                return console.error(err)
+        fs.readdir(protoDir).then(
+            (files) => {
+                return files.forEach((file) => {
+                    const filePart = path.parse(file)
+                    const serviceName = filePart.name
+                    const packageName = filePart.name
+                    const extName = filePart.ext
+                    const filePath = path.join(protoDir, file)
+                    if (extName === '.proto') {
+                        const proto = rpc.load(filePath)
+                        const Service = proto[packageName][serviceName]
+                        this.services[serviceName] = Service
+                        this.clients[serviceName] = new Service(`${this.ip}:${this.port}`,
+                            rpc.credentials.createInsecure())
+                    }
+                }, files)
             }
-            return files.forEach((file) => {
-                const filePart = path.parse(file)
-                const serviceName = filePart.name
-                const packageName = filePart.name
-                const extName = filePart.ext
-                const filePath = path.join(protoDir, file)
-                if (extName === '.proto') {
-                    const proto = rpc.load(filePath)
-                    const Service = proto[packageName][serviceName]
-                    this.services[serviceName] =  Service
-                    this.clients[serviceName] = new Service(`${this.ip}:${this.port}`,
-                    rpc.credentials.createInsecure())
-                }
-            }, files)
+        ).catch((err) => {
+            console.error(err)
         })
     }
 
     async invoke(serviceName, name, params) {
         return new Promise((resolve, reject) => {
-            
+
             function callback(error, response) {
                 if (error) {
                     reject(error)
