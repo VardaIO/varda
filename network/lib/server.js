@@ -11,9 +11,9 @@ class Server {
     }
 
     autoRun(protoDir) {
-        fs.readdir(protoDir, (err, files) => {
-            if(err) {
-                return console.error(err)
+        fs.readdir(protoDir, (error, files) => {
+            if(error) {
+                return console.error(error)
             }
             files.forEach((file) => {
                 const filePart = path.parse(file)
