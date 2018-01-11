@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/Elvenisboy/varda#readme",
   "dependencies": {
+    "cache-base": "^2.0.2",
     "fs-extra": "^5.0.0",
     "grpc": "^1.8.0",
     "leveldown": "^2.1.1",

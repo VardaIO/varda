@@ -1,21 +1,27 @@
 
 // init
 // init()
-const models = require('../database/models')
+const crypto = require('crypto')
+const Cache = require('cache-base')
+const _ = require('lodash')
 const server = require('./server')
 const client = require('./client')
 
-const Peer = models.Peer
-
+const cache = new Cache()
 
 const addPeer = (ip, port) => {
-    models.Peer.insert({ 'ip': ip, 'port': port }, (error) => {
-        if (error) {
-            console.log(error)
-        }
-    })
+    const md5 = crypto.createHash('md5')
+    md5.update(ip + port.toString())
+    cache.set(md5.digest('hex'), { ip: ip, port: port });
 }
-
+addPeer('192.168.0.0.1', 23333)
+addPeer('192.168.0.1', 23333)
+// _.forIn(cache, (value, key) => {
+//     console.log(value)
+// })
+console.log(cache)
+// _.mapValues(cache, (e)=>console.log)
+return
 const peers = async () => {
     return new Promise((resolve, reject) => {
         Peer.find({}, (error, docs) => {
@@ -28,9 +34,9 @@ const peers = async () => {
     })
 }
 const bootstrap = (peerList) => {
-        // const ip = peerList[0].ip
-        // const port = peerList[0].port
-        // client.checkServerState(ip, port)
+    // const ip = peerList[0].ip
+    // const port = peerList[0].port
+    // client.checkServerState(ip, port)
 }
 
 const init = async (peersList) => {
