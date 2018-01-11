@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/Elvenisboy/varda#readme",
   "dependencies": {
+    "app-root-path": "^2.0.1",
     "cache-base": "^2.0.2",
     "fs-extra": "^5.0.0",
     "grpc": "^1.8.0",
@@ -32,7 +33,10 @@
     "libp2p-websockets": "^0.10.4",
     "linvodb3": "^3.25.1",
     "lodash": "^4.17.4",
+    "multiaddr": "^3.0.2",
+    "peer-book": "^0.5.2",
     "peer-id": "^0.10.4",
-    "peer-info": "^0.11.4"
+    "peer-info": "^0.11.4",
+    "pify": "^3.0.0"
   }
 }

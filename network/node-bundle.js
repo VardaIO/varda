@@ -13,15 +13,16 @@ class Node extends libp2p {
         const modules = {
             transport: [new TCP(), new WS(), wsstar],
             connection: {
-                [Multiplex],
+                muxer: [Multiplex],
                 crypto: [SECIO]
             },
-            discovery: [wsstar.discovery]
+            discovery: [wsstar.discovery, new MulticastDNS(peerInfo, { interval: 100 })]
         }
+        
         // bootstrap
-        modules.push(config.bootstrap)
-        // mdns
-        modules.push(new MulticastDNS(peerInfo, { interval: 100 }))
+        if (config.bootstrap) {
+            modules.discovery.push(new Railing(config.bootstrap))
+          }
 
         super(modules, peerInfo)
     }
