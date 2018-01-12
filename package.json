@@ -2,6 +2,9 @@
   "name": "varda",
   "version": "0.0.1",
   "description": "a DAG style blockchain",
+  "engines": {
+    "node": "8.x.x"
+  },
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -20,7 +23,6 @@
     "app-root-path": "^2.0.1",
     "cache-base": "^2.0.2",
     "fs-extra": "^5.0.0",
-    "grpc": "^1.8.0",
     "leveldown": "^2.1.1",
     "libp2p": "^0.15.0",
     "libp2p-floodsub": "^0.13.1",
