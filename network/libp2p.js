@@ -41,20 +41,29 @@ function getPeers(node) {
     // console.log(msg.addrs.decode(buf))
     return buf
 }
+function sendAddrs(node, peerInfo) {
+    node.dial(peerInfo, '/addrs', (err, conn) => {
+        if (err) console.log(err)
+        pull(
+            pull.values([getPeers(node)]),
+            conn
+        )
+    })
+}
 setImmediate(async () => {
     let node = await createNode()
     node.start(() => {
         console.log('node has started (true/false):', node.isStarted())
         console.log('listening on:')
         node.peerInfo.multiaddrs.forEach((ma) => console.log(ma.toString()))
-        
+
         node.handle('/addrs', (protocol, conn) => {
             pull(
                 conn,
-                pull.map((v)=>msg.addrs.decode(v)),
+                pull.map((v) => msg.addrs.decode(v)),
                 pull.collect(function (err, array) {
-                          console.log(array)
-                        })
+                    console.log(array)
+                })
             )
 
         })
@@ -71,14 +80,8 @@ setImmediate(async () => {
         node.on('peer:connect', (peerInfo) => {
             console.log('connected a peer')
             const idStr = peerInfo.id.toB58String()
-            node.dial(peerInfo, '/addrs', (err, conn) => {
-                if (err) console.log(err)
-                pull(
-                    pull.values([getPeers(node)]),
-                    conn
-                  )
-            })
-            
+
+
             console.log('connected: ' + idStr)
             console.log(node.peerBook)
         })
@@ -91,8 +94,13 @@ setImmediate(async () => {
 
 
         setInterval(() => {
-            console.log(geetPeers(node))
-        }, 1000 * 10)
+            values(node.peerBook.getAll()).forEach((peer) => {
+                const addr = peer.isConnected()
+                if (!addr) { return }
+                sendAddrs(node, peer)
+            })
+
+        }, 1000 * 10 * 2)
     })
 
 })
