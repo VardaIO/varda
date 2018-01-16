@@ -2,6 +2,7 @@ const os = require('os')
 const fs = require('fs')
 const PeerInfo = require('peer-info')
 const peerId = require('peer-id')
+const peerBook = require('peer-book')
 const pify = require('pify')
 const rootPath = require('app-root-path')
 const multiaddr = require('multiaddr')
@@ -29,9 +30,9 @@ const createNode = () => {
         })
         .then(peerInfo => { return new Node(peerInfo, config) })
 }
-function getPeers(node) {
+function getPeers(peerBook) {
     let peers = []
-    values(node.peerBook.getAll()).forEach((peer) => {
+    values(peerBook.getAll()).forEach((peer) => {
         const addr = peer.isConnected()
         if (!addr) { return }
         peers.push(addr.toString())
@@ -42,17 +43,20 @@ function getPeers(node) {
     // console.log(msg.addrs.decode(buf))
     return buf
 }
-function sendAddrs(node, peerInfo) {
+
+function sendAddrs(node, peerInfo, peerBook) {
     node.dial(peerInfo, '/addrs', (err, conn) => {
         if (err) console.log(err)
         pull(
-            pull.values([getPeers(node)]),
+            pull.values([getPeers(peerBook)]),
             conn
         )
     })
 }
 setImmediate(async () => {
-    let node = await createNode()
+    let node = await createNode(peerBook)
+    let PeerBook = new peerBook()
+
     node.start(() => {
         console.log('node has started (true/false):', node.isStarted())
         console.log('listening on:')
@@ -70,35 +74,30 @@ setImmediate(async () => {
         })
 
         node.on('peer:discovery', (peerInfo) => {
-            console.log('Discovered a peer')
-            const idStr = peerInfo.id.toB58String()
-            console.log('Discovered: ' + idStr)
+            // console.log('Discovered a peer')
+            // const idStr = peerInfo.id.toB58String()
+            // console.log('Discovered: ' + idStr)
             // console.log(peerInfo)
             node.dial(peerInfo, (err, conn) => {
                 if (err) console.log(err)
             })
         })
         node.on('peer:connect', (peerInfo) => {
-            console.log('connected a peer')
             const idStr = peerInfo.id.toB58String()
-
-
             console.log('connected: ' + idStr)
-            console.log(node.peerBook)
+            PeerBook.put(peerInfo)
         })
 
         node.on('peer:disconnect', (peerInfo) => {
             console.log('disconnect a peer')
-            // console.log(node.peerBook)
+            PeerBook.remove(peerInfo)
         })
 
-
-
         setInterval(() => {
-            values(node.peerBook.getAll()).forEach((peer) => {
+            values(PeerBook.getAll()).forEach((peer) => {
                 const addr = peer.isConnected()
                 if (!addr) { return }
-                sendAddrs(node, peer)
+                sendAddrs(node, peer, PeerBook)
             })
 
         }, 1000 * 10 * 2)
