@@ -26,10 +26,10 @@ const createNode = () => {
 setImmediate(async () => {
     let node = await createNode()
     node.start(() => {
+        console.log('node has started (true/false):', node.isStarted())
+        console.log('listening on:')
+        node.peerInfo.multiaddrs.forEach((ma) => console.log(ma.toString()))
         node.on('peer:discovery', (peerInfo) => {
-            console.log('node has started (true/false):', node.isStarted())
-            console.log('listening on:')
-            node.peerInfo.multiaddrs.forEach((ma) => console.log(ma.toString()))
             console.log('Discovered a peer')
             const idStr = peerInfo.id.toB58String()
             console.log('Discovered: ' + idStr)
