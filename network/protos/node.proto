@@ -4,3 +4,7 @@ message ping {
 
 message pong {
 }
+
+message addrs {
+    repeated string addrs = 1;
+}
