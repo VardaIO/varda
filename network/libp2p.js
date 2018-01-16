@@ -33,6 +33,21 @@ setImmediate(async () => {
             console.log('Discovered a peer')
             const idStr = peerInfo.id.toB58String()
             console.log('Discovered: ' + idStr)
+            // console.log(peerInfo)
+            node.dial(peerInfo, (err, conn) => {
+                if (err) console.log(err)
+            })
+        })
+        node.on('peer:connect', (peerInfo) => {
+            console.log('connected a peer')
+            const idStr = peerInfo.id.toB58String()
+            console.log('connected: ' + idStr)
+            console.log(node.peerBook)
+        })
+        
+        node.on('peer:disconnect', (peerInfo) => {
+            console.log('disconnect a peer')
+            console.log(node.peerBook)
         })
     })
 })
