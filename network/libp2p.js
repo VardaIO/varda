@@ -1,4 +1,5 @@
 const os = require('os')
+const fs = require('fs')
 const PeerInfo = require('peer-info')
 const peerId = require('peer-id')
 const pify = require('pify')
@@ -6,7 +7,7 @@ const rootPath = require('app-root-path')
 const multiaddr = require('multiaddr')
 const { values } = require('lodash')
 const pb = require('protocol-buffers')
-const fs = require('fs')
+const pull = require('pull-stream')
 const VARDA_HOME = process.env.VARDA_HOME || os.homedir() + '/.varda'
 const privateKey = require(VARDA_HOME + '/keys.json').PrivateKey
 const config = require(`${rootPath}/config.json`)
