@@ -5,7 +5,7 @@ const peerId = require('peer-id')
 const pify = require('pify')
 const rootPath = require('app-root-path')
 const multiaddr = require('multiaddr')
-const { values } = require('lodash')
+const { values, pullAt } = require('lodash')
 const pb = require('protocol-buffers')
 const pull = require('pull-stream')
 const ip = require('ip')
@@ -88,8 +88,25 @@ async function sendAddr(node, peerInfo) {
 
 }
 
+const checkBootstrap = () => {
+    try {
+        let publicIp = await publicIP.v4()
+        const addr = `/ip4/${publicIp}/tcp/${config.Port}/ipfs/${node.peerInfo.id.toB58String()}`
+        const find = element => {
+            return element == addr
+        }
+        const result = bootstrap.findIndex(find)
+        if (result !== -1) {
+            pullAt(bootstrap, result)
+        }
+    } catch (error) {
+        console.log('no public ip')
+    }
+}
+
 setImmediate(async () => {
     let node = await createNode()
+    checkBootstrap()
     node.start(() => {
         console.log('node has started (true/false):', node.isStarted())
         console.log('listening on:')
@@ -104,6 +121,7 @@ setImmediate(async () => {
                     array[0].addrs.map((v) => {
                         addBootstrap(v)
                     })
+                    checkBootstrap()
                 })
             )
         })
@@ -115,6 +133,7 @@ setImmediate(async () => {
                 pull.map((v) => msg.addr.decode(v)),
                 pull.collect(function (err, array) {
                     addBootstrap(array[0].addr)
+                    checkBootstrap()
                 })
             )
         })
