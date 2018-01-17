@@ -97,7 +97,7 @@ setImmediate(async () => {
                 conn,
                 pull.map((v) => msg.addr.decode(v)),
                 pull.collect(function (err, array) {
-                    console.log(array)
+                    addBootstrap(array[0].addr)
                 })
             )
         })
