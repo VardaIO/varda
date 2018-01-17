@@ -88,7 +88,7 @@ async function sendAddr(node, peerInfo) {
 
 }
 
-const checkBootstrap = () => {
+const checkBootstrap = async () => {
     try {
         let publicIp = await publicIP.v4()
         const addr = `/ip4/${publicIp}/tcp/${config.Port}/ipfs/${node.peerInfo.id.toB58String()}`
