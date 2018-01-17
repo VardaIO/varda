@@ -135,7 +135,7 @@ setImmediate(async () => {
         })
 
         node.on('peer:disconnect', (peerInfo) => {
-            console.log('disconnect a peer')
+            console.log(colors.gray('Disconnect:'), peerInfo.id.toB58String())
         })
 
 
