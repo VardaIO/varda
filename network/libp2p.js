@@ -8,6 +8,7 @@ const multiaddr = require('multiaddr')
 const { values } = require('lodash')
 const pb = require('protocol-buffers')
 const pull = require('pull-stream')
+const ip = require('ip')
 const VARDA_HOME = process.env.VARDA_HOME || os.homedir() + '/.varda'
 const privateKey = require(VARDA_HOME + '/keys.json').PrivateKey
 const config = require(`${rootPath}/config.json`)
@@ -15,20 +16,20 @@ const Node = require('./node-bundle')
 
 const msg = pb(fs.readFileSync('./protos/node.proto'))
 
-
 const createNode = () => {
     return pify(peerId.createFromPrivKey)(privateKey) // peerid 
         .then(id => { return new PeerInfo(id) }) // peerInfo
         .then(peerInfo => {
-            // peerInfo.multiaddrs.add(ma)}
-            config.Swarm.forEach((addr) => {
-                let ma = multiaddr(addr)
-                peerInfo.multiaddrs.add(ma) //add multiaddr
-            })
+            let addr = `/ip4/${ip.address()}/tcp/${config.Port}`
+            let ma = multiaddr(addr)
+            peerInfo.multiaddrs.add(ma) //add multiaddr
             return peerInfo
         })
         .then(peerInfo => { return new Node(peerInfo, config) })
 }
+
+
+
 function getPeers(node) {
     let peers = []
     values(node.peerBook.getAll()).forEach((peer) => {
