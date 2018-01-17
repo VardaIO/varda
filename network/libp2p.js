@@ -100,7 +100,7 @@ const checkBootstrap = async () => {
             pullAt(bootstrap, result)
         }
     } catch (error) {
-        console.log('no public ip')
+        return
     }
 }
 
