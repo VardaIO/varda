@@ -26,7 +26,7 @@ const getAddr = async () => {
         await publicIP.v4()
         return [`/ip4/${ip.address()}/tcp/${config.Port}`, `/ip4/${ip.address()}/tcp/${config.WSPOrt}/ws`]
     } catch (error) {
-        return ['/dns4/star-signal.cloud.ipfs.team/tcp/443/wss/p2p-webrtc-star', `/ip4/${ip.address()}/tcp/${config.Port}`]
+        return ['/ip4/112.74.173.37/tcp/9090/wss/p2p-webrtc-star', `/ip4/${ip.address()}/tcp/${config.Port}`]
     }
 }
 const createNode = (addrs) => {
@@ -151,6 +151,8 @@ setImmediate(async () => {
         // when discovery a peer, try to dial to this peer,if it can reply, 
         // peers will connect with each other
         node.on('peer:discovery', (peerInfo) => {
+            const idStr = peerInfo.id.toB58String()
+            console.log('Discovered: ' + idStr)
             node.dial(peerInfo, (error, conn) => {
                 // if (error) console.log('Fail to dial')
             })
@@ -177,6 +179,10 @@ setImmediate(async () => {
             })
 
         }, 1000 * 10 * 2)
+
+        setInterval(() => {
+            console.log(bootstrap)
+        }, 1000 * 10)
     })
 
 })
