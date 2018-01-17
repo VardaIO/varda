@@ -18,26 +18,26 @@ const bootstrap = require('./bootstrap')
 config.bootstrap = bootstrap
 const msg = pb(fs.readFileSync('./protos/node.proto'))
 
-const getIp = async () => {
-    try {
-        return await publicIP.v4()
-    } catch (error) {
-        return ip.address()
-    }
-}
 
 
-const createNode =  () => {
+
+const createNode = (ip) => {
     return pify(peerId.createFromPrivKey)(privateKey) // peerid 
         .then(id => { return new PeerInfo(id) }) // peerInfo
-        .then(async peerInfo =>  {
-            let ip = await getIp()
+        .then(peerInfo => {
             let addr = `/ip4/${ip}/tcp/${config.Port}`
             let ma = multiaddr(addr)
             peerInfo.multiaddrs.add(ma) //add multiaddr
             return peerInfo
         })
         .then(peerInfo => { return new Node(peerInfo, config) })
+}
+const getIp = async () => {
+    try {
+        return await publicIP.v4()
+    } catch (error) {
+        return ip.address()
+    }
 }
 
 const addBootstrap = (peer) => {
@@ -73,7 +73,8 @@ function sendAddrs(node, peerInfo) {
     })
 }
 setImmediate(async () => {
-    let node = await createNode()
+    let ip = await getIp()
+    let node = await createNode(ip)
     node.start(() => {
         console.log('node has started (true/false):', node.isStarted())
         console.log('listening on:')
