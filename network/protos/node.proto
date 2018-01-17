@@ -10,5 +10,5 @@ message addrs {
 }
 
 message addr {
-    string addr = 1
+    string addr = 1;
 }
