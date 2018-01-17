@@ -16,11 +16,9 @@ const privateKey = require(VARDA_HOME + '/keys.json').PrivateKey
 const config = require(`${rootPath}/config.json`)
 const Node = require('./node-bundle')
 const bootstrap = require('./bootstrap')
+
 config.bootstrap = bootstrap
 const msg = pb(fs.readFileSync('./protos/node.proto'))
-
-
-
 
 const createNode = () => {
     return pify(peerId.createFromPrivKey)(privateKey) // peerid 
@@ -52,14 +50,14 @@ const addBootstrap = (peer) => {
 }
 
 
-function getPeers() {
+const getPeers = () => {
     const buf = msg.addrs.encode({
         addrs: bootstrap
     })
     return buf
 }
 
-function sendAddrs(node, peerInfo) {
+const sendAddrs = (node, peerInfo) => {
     node.dial(peerInfo, '/addrs', (err, conn) => {
         if (err) console.log(err)
         pull(
@@ -69,7 +67,7 @@ function sendAddrs(node, peerInfo) {
     })
 }
 
-async function sendAddr(node, peerInfo) {
+const sendAddr = async (node, peerInfo) => {
     try {
         let publicIp = await publicIP.v4()
         const buf = msg.addr.encode({
