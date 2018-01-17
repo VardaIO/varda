@@ -27,17 +27,15 @@ const getIp = async () => {
 }
 
 
-return
-const createNode = () => {
+const createNode =  () => {
     return pify(peerId.createFromPrivKey)(privateKey) // peerid 
         .then(id => { return new PeerInfo(id) }) // peerInfo
-        .then(peerInfo => {
-            getIp().then(ip => {
-                let addr = `/ip4/${ip}/tcp/${config.Port}`
-                let ma = multiaddr(addr)
-                peerInfo.multiaddrs.add(ma) //add multiaddr
-                return peerInfo
-            })
+        .then(async peerInfo =>  {
+            let ip = await getIp()
+            let addr = `/ip4/${ip}/tcp/${config.Port}`
+            let ma = multiaddr(addr)
+            peerInfo.multiaddrs.add(ma) //add multiaddr
+            return peerInfo
         })
         .then(peerInfo => { return new Node(peerInfo, config) })
 }
