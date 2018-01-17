@@ -51,24 +51,18 @@ const addBootstrap = (peer) => {
 }
 
 
-function getPeers(node) {
-    let peers = []
-    values(node.peerBook.getAll()).forEach((peer) => {
-        const addr = peer.isConnected()
-        if (!addr) { return }
-        peers.push(addr.toString())
-    })
+function getPeers() {
     const buf = msg.addrs.encode({
-        addrs: peers
+        addrs: bootstrap
     })
-    // console.log(msg.addrs.decode(buf))
     return buf
 }
+
 function sendAddrs(node, peerInfo) {
     node.dial(peerInfo, '/addrs', (err, conn) => {
         if (err) console.log(err)
         pull(
-            pull.values([getPeers(node)]),
+            pull.values([getPeers()]),
             conn
         )
     })
