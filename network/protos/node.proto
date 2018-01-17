@@ -8,3 +8,7 @@ message pong {
 message addrs {
     repeated string addrs = 1;
 }
+
+message addr {
+    string addr = 1
+}

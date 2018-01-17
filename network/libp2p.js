@@ -21,17 +21,18 @@ const msg = pb(fs.readFileSync('./protos/node.proto'))
 
 
 
-const createNode = (ip) => {
+const createNode = () => {
     return pify(peerId.createFromPrivKey)(privateKey) // peerid 
         .then(id => { return new PeerInfo(id) }) // peerInfo
         .then(peerInfo => {
-            let addr = `/ip4/${ip}/tcp/${config.Port}`
+            let addr = `/ip4/${ip.address()}/tcp/${config.Port}`
             let ma = multiaddr(addr)
             peerInfo.multiaddrs.add(ma) //add multiaddr
             return peerInfo
         })
         .then(peerInfo => { return new Node(peerInfo, config) })
 }
+
 const getIp = async () => {
     try {
         return await publicIP.v4()
@@ -73,8 +74,7 @@ function sendAddrs(node, peerInfo) {
     })
 }
 setImmediate(async () => {
-    let ip = await getIp()
-    let node = await createNode(ip)
+    let node = await createNode()
     node.start(() => {
         console.log('node has started (true/false):', node.isStarted())
         console.log('listening on:')
@@ -92,18 +92,48 @@ setImmediate(async () => {
             )
         })
 
+        node.handle('/addr', (protocol, conn) => {
+            pull(
+                conn,
+                pull.map((v) => msg.addr.decode(v)),
+                pull.collect(function (err, array) {
+                    console.log(array)
+                })
+            )
+        })
+
         node.on('peer:discovery', (peerInfo) => {
             console.log('Discovered a peer')
             const idStr = peerInfo.id.toB58String()
             console.log('Discovered: ' + idStr)
             node.dial(peerInfo, (err, conn) => {
                 if (err) console.log(err)
+                pull(
+                    pull.values([getPeers(node)]),
+                    conn
+                )
             })
         })
-        node.on('peer:connect', (peerInfo) => {
+        node.on('peer:connect', async (peerInfo) => {
             console.log('connected a peer')
             const idStr = peerInfo.id.toB58String()
             console.log('connected: ' + idStr)
+            try {
+                let publicIp = await publicIP.v4()
+                const buf = msg.addr.encode({
+                    addr: `/ip4/${publicIp}/tcp/${config.Port}/ipfs/${node.peerInfo.id.toB58String()}`
+                })
+                node.dial(peerInfo, '/addr', (err, conn) => {
+                    if (err) console.log(err)
+                    pull(
+                        pull.values([buf]),
+                        conn
+                    )
+                })
+            } catch (error) {
+                console.log('no public ip')
+            }
+
         })
 
         node.on('peer:disconnect', (peerInfo) => {
