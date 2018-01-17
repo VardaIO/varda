@@ -83,7 +83,7 @@ async function sendAddr(node, peerInfo) {
             )
         })
     } catch (error) {
-        console.log('no public ip')
+        return
     }
 
 }
@@ -167,18 +167,6 @@ setImmediate(async () => {
             })
 
         }, 1000 * 10 * 2)
-
-        // setInterval(() => {
-        //     values(node.peerBook.getAll()).forEach((peer) => {
-        //         const addr = peer.isConnected()
-        //         if (!addr) { return }
-        //         console.log('=====================')
-        //         console.log(addr.toString())
-        //         console.log('=====================')
-        //         console.log(bootstrap)
-        //     })
-
-        // }, 1000 * 10)
     })
 
 })
