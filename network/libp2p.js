@@ -19,25 +19,14 @@ const bootstrap = require('./bootstrap')
 
 config.bootstrap = bootstrap
 const msg = pb(fs.readFileSync('./protos/node.proto'))
-// const peerIdStr = peerInfo.id.toB58String()
-// const ma = `/dns4/star-signal.cloud.ipfs.team/tcp/443/wss/p2p-webrtc-star/ipfs/${peerIdStr}`
-const getAddr = async () => {
-    try {
-        await publicIP.v4()
-        return [`/ip4/${ip.address()}/tcp/${config.Port}`, `/ip4/${ip.address()}/tcp/${config.WSPOrt}/ws`]
-    } catch (error) {
-        return ['/ip4/112.74.173.37/tcp/9090/wss/p2p-webrtc-star', `/ip4/${ip.address()}/tcp/${config.Port}`]
-    }
-}
-const createNode = (addrs) => {
+
+const createNode = () => {
     return pify(peerId.createFromPrivKey)(privateKey) // peerid 
         .then(id => { return new PeerInfo(id) }) // peerInfo
         .then(peerInfo => {
-            // let addr = `/ip4/${ip.address()}/tcp/${config.Port}`
-            addrs.forEach((addr) => {
-                let ma = multiaddr(addr)
-                peerInfo.multiaddrs.add(ma) //add multiaddr
-            })
+            let addr = `/ip4/${ip.address()}/tcp/${config.Port}`
+            let ma = multiaddr(addr)
+            peerInfo.multiaddrs.add(ma) //add multiaddr
             return peerInfo
         })
         .then(peerInfo => { return new Node(peerInfo, config) })
@@ -69,8 +58,8 @@ const getPeers = () => {
 }
 
 const sendAddrs = (node, peerInfo) => {
-    node.dial(peerInfo, '/addrs', (error, conn) => {
-        // if (error) console.log('Fail to dial')
+    node.dial(peerInfo, '/addrs', (err, conn) => {
+        if (err) console.log(err)
         pull(
             pull.values([getPeers()]),
             conn
@@ -84,8 +73,8 @@ const sendAddr = async (node, peerInfo) => {
         const buf = msg.addr.encode({
             addr: `/ip4/${publicIp}/tcp/${config.Port}/ipfs/${node.peerInfo.id.toB58String()}`
         })
-        node.dial(peerInfo, '/addr', (error, conn) => {
-            // if (error) console.log('Fail to dial')
+        node.dial(peerInfo, '/addr', (err, conn) => {
+            if (err) console.log(err)
             pull(
                 pull.values([buf]),
                 conn
@@ -114,8 +103,7 @@ const checkBootstrap = async () => {
 }
 
 setImmediate(async () => {
-    let addrs = await getAddr()
-    let node = await createNode(addrs)
+    let node = await createNode()
     checkBootstrap()
     node.start(() => {
         console.log('node has started (true/false):', node.isStarted())
@@ -127,7 +115,7 @@ setImmediate(async () => {
             pull(
                 conn,
                 pull.map((v) => msg.addrs.decode(v)),
-                pull.collect(function (error, array) {
+                pull.collect(function (err, array) {
                     array[0].addrs.map((v) => {
                         addBootstrap(v)
                     })
@@ -141,7 +129,7 @@ setImmediate(async () => {
             pull(
                 conn,
                 pull.map((v) => msg.addr.decode(v)),
-                pull.collect(function (error, array) {
+                pull.collect(function (err, array) {
                     addBootstrap(array[0].addr)
                     checkBootstrap()
                 })
@@ -151,10 +139,8 @@ setImmediate(async () => {
         // when discovery a peer, try to dial to this peer,if it can reply, 
         // peers will connect with each other
         node.on('peer:discovery', (peerInfo) => {
-            const idStr = peerInfo.id.toB58String()
-            console.log('Discovered: ' + idStr)
-            node.dial(peerInfo, (error, conn) => {
-                // if (error) console.log('Fail to dial')
+            node.dial(peerInfo, (err, conn) => {
+                if (err) console.log(err)
             })
         })
 
@@ -179,10 +165,6 @@ setImmediate(async () => {
             })
 
         }, 1000 * 10 * 2)
-
-        setInterval(() => {
-            console.log(bootstrap)
-        }, 1000 * 10)
     })
 
 })

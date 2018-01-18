@@ -33,7 +33,6 @@
     "libp2p-railing": "^0.7.1",
     "libp2p-secio": "^0.9.0",
     "libp2p-tcp": "^0.11.2",
-    "libp2p-webrtc-star": "^0.13.3",
     "libp2p-websocket-star": "^0.7.2",
     "libp2p-websockets": "^0.10.4",
     "linvodb3": "^3.25.1",
@@ -45,7 +44,6 @@
     "pify": "^3.0.0",
     "protocol-buffers": "^3.2.1",
     "public-ip": "^2.4.0",
-    "pull-stream": "^3.6.1",
-    "wrtc": "0.0.65"
+    "pull-stream": "^3.6.1"
   }
 }
