@@ -5,7 +5,9 @@ const peerId = require('peer-id')
 const VARDA_HOME = process.env.VARDA_HOME || os.homedir() + '/.varda'
 const keyFile = VARDA_HOME + '/keys.json'
 
-peerId.create({ bits: 2048 }, (error, keys) => {
+peerId.create({
+    bits: 2048
+}, (error, keys) => {
     if (error) {
         console.log(error)
     }

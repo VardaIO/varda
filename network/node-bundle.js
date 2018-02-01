@@ -15,13 +15,15 @@ class Node extends libp2p {
                 muxer: [Multiplex],
                 crypto: [SECIO]
             },
-            discovery: [new MulticastDNS(peerInfo, { interval: 100 })]
+            discovery: [new MulticastDNS(peerInfo, {
+                interval: 100
+            })]
         }
-        
+
         // bootstrap
         if (config.bootstrap) {
             modules.discovery.push(new Railing(config.bootstrap))
-          }
+        }
 
         super(modules, peerInfo)
     }
