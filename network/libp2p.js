@@ -5,7 +5,10 @@ const peerId = require('peer-id')
 const pify = require('pify')
 const rootPath = require('app-root-path')
 const multiaddr = require('multiaddr')
-const { values, pullAt } = require('lodash')
+const {
+    values,
+    pullAt
+} = require('lodash')
 const pb = require('protocol-buffers')
 const pull = require('pull-stream')
 const ip = require('ip')
@@ -22,14 +25,18 @@ const msg = pb(fs.readFileSync('./protos/node.proto'))
 
 const createNode = () => {
     return pify(peerId.createFromPrivKey)(privateKey) // peerid 
-        .then(id => { return new PeerInfo(id) }) // peerInfo
+        .then(id => {
+            return new PeerInfo(id)
+        }) // peerInfo
         .then(peerInfo => {
             let addr = `/ip4/${ip.address()}/tcp/${config.Port}`
             let ma = multiaddr(addr)
             peerInfo.multiaddrs.add(ma) //add multiaddr
             return peerInfo
         })
-        .then(peerInfo => { return new Node(peerInfo, config) })
+        .then(peerInfo => {
+            return new Node(peerInfo, config)
+        })
 }
 
 const getIp = async () => {
@@ -160,7 +167,9 @@ setImmediate(async () => {
         setInterval(() => {
             values(node.peerBook.getAll()).forEach((peer) => {
                 const addr = peer.isConnected()
-                if (!addr) { return }
+                if (!addr) {
+                    return
+                }
                 sendAddrs(node, peer)
             })
 

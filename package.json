@@ -21,10 +21,13 @@
   "homepage": "https://github.com/Elvenisboy/varda#readme",
   "dependencies": {
     "app-root-path": "^2.0.1",
+    "base32.js": "^0.1.0",
     "cache-base": "^2.0.2",
     "colors": "^1.1.2",
+    "crc": "^3.5.0",
     "fs-extra": "^5.0.0",
     "ip": "^1.1.5",
+    "keccak": "^1.4.0",
     "leveldown": "^2.1.1",
     "libp2p": "^0.15.0",
     "libp2p-floodsub": "^0.13.1",
@@ -45,6 +48,7 @@
     "protocol-buffers": "^3.2.1",
     "public-ip": "^2.4.0",
     "pull-stream": "^3.6.1",
-    "tweetnacl": "^1.0.0"
+    "tweetnacl": "^1.0.0",
+    "tweetnacl-util": "^0.15.0"
   }
 }
