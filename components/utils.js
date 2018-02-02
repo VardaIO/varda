@@ -3,6 +3,7 @@ nacl.util = require('tweetnacl-util')
 const createKeccakHash = require('keccak')
 const base32 = require('base32.js')
 const crc = require('crc')
+const _ = require('lodash')
 
 const encode = nacl.util.encodeBase64
 const decode = nacl.util.decodeBase64
@@ -42,9 +43,9 @@ class Utils {
     }
 
     genAddress(pk) {
-        pk = Buffer.from(pk,'hex')
+        pk = Buffer.from(pk, 'hex')
         const pkHash = createKeccakHash('sha3-256').update(pk).digest()
-        const checksum =  this.checksum(pkHash)
+        const checksum = this.checksum(pkHash)
         const unencodedAddress = Buffer.concat([pkHash, checksum])
         return base32.encode(unencodedAddress)
     }
@@ -56,8 +57,18 @@ class Utils {
         return checksum
     }
 
-    checksumVerify(checksum) {
+    addressVerify(address) {
+        address = base32.decode(address)
 
+        const originalChecksum = address.slice(-2)
+        const pkHash = address.slice(0, -2)
+        const newChecksum = this.checksum(pkHash)
+
+        if (_.isEqual(newChecksum, originalChecksum)) {
+            return true
+        } else {
+            return false
+        }
     }
 
 }
