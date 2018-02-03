@@ -47,7 +47,8 @@ class Utils {
         const pkHash = createKeccakHash('sha3-256').update(pk).digest()
         const checksum = this.checksum(pkHash)
         const unencodedAddress = Buffer.concat([pkHash, checksum])
-        return base32.encode(unencodedAddress)
+        // the V is prefix
+        return 'V' + base32.encode(unencodedAddress)
     }
 
     checksum(hash) {
@@ -58,7 +59,7 @@ class Utils {
     }
 
     addressVerify(address) {
-        address = base32.decode(address)
+        address = base32.decode(address.substr(1))
 
         const originalChecksum = address.slice(-2)
         const pkHash = address.slice(0, -2)
@@ -73,3 +74,4 @@ class Utils {
 
 }
 
+module.exports = Utils
