@@ -1,12 +1,8 @@
 const nacl = require("tweetnacl")
-nacl.util = require('tweetnacl-util')
 const createKeccakHash = require('keccak')
 const base32 = require('base32.js')
 const crc = require('crc')
 const _ = require('lodash')
-
-const encode = nacl.util.encodeBase64
-const decode = nacl.util.decodeBase64
 
 class Utils {
     constructor() {}
@@ -19,7 +15,17 @@ class Utils {
             publicKey: publicKey
         }
     }
+    fromSeed(seed) {
+        // seed can be a random 32 bytes uint8Array value
+        const keys = nacl.sign.keyPair.fromSeed(seed)
+        const secretKey = Buffer.from(keys.secretKey).toString('hex')
+        const publicKey = Buffer.from(keys.publicKey).toString('hex')
+        return {
+            secretKey: secretKey,
+            publicKey: publicKey
+        }
 
+    }
     getPub(sk) {
         const secretKey = new Uint8Array(Buffer.from(sk, 'hex'))
 
