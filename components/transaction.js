@@ -2,6 +2,9 @@ const createKeccakHash = require('keccak')
 const {
     forOwn
 } = require('lodash')
+const Utils = require('./utils')
+const utils = new Utils()
+
 class Transaction {
     constructor() {
         this.payload_hash = null
@@ -10,11 +13,15 @@ class Transaction {
         this.amount = null
         this.recpient = null
         this.senderPublicKey = null
+        this.signature = null
     }
-    // Object.assign(this, { ip, port })
 
     toHash() {
         return createKeccakHash('sha3-256').update(this.type + this.sender + this.amount + this.recpient + this.senderPublicKey).digest('hex')
+    }
+
+    sign(sk) {
+        return utils.sign(this.payload_hash, sk)
     }
 
     newTransaction(tx) {
@@ -27,17 +34,25 @@ class Transaction {
     }
 
     check() {
-        //first check signaature
-        // 1. get address from database and vailate address with pubkey
-        // 2. get sig from database, use pubkey to vailate sig
+
+        //first check address and signature 
+        // 1. get address and vailate address with pubkey
+        // 2. get sig , use pubkey to vailate sig
+        if (utils.genAddress(this.senderPublicKey) !== this.sender) {
+            return {
+                msg: 'sender address is wrong'
+            }
+        }
+
+        if (!utils.sigVerify(this.signature, this.senderPublicKey)) {
+            return {
+                msg: 'signature is wrong'
+            }
+        }
 
         //secound check amount
-        // 1.get inputs amount
-        // 2. if send amount > inputs amout,return false 
+        // 1.get amount
+        // 2. if sender amount > his have, return false 
     }
 
 }
-
-let a = new Transaction()
-a.type = 'pay'
-console.log(a)
