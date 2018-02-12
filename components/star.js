@@ -9,14 +9,19 @@ const createKeccakHash = require('keccak')
 
 class Star {
     constructor() {
-
+        this.timestamp = null
+        this.parentStars = null
+        this.transaction = null
+        this.star_hash = null
     }
+
     buildStar(star) {
         const schema = joi.object().keys({
             timestamp: joi.string().required(),
             parentStars: joi.array().required(),
             transaction: joi.object().required()
         })
+
         const result = joi.validate(star, schema)
 
         if (result.error !== null || result.value === undefined) {
@@ -32,9 +37,14 @@ class Star {
         } else {
             parents = star.parentStars[0]
         }
-        let beforeHash = star.timestamp + parents + star.transaction.payload_hash
-        return createKeccakHash('sha3-256').update(beforeHash).digest('hex')
 
+        const beforeHash = star.timestamp + parents + star.transaction.payload_hash
+        const star_hash = createKeccakHash('sha3-256').update(beforeHash).digest('hex')
+
+        const aStar = new Star()
+        Object.assign(aStar, star)
+        aStar.star_hash = star_hash
+        
+        return aStar
     }
 }
-
