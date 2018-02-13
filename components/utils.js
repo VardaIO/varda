@@ -51,7 +51,7 @@ class Utils {
 
     genAddress(pk) {
         pk = Buffer.from(pk, 'hex')
-        const afterHash = createKeccakHash('sha3-256').update(pk).digest().slice(0, 10)
+        const afterHash = createKeccakHash('sha3-256').update(pk).digest().slice(0, 15)
         const checksum = this.checksum(afterHash)
         const unencodedAddress = Buffer.concat([afterHash, checksum])
         // the V is prefix

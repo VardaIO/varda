@@ -19,7 +19,8 @@ class Star {
         const schema = joi.object().keys({
             timestamp: joi.string().required(),
             parentStars: joi.array().required(),
-            transaction: joi.object().required()
+            transaction: joi.object().required(),
+            authorAddress: joi.string().required()
         })
 
         const result = joi.validate(star, schema)
@@ -38,8 +39,8 @@ class Star {
             parents = star.parentStars[0]
         }
 
-        const beforeHash = star.timestamp + parents + star.transaction.payload_hash
-        const star_hash = createKeccakHash('sha3-256').update(beforeHash).digest('hex')
+        const beforeHash = star.timestamp + parents + star.transaction.payload_hash + star.authorAddress
+        const star_hash = createKeccakHash('sha3-256').update(beforeHash).digest('base64')
 
         const aStar = new Star()
         Object.assign(aStar, star)
