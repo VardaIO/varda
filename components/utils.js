@@ -35,13 +35,14 @@ class Utils {
     sign(msg, sk) {
         msg = new Uint8Array(Buffer.from(msg))
         sk = new Uint8Array(Buffer.from(sk, 'hex'))
-        return Buffer.from(nacl.sign(msg, sk)).toString('hex')
+        return Buffer.from(nacl.sign.detached(msg, sk)).toString('hex')
     }
 
-    sigVerify(sig, pk) {
+    sigVerify(msg, sig, pk) {
+        msg = new Uint8Array(Buffer.from(msg))
         sig = new Uint8Array(Buffer.from(sig, 'hex'))
         pk = new Uint8Array(Buffer.from(pk, 'hex'))
-        const result = nacl.sign.open(sig, pk)
+        const result = nacl.sign.detached.verify(msg, sig, pk)
         if (!result) {
             return false
         }
