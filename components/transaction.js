@@ -26,7 +26,7 @@ class Transaction {
         let transaction = new Transaction()
         Object.assign(transaction, tx)
         transaction.payload_hash = transaction.toHash()
-        
+
         return transaction
     }
 
@@ -53,19 +53,5 @@ class Transaction {
     }
 
 }
-const sk = 'f9ec5ccb42e3c976a027a5ba74a0ed636b35d93bacde225dbe85aed8dfbb00b4f2e4942768671e46faf596f2bdf73c665a5a7c26e768eca1cf6935620e17d1ba'
-const pk = 'f2e4942768671e46faf596f2bdf73c665a5a7c26e768eca1cf6935620e17d1ba'
 
-let a = {
-    type: 'pay',
-    sender: 'me',
-    amount: 10,
-    recpient: 'you',
-    senderPublicKey: pk
-}
-let b = new Transaction()
-
-console.log(b.newTransaction(a).toHash())
-console.log(b.newTransaction(a).sign(sk))
-console.log(utils.sigVerify(b.newTransaction(a).sign(sk), pk))
 
