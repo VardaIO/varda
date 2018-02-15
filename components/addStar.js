@@ -1,15 +1,14 @@
 //first, get last main chain index, and view how many stars in it
 
 /* today is new year, so drink some bear～ happy new year every friends!!!!!
-*   at 2018.2.15 23:52
-*/ 
+ *   at 2018.2.15 23:52
+ */
 const _ = require('lodash')
 const pool = require('../database/pool')
 const Star = require('./star')
 const aStar = new Star()
 const genesis = aStar.getGenesis()
 
-const lastMci = client.prepare('SELECT main_chain_index FROM stars ORDER BY main_chain_index DESC LIMIT 1').get().main_chain_index
 
 function findUnLinked(client, index) {
     const unlinkedStars = []
@@ -26,6 +25,7 @@ function findUnLinked(client, index) {
 
 function findUnLinkedInFour(client) {
     const mciArray = []
+    const lastMci = client.prepare('SELECT main_chain_index FROM stars ORDER BY main_chain_index DESC LIMIT 1').get().main_chain_index
     if (lastMci < 4) return mciArray
     for (let i = 1; i < 5; i++) {
         const unlinkedStars = findUnLinked(client, i)
@@ -44,6 +44,7 @@ function getSortedStars(client, index) {
 }
 
 function getParents(client) {
+    const lastMci = client.prepare('SELECT main_chain_index FROM stars ORDER BY main_chain_index DESC LIMIT 1').get().main_chain_index
     const starsOfMci = client.prepare(`SELECT * FROM stars WHERE main_chain_index=${lastMci}`).all()
     const intervalTime = Math.floor(Date.now() / 1000) - starsOfMci[0].timestamp
 
@@ -172,6 +173,8 @@ const addStar = (transaction) => {
         const begin = client.prepare('BEGIN');
         const commit = client.prepare('COMMIT');
         const rollback = client.prepare('ROLLBACK');
+        const lastMci = client.prepare('SELECT main_chain_index FROM stars ORDER BY main_chain_index DESC LIMIT 1').get().main_chain_index
+
         const {
             parents,
             move
@@ -227,6 +230,7 @@ const addStar = (transaction) => {
         }
         pool.release(client)
     }).catch(error => {
-        return Promise.reject(error)
+        console.log(error)
     })
 }
+

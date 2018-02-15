@@ -53,8 +53,6 @@ class Transaction {
         // 1.get amount
         // 2. if sender amount > his have, return false 
         return true
-
-
     }
 
 }
