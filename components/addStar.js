@@ -1,4 +1,8 @@
 //first, get last main chain index, and view how many stars in it
+
+/* today is new year, so drink some bear～ happy new year every friends!!!!!
+*   at 2018.2.15 23:52
+*/ 
 const _ = require('lodash')
 const pool = require('../database/pool')
 const Star = require('./star')
@@ -213,7 +217,7 @@ const addStar = (transaction) => {
                 let addAccount = client.prepare('INSERT INTO account_pks VALUES (@address,@pk)')
                 addAccount.run({
                     address: transaction.sender,
-                    pk: transaction.pk
+                    pk: transaction.senderPublicKey
                 })
             }
             commit.run()
