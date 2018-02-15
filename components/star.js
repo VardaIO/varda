@@ -14,6 +14,7 @@ class Star {
         this.payload_hash = null
         this.transaction = null
         this.star_hash = null
+        this.mci = null
     }
 
     getGenesis() {
@@ -23,7 +24,8 @@ class Star {
             parentStars: [],
             payload_hash: 'ELggd3MSKdJf9HuOK3V7TkfhOeEnqmTUtmdF7yFkK9A=',
             transaction: {},
-            authorAddress: 'VLRAJEAFXJBVYZQYT67YUQ3KJV53A'
+            authorAddress: 'VLRAJEAFXJBVYZQYT67YUQ3KJV53A',
+            mci: 0
         })
     }
 
@@ -33,7 +35,8 @@ class Star {
             parentStars: joi.array().required(),
             payload_hash: joi.string().required(),
             transaction: joi.object().required(),
-            authorAddress: joi.string().required()
+            authorAddress: joi.string().required(),
+            mci: joi.number().required()
         })
 
         const result = joi.validate(star, schema)
@@ -52,7 +55,7 @@ class Star {
             parents = star.parentStars[0]
         }
 
-        const beforeHash = star.timestamp + parents + star.payload_hash + star.authorAddress
+        const beforeHash = star.timestamp + parents + star.payload_hash + star.authorAddress + star.mci
         const star_hash = createKeccakHash('sha3-256').update(beforeHash).digest('base64')
 
         const aStar = new Star()
@@ -61,6 +64,7 @@ class Star {
 
         return aStar
     }
+
 }
 
 module.exports = Star
