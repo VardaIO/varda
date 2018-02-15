@@ -11,14 +11,27 @@ class Star {
     constructor() {
         this.timestamp = null
         this.parentStars = null
+        this.payload_hash = null
         this.transaction = null
         this.star_hash = null
     }
 
+    getGenesis() {
+        return this.buildStar({
+            // timestamp: Math.floor(Date.now() / 1000),
+            timestamp: 1518578669,
+            parentStars: [],
+            payload_hash: 'ELggd3MSKdJf9HuOK3V7TkfhOeEnqmTUtmdF7yFkK9A=',
+            transaction: {},
+            authorAddress: 'VLRAJEAFXJBVYZQYT67YUQ3KJV53A'
+        })
+    }
+
     buildStar(star) {
         const schema = joi.object().keys({
-            timestamp: joi.string().required(),
+            timestamp: joi.number().required(),
             parentStars: joi.array().required(),
+            payload_hash: joi.string().required(),
             transaction: joi.object().required(),
             authorAddress: joi.string().required()
         })
@@ -39,13 +52,15 @@ class Star {
             parents = star.parentStars[0]
         }
 
-        const beforeHash = star.timestamp + parents + star.transaction.payload_hash + star.authorAddress
+        const beforeHash = star.timestamp + parents + star.payload_hash + star.authorAddress
         const star_hash = createKeccakHash('sha3-256').update(beforeHash).digest('base64')
 
         const aStar = new Star()
         Object.assign(aStar, star)
         aStar.star_hash = star_hash
-        
+
         return aStar
     }
 }
+
+module.exports = Star
