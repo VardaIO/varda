@@ -3,20 +3,7 @@ const _ = require('lodash')
 const pool = require('../database/pool')
 const Star = require('./star')
 const genesis = new Star().getGenesis()
-// var source = _.range(1000),
-//     collection = [
-//         //sample从集合中获取一个或n个元素
-//         _.sample(source, 50),
-//         _.sample(source, 100),
-//         _.sample(source, 150)
-//     ];
 
-// //[ 12, 44, 0 ]
-// // console.log(_.map(collection, _.min));
-// console.log(_.sortBy(['2', '1', '6', '5', 'haha', 'aa'], function (item) {
-//     return item;
-// }))
-// return
 pool.acquire().then(client => {
     const lastMci = client.prepare('SELECT main_chain_index FROM stars ORDER BY main_chain_index DESC LIMIT 1').get().main_chain_index
     const starsOfMci = client.prepare(`SELECT * FROM stars WHERE main_chain_index=${lastMci}`).all()
@@ -53,8 +40,9 @@ pool.acquire().then(client => {
         })
     }
 
+    const intervalTime = Math.floor(Date.now() / 1000) - starsOfMci[0].timestamp
+
     if (starsOfMci.length == 1) {
-        const intervalTime = Math.floor(Date.now() / 1000) - starsOfMci[0].timestamp
         if (intervalTime > 10) {
             // findUnLinkedInFour()
             const parents = [starsOfMci[0].star, ...findUnLinkedInFour()]
@@ -114,5 +102,65 @@ pool.acquire().then(client => {
             }
 
         }
-    } 
+    } else {
+        if (intervalTime > 10) {
+            const parents = [starsOfMci[0].star, ...findUnLinkedInFour()]
+            const move = 1
+            return {
+                parents,
+                move
+            }
+        }
+
+        if (starsOfMci.length < 10) {
+            const unlinkedStars = findUnLinked(lastMci - 1)
+            const starsInFour = findUnLinkedInFour()
+            if (starsInFour.length == 0) {
+                if (1 < unlinkedStars.length < 2) {
+                    return {
+                        parents: [getSortedStars(lastMci - 1)[0], unlinkedStars],
+                        move: 0
+                    }
+                }
+
+                if (unlinkedStars.length > 2) {
+                    return {
+                        parents: unlinkedStars,
+                        move: 0
+                    }
+                }
+
+                if (unlinkedStars.length = 0) {
+                    return {
+                        parents: getSortedStars(lastMci - 1).slice(0, 2),
+                        move: 0
+                    }
+                }
+            } else {
+                if (1 < unlinkedStars.length < 2) {
+                    return {
+                        parents: [unlinkedStars, starsInFour],
+                        move: 0
+                    }
+                }
+
+                if (unlinkedStars.length > 2) {
+                    return {
+                        parents: [...unlinkedStars, ...starsInFour],
+                        move: 0
+                    }
+                }
+
+                if (unlinkedStars.length = 0) {
+                    return {
+                        parents: [getSortedStars(lastMci - 1)[0], ...starsInFour],
+                        move: 0
+                    }
+                }
+
+            }
+        }
+    }
+    
+    pool.release(client)
 }).catch(error => console.log(error))
