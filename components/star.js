@@ -61,7 +61,6 @@ class Star {
         const aStar = new Star()
         Object.assign(aStar, star)
         aStar.star_hash = star_hash
-
         return aStar
     }
 
