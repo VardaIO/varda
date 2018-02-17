@@ -3,6 +3,8 @@
 /* today is new year, so drink some bear～ happy new year every friends!!!!!
  *   at 2018.2.15 23:52
  */
+
+ // todo: Optimization sqlite query
 const _ = require('lodash')
 const pool = require('../database/pool')
 const Star = require('./star')
@@ -237,8 +239,7 @@ function getParents(client) {
 }
 
 const addStar = (transaction) => {
-    return new Promise((resolve, reject) => {
-        pool.acquire().then(client => {
+        return pool.acquire().then(client => {
             const begin = client.prepare('BEGIN');
             const commit = client.prepare('COMMIT');
             const rollback = client.prepare('ROLLBACK');
@@ -302,17 +303,15 @@ const addStar = (transaction) => {
                 if (client.inTransaction) {
                     rollback.run()
                     pool.release(client)
-                    reject('error')
+                    return Promise.reject('error')
                 };
                 pool.release(client)
-                resolve('success')
+                return Promise.resolve('success')
 
             }
         }).catch(error => {
-            console.log(error)
-            reject('error')
+            return Promise.reject(error)
         })
-    })
 }
 
 module.exports = addStar

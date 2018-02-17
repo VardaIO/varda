@@ -20,18 +20,7 @@ pool.acquire().then((client) => {
         author_address CHAR(29) NOT NULL
         )`).run()
     client.prepare("CREATE INDEX IF NOT EXISTS mci ON stars (main_chain_index)").run()
-    // PRIMARY KEY (
-    //     parent_unit,
-    //     child_unit
-    // ),
-    // CONSTRAINT parenthoodsByChild FOREIGN KEY (
-    //     child_unit
-    // )
-    // REFERENCES units (unit),
-    // CONSTRAINT parenthoodsByParent FOREIGN KEY (
-    //     parent_unit
-    // )
-    // REFERENCES units (unit) 
+
     client.prepare(`CREATE TABLE IF NOT EXISTS  parenthoods (
         child_star CHAR(44) NOT NULL,
         parent_star CHAR(44) NOT NULL,
