@@ -136,6 +136,32 @@ const runP2p = async () => {
         }, 1000 * 60)
     }
 
+    node.handle('/getAddrList', (protocol, conn) => {
+        pull(
+            conn,
+            pull.map((v) => msg.addrs.decode(v)),
+            pull.collect(function (err, array) {
+                array[0].addrs.map((v) => {
+                    if (publicIpsList.indexOf(v) == -1) publicIpsList.push(v)
+                })
+            })
+        )
+    })
+
+    setInterval(() => {
+        if (publicIpsList.length != 0) {
+            values(node.peerBook.getAll()).forEach((peer) => {
+                node.dial(peer, '/getAddrList', (err, conn) => {
+                    if (err) console.log(err)
+                    pull(
+                        pull.values([encodePublicIps(publicIpsList)]),
+                        conn
+                    )
+                })
+            })
+        }
+    }, 1000 * 30)
+
     node.handle('/t', (protocol, conn) => {
         pull(
             conn,
