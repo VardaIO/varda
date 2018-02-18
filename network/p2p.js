@@ -97,14 +97,15 @@ setImmediate(async () => {
             conn,
             pull.map((v) => msg.addrs.decode(v)),
             pull.collect(function (err, array) {
-                array[0].addrs.map((v) => {
-                    // console.log(v)
-                    const peer = new PeerInfo()
-                    peer.multiaddrs.add(v)
-                    node.dial(peer, (err, conn) => {
-                        if (err) console.log(err)
-                    })
-                })
+                // array[0].addrs.map((v) => {
+                //     // console.log(v)
+                //     const peer = new PeerInfo()
+                //     peer.multiaddrs.add(v)
+                //     node.dial(peer, (err, conn) => {
+                //         if (err) console.log(err)
+                //     })
+                // })
+                console.log(array)
             })
         )
     })
