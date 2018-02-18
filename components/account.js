@@ -49,4 +49,13 @@ class Account {
         })
     }
 
+    checkTransaction(amount) {
+        const balance = this.getBalance()
+        if (balance - amount < 0) {
+            return false
+        }
+        return true
+    }
 }
+
+module.exports = Account

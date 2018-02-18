@@ -4,12 +4,13 @@
  *   at 2018.2.15 23:52
  */
 
- // todo: Optimization sqlite query
+// todo: Optimization sqlite query
 const _ = require('lodash')
 const pool = require('../database/pool')
 const Star = require('./star')
 const aStar = new Star()
 const genesis = aStar.getGenesis()
+const Account = require('./account')
 const colors = require('colors')
 
 
@@ -239,79 +240,93 @@ function getParents(client) {
 }
 
 const addStar = (transaction) => {
-        return pool.acquire().then(client => {
-            const begin = client.prepare('BEGIN');
-            const commit = client.prepare('COMMIT');
-            const rollback = client.prepare('ROLLBACK');
-            const lastMci = client.prepare('SELECT main_chain_index FROM stars ORDER BY main_chain_index DESC LIMIT 1').get().main_chain_index
+    return pool.acquire().then(client => {
+        const senderAddress = transaction.sender
+        const account = new Account(senderAddress)
 
-            const {
-                parents,
-                move
-            } = getParents(client)
-            const mci = lastMci + move
-            const star = aStar.buildStar({
-                timestamp: Math.floor(Date.now() / 1000),
-                parentStars: parents,
-                payload_hash: transaction.payload_hash,
-                transaction: transaction,
-                authorAddress: transaction.sender,
-                mci: mci
-            })
+        if (!account.checkTransaction(transaction.amount)) {
+            return Promise.reject('amount bigger than balance')
+        }
 
-            begin.run()
-            try {
-                let addStar = client.prepare('INSERT INTO stars VALUES(@star, @main_chain_index, @timestamp, @payload_hash, @author_address)')
+        const begin = client.prepare('BEGIN');
+        const commit = client.prepare('COMMIT');
+        const rollback = client.prepare('ROLLBACK');
+        const lastMci = client.prepare('SELECT main_chain_index FROM stars ORDER BY main_chain_index DESC LIMIT 1').get().main_chain_index
 
-                addStar.run({
-                    star: star.star_hash,
-                    main_chain_index: star.mci,
-                    timestamp: star.timestamp,
-                    payload_hash: transaction.payload_hash,
-                    author_address: star.authorAddress
-                })
-                // transaction
-                let addTransaction = client.prepare('INSERT INTO transactions VALUES (@star, @type, @sender, @amount, @recpient, @signature)')
-                addTransaction.run({
-                    star: star.star_hash,
-                    type: transaction.type,
-                    sender: transaction.sender,
-                    amount: transaction.amount,
-                    recpient: transaction.recpient,
-                    signature: transaction.signature
-                })
-                // parenthood
-                let addparenthood = client.prepare('INSERT INTO parenthoods VALUES (@child_star, @parent_star, @parent_index)')
-                parents.map((parent, index) => {
-                    addparenthood.run({
-                        child_star: star.star_hash,
-                        parent_star: parent,
-                        parent_index: index
-                    })
-                })
-                //account pk
-                let findPk = client.prepare(`SELECT address FROM account_pks WHERE address='${transaction.sender}'`).get()
-                if (findPk == undefined) {
-                    let addAccount = client.prepare('INSERT INTO account_pks VALUES (@address,@pk)')
-                    addAccount.run({
-                        address: transaction.sender,
-                        pk: transaction.senderPublicKey
-                    })
-                }
-                commit.run()
-            } finally {
-                if (client.inTransaction) {
-                    rollback.run()
-                    pool.release(client)
-                    return Promise.reject('error')
-                };
-                pool.release(client)
-                return Promise.resolve('success')
-
-            }
-        }).catch(error => {
-            return Promise.reject(error)
+        const {
+            parents,
+            move
+        } = getParents(client)
+        const mci = lastMci + move
+        const star = aStar.buildStar({
+            timestamp: Math.floor(Date.now() / 1000),
+            parentStars: parents,
+            payload_hash: transaction.payload_hash,
+            transaction: transaction,
+            authorAddress: transaction.sender,
+            mci: mci
         })
+
+        begin.run()
+        try {
+            let addStar = client.prepare('INSERT INTO stars VALUES(@star, @main_chain_index, @timestamp, @payload_hash, @author_address)')
+
+            addStar.run({
+                star: star.star_hash,
+                main_chain_index: star.mci,
+                timestamp: star.timestamp,
+                payload_hash: transaction.payload_hash,
+                author_address: star.authorAddress
+            })
+            // transaction
+            let addTransaction = client.prepare('INSERT INTO transactions VALUES (@star, @type, @sender, @amount, @recpient, @signature)')
+            addTransaction.run({
+                star: star.star_hash,
+                type: transaction.type,
+                sender: transaction.sender,
+                amount: transaction.amount,
+                recpient: transaction.recpient,
+                signature: transaction.signature
+            })
+            // parenthood
+            let addparenthood = client.prepare('INSERT INTO parenthoods VALUES (@child_star, @parent_star, @parent_index)')
+            parents.map((parent, index) => {
+                addparenthood.run({
+                    child_star: star.star_hash,
+                    parent_star: parent,
+                    parent_index: index
+                })
+            })
+            //account pk
+            let findPk = client.prepare(`SELECT address FROM account_pks WHERE address='${transaction.sender}'`).get()
+            if (findPk == undefined) {
+                let addAccount = client.prepare('INSERT INTO account_pks VALUES (@address,@pk)')
+                addAccount.run({
+                    address: transaction.sender,
+                    pk: transaction.senderPublicKey
+                })
+            }
+            commit.run()
+        } finally {
+            if (client.inTransaction) {
+                rollback.run()
+                pool.release(client)
+                return Promise.reject('error')
+            };
+            pool.release(client)
+            return Promise.resolve('success')
+
+        }
+    }).catch(error => {
+        return Promise.reject(error)
+    })
+}
+
+const addStarFromBroadcast = (message) => {
+    // 1. vailidate the message signature, the message should from commission
+    // 2. vailidate the transaction signature
+    // 3. vailidate amount
+    // 4. add star
 }
 
 module.exports = addStar

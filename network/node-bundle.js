@@ -19,7 +19,6 @@ class Node extends libp2p {
                 interval: 100
             })]
         }
-
         // bootstrap
         if (config.bootstrap) {
             modules.discovery.push(new Railing(config.bootstrap))

@@ -174,6 +174,20 @@ setImmediate(async () => {
             })
 
         }, 1000 * 10 * 2)
+
+        setInterval(() => {
+            values(node.peerBook.getAll()).forEach((peer) => {
+                const addr = peer.isConnected()
+                // if (!addr) {
+                //     return
+                // }
+                peer.multiaddrs.forEach((ma) => console.log(ma.toString()))
+                console.log(addr)
+                // console.log(peer)
+                // sendAddrs(node, peer)
+            })
+
+        }, 1000)
     })
 
 })
