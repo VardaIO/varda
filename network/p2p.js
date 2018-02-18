@@ -37,7 +37,7 @@ const createNode = async () => {
         .then(id => {
             return new PeerInfo(id)
         }) // peerInfo
-        .then(peerInfo => {
+        .then(async peerInfo => {
             let publicIP = await getPublicIp()
             if (!publicIP) {
                 if (config.signal) {
@@ -119,7 +119,7 @@ const runP2p = async () => {
 
     let publicIp = await getPublicIp()
 
-    node.handle('/getPubIp', (protocol, conn) => {
+    node.handle('/getPubIpAddr', (protocol, conn) => {
         pull(
             conn,
             pull.map((ip) => msg.addr.decode(ip)),
@@ -165,7 +165,7 @@ const runP2p = async () => {
         })
         setInterval(() => {
             values(node.peerBook.getAll()).forEach((peer) => {
-                node.dial(peer, '/getPubIp', (err, conn) => {
+                node.dial(peer, '/getPubIpAddr', (err, conn) => {
                     if (err) console.log(err)
                     pull(
                         pull.values([buf]),
