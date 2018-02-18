@@ -140,11 +140,13 @@ setImmediate(async () => {
     setInterval(() => {
         // let addrs = await encodePeers(node)
         // console.log(addrs)
+
+        let i = node.peerInfo.id.toB58String()
         values(node.peerBook.getAll()).forEach((peer) => {
             node.dial(peer, '/t', (err, conn) => {
                 if (err) console.log(err)
                 pull(
-                    pull.values(['hello, this is a test']),
+                    pull.values([`hello, this is a ${i} dial`]),
                     conn
                 )
             })
