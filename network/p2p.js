@@ -110,6 +110,14 @@ setImmediate(async () => {
         )
     })
 
+    node.handle('/t', (protocol, conn) => {
+        pull(
+            conn,
+            pull.map((s) => s.toString()),
+            pull.log()
+        )
+    })
+
     // when discovery a peer, try to dial to this peer,if it can reply, 
     // peers will connect with each other
     node.on('peer:discovery', (peerInfo) => {
@@ -129,9 +137,18 @@ setImmediate(async () => {
         console.log(colors.gray('Disconnect:'), peerInfo.id.toB58String())
     })
 
-    // setInterval(async () => {
-    //     let addrs = await encodePeers(node)
-    //     console.log(addrs)
-    // }, 2000)
+    setInterval(() => {
+        // let addrs = await encodePeers(node)
+        // console.log(addrs)
+        values(node.peerBook.getAll()).forEach((peer) => {
+            node.dial(peer, '/t', (err, conn) => {
+                if (err) console.log(err)
+                pull(
+                    pull.values(['hello, this is a test']),
+                    conn
+                )
+            })
+        })
+    }, 2000)
 
 })
