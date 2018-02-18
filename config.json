@@ -2,5 +2,6 @@
     "Port": 4002,
     "bootstrap": [
         "/ip4/106.75.148.236/tcp/4002/ipfs/QmZwp7juHGq4sVfsFoJggGtUwLa3fQjccZSTB2dHbGHBM4"
-    ]
+    ],
+    "signal":  "/ip4/106.75.148.236/tcp/9090/ws/p2p-websocket-star/"
 }
