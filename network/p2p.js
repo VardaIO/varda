@@ -38,13 +38,18 @@ const createNode = async () => {
             return new PeerInfo(id)
         }) // peerInfo
         .then(async peerInfo => {
-            let publicIP = await getPublicIp()
-            if (!publicIP) {
+            let peerPublicIP = await getPublicIp()
+            if (!peerPublicIP) {
                 if (config.signal) {
                     let ma = multiaddr(config.signal)
                     peerInfo.multiaddrs.add(ma)
                 }
+            } else {
+                let addr = `/ip4/${peerPublicIP}/tcp/${config.Port}`
+                let ma = multiaddr(addr)
+                peerInfo.multiaddrs.add(ma)
             }
+
             let addr = `/ip4/0.0.0.0/tcp/${config.Port}`
             let ma = multiaddr(addr)
             peerInfo.multiaddrs.add(ma)
@@ -58,6 +63,7 @@ const createNode = async () => {
 
 const getPublicIp = async () => {
     try {
+        console.log(await publicIP.v4())
         return await publicIP.v4()
     } catch (error) {
         return null
@@ -117,7 +123,7 @@ const runP2p = async () => {
         console.log(colors.gray('Disconnect:'), peerInfo.id.toB58String())
     })
 
-    let publicIp = await getPublicIp()
+    let peerPublicIp = await getPublicIp()
 
     node.handle('/getPubIpAddr', (protocol, conn) => {
         pull(
@@ -156,10 +162,10 @@ const runP2p = async () => {
         )
     })
 
-    if (publicIp) {
-        console.log(publicIp)
+    if (peerPublicIp) {
+        console.log(peerPublicIp)
         let id = node.peerInfo.id.toB58String()
-        let addr = `/ip4/${publicIP}/tcp/${config.Port}/ipfs/${id}`
+        let addr = `/ip4/${peerPublicIp}/tcp/${config.Port}/ipfs/${id}`
         const buf = msg.addr.encode({
             addr: addr
         })
@@ -190,7 +196,7 @@ const runP2p = async () => {
         }
     }, 1000 * 30)
 
-   
+
 
     setInterval(() => {
         let i = node.peerInfo.id.toB58String()
