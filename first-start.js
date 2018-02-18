@@ -6,71 +6,87 @@ const VARDA_HOME = process.env.VARDA_HOME || os.homedir() + '/.varda'
 const pool = require('./database/pool')
 const generateKey = require('./network/generateKey')
 
-fs.ensureDir(VARDA_HOME)
-    .then(() => {
+const createVardaHome = async () => {
+    try {
+        await fs.ensureDir(VARDA_HOME)
         console.log('VARDA_HOME create success! / VARDA_HOME already exists')
-    })
-    .catch(error => console.error(error))
+    } catch (error) {
+        console.error(error)
+    }
+}
 
-fs.pathExists('config.json')
-    .then(exists => {
+const createConfig = async () => {
+    try {
+        const exists = fs.pathExists('config.json')
         if (!exists) {
-            fs.copy('config.json.example', 'config.json')
-                .then(() => console.log('create config.json success!'))
-                .catch(error => console.error(error))
+            await fs.copy('config.json.example', 'config.json')
+            console.log('create config.json success!')
         }
-    })
-    .catch(error => console.log(error))
+    } catch (error) {
+        error => console.error(error)
+    }
+}
 
-generateKey()
 // tables: stars, parenthoods, transactions, account_pks
 // star use base64
-pool.acquire().then((client) => {
-    client.prepare(`CREATE TABLE IF NOT EXISTS stars (
-        star CHAR(44) PRIMARY KEY NOT NULL,
-        main_chain_index BIGINT NOT NULL,
-        timestamp INT NOT NULL,
-        payload_hash CHAR(64) NOT NULL,
-        author_address CHAR(29) NOT NULL
-        )`).run()
-    client.prepare("CREATE INDEX IF NOT EXISTS mci ON stars (main_chain_index)").run()
-
-    client.prepare(`CREATE TABLE IF NOT EXISTS  parenthoods (
-        child_star CHAR(44) NOT NULL,
-        parent_star CHAR(44) NOT NULL,
-        parent_index INT NOT NULL DEFAULT 0,
-    
-    PRIMARY KEY (
-        parent_star,
-        child_star
-    )
-    )`).run()
-    client.prepare("CREATE INDEX IF NOT EXISTS byChildStar ON parenthoods (child_star)").run()
-
-    client.prepare(`CREATE TABLE IF NOT EXISTS transactions (
+const sqliteMigrate = () => {
+    pool.acquire().then((client) => {
+        client.prepare(`CREATE TABLE IF NOT EXISTS stars (
             star CHAR(44) PRIMARY KEY NOT NULL,
-            type INT NOT NULL,
-            sender CHAR(29) NOT NULL,
-            amount BIGINT NOT NULL,
-            recpient CHAR(29),
-            signature CHAR(128) NOT NULL
-    )`).run()
-    client.prepare("CREATE INDEX IF NOT EXISTS byStar ON transactions (star)").run()
+            main_chain_index BIGINT NOT NULL,
+            timestamp INT NOT NULL,
+            payload_hash CHAR(64) NOT NULL,
+            author_address CHAR(29) NOT NULL
+            )`).run()
+        client.prepare("CREATE INDEX IF NOT EXISTS mci ON stars (main_chain_index)").run()
 
-    client.prepare(
-        `CREATE TABLE IF NOT EXISTS account_pks (
-           address  CHAR(29) PRIMARY KEY NOT NULL,
-           pk CHAR(64) NOT NULL
-        )`
-    ).run()
-    client.prepare("CREATE INDEX IF NOT EXISTS byAddress ON account_pks (address)").run()
+        client.prepare(`CREATE TABLE IF NOT EXISTS  parenthoods (
+            child_star CHAR(44) NOT NULL,
+            parent_star CHAR(44) NOT NULL,
+            parent_index INT NOT NULL DEFAULT 0,
+        
+        PRIMARY KEY (
+            parent_star,
+            child_star
+        )
+        )`).run()
+        client.prepare("CREATE INDEX IF NOT EXISTS byChildStar ON parenthoods (child_star)").run()
 
-    if (!client.prepare('SELECT star FROM stars WHERE main_chain_index=0').get()) {
-        const star = new Star()
-        const genesis = star.getGenesis()
-        let addGenesis = client.prepare('INSERT INTO stars VALUES (?, ?, ?, ?, ?)');
-        addGenesis.run(genesis.star_hash, 0, genesis.timestamp, genesis.payload_hash, genesis.authorAddress);
-        console.log('added a genesis star ')
-    }
-    pool.release(client)
-}).catch(error => console.log(error))
+        client.prepare(`CREATE TABLE IF NOT EXISTS transactions (
+                star CHAR(44) PRIMARY KEY NOT NULL,
+                type INT NOT NULL,
+                sender CHAR(29) NOT NULL,
+                amount BIGINT NOT NULL,
+                recpient CHAR(29),
+                signature CHAR(128) NOT NULL
+        )`).run()
+        client.prepare("CREATE INDEX IF NOT EXISTS byStar ON transactions (star)").run()
+
+        client.prepare(
+            `CREATE TABLE IF NOT EXISTS account_pks (
+               address  CHAR(29) PRIMARY KEY NOT NULL,
+               pk CHAR(64) NOT NULL
+            )`
+        ).run()
+        client.prepare("CREATE INDEX IF NOT EXISTS byAddress ON account_pks (address)").run()
+
+        if (!client.prepare('SELECT star FROM stars WHERE main_chain_index=0').get()) {
+            const star = new Star()
+            const genesis = star.getGenesis()
+            let addGenesis = client.prepare('INSERT INTO stars VALUES (?, ?, ?, ?, ?)');
+            addGenesis.run(genesis.star_hash, 0, genesis.timestamp, genesis.payload_hash, genesis.authorAddress);
+            console.log('added a genesis star ')
+        }
+        pool.release(client)
+    }).catch(error => console.log(error))
+}
+
+const initialVarda = async () => {
+    createVardaHome()
+    createConfig()
+    generateKey()
+    sqliteMigrate()
+    await fs.ensureFile('initialComplete')
+}
+
+module.exports = initialVarda
