@@ -153,4 +153,10 @@ setImmediate(async () => {
         })
     }, 2000)
 
+    setInterval(() => {
+        console.log(colors.green('20s'))
+        values(node.peerBook.getAll()).forEach((peer) => {
+            sendAddrs(node, peer)
+        })
+    }, 1000 * 20)
 })
