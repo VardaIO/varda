@@ -45,43 +45,6 @@ const createNode = () => {
         })
 }
 
-let getAddrs = async (node) => {
-    return new Promise((resolve, reject) => {
-        let addrs = []
-        values(node.peerBook.getAll()).forEach((peer) => {
-            const addr = peer.isConnected()
-            if (!addr) {
-                return
-            }
-            peer.multiaddrs.forEach((ma) => {
-                if (ma) {
-                    addrs.push(ma.toString())
-                }
-            })
-        })
-        resolve(addrs)
-    })
-}
-
-const encodePeers = async (node) => {
-    let addrs = await getAddrs(node)
-    const buf = msg.addrs.encode({
-        addrs: addrs
-    })
-    return buf
-}
-
-const sendAddrs = (node, peerInfo) => {
-    node.dial(peerInfo, '/addrs', (err, conn) => {
-        if (err) console.log(err)
-        pull(
-            pull.values([encodePeers(node)]),
-            conn
-        )
-    })
-}
-
-
 setImmediate(async () => {
 
     let node = await createNode()
@@ -92,23 +55,6 @@ setImmediate(async () => {
         node.peerInfo.multiaddrs.forEach((ma) => console.log(ma.toString()))
     })
 
-    node.handle('/addrs', (protocol, conn) => {
-        pull(
-            conn,
-            pull.map((v) => msg.addrs.decode(v)),
-            pull.collect(function (err, array) {
-                // array[0].addrs.map((v) => {
-                //     // console.log(v)
-                //     const peer = new PeerInfo()
-                //     peer.multiaddrs.add(v)
-                //     node.dial(peer, (err, conn) => {
-                //         if (err) console.log(err)
-                //     })
-                // })
-                console.log(array)
-            })
-        )
-    })
 
     node.handle('/t', (protocol, conn) => {
         pull(
@@ -130,7 +76,6 @@ setImmediate(async () => {
     node.on('peer:connect', (peerInfo) => {
         const idStr = peerInfo.id.toB58String()
         console.log(colors.green('Connected: ') + idStr)
-        sendAddrs(node, peerInfo)
     })
 
     node.on('peer:disconnect', (peerInfo) => {
@@ -153,10 +98,4 @@ setImmediate(async () => {
         })
     }, 2000)
 
-    setInterval(() => {
-        console.log(colors.green('20s'))
-        values(node.peerBook.getAll()).forEach((peer) => {
-            sendAddrs(node, peer)
-        })
-    }, 1000 * 20)
 })

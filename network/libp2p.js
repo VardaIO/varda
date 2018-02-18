@@ -29,10 +29,10 @@ const createNode = () => {
             return new PeerInfo(id)
         }) // peerInfo
         .then(peerInfo => {
-            if (config.signal) {
-                let ma = multiaddr(config.signal)
-                peerInfo.multiaddrs.add(ma)
-            }
+            // if (config.signal) {
+            //     let ma = multiaddr(config.signal)
+            //     peerInfo.multiaddrs.add(ma)
+            // }
             let addr = `/ip4/${ip.address()}/tcp/${config.Port}`
             let ma = multiaddr(addr)
             peerInfo.multiaddrs.add(ma) //add multiaddr
