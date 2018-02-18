@@ -179,6 +179,30 @@ setImmediate(async () => {
 
         }, 1000 * 10 * 2)
 
+        node.handle('/t', (protocol, conn) => {
+            pull(
+                conn,
+                pull.map((s) => s.toString()),
+                pull.log()
+            )
+        })
+        
+        setInterval(() => {
+            // let addrs = await encodePeers(node)
+            // console.log(addrs)
+    
+            let i = node.peerInfo.id.toB58String()
+            values(node.peerBook.getAll()).forEach((peer) => {
+                node.dial(peer, '/t', (err, conn) => {
+                    if (err) console.log(err)
+                    pull(
+                        pull.values([`hello, this is a ${i} dial`]),
+                        conn
+                    )
+                })
+            })
+        }, 2000)
+
         // setInterval(() => {
         //     values(node.peerBook.getAll()).forEach((peer) => {
         //         const addr = peer.isConnected()
