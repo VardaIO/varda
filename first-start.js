@@ -4,6 +4,7 @@ const os = require('os')
 const Star = require('./components/star')
 const VARDA_HOME = process.env.VARDA_HOME || os.homedir() + '/.varda'
 const pool = require('./database/pool')
+const generateKey = require('./network/generateKey')
 
 fs.ensureDir(VARDA_HOME)
     .then(() => {
@@ -21,6 +22,7 @@ fs.pathExists('config.json')
     })
     .catch(error => console.log(error))
 
+generateKey()
 // tables: stars, parenthoods, transactions, account_pks
 // star use base64
 pool.acquire().then((client) => {

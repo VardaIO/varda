@@ -3,6 +3,7 @@ const fs = require('fs')
 const {
     EventEmitter
 } = require("events");
+const appRoot = require('app-root-path');
 const PeerInfo = require('peer-info')
 const peerId = require('peer-id')
 const pify = require('pify')
@@ -22,10 +23,8 @@ const VARDA_HOME = process.env.VARDA_HOME || os.homedir() + '/.varda'
 const privateKey = require(VARDA_HOME + '/keys.json').PrivateKey
 const config = require(`${rootPath}/config.json`)
 const Node = require('./node-bundle')
-const bootstrap = require('./bootstrap')
 
-config.bootstrap = bootstrap
-const msg = pb(fs.readFileSync('./protos/node.proto'))
+const msg = pb(fs.readFileSync(`${appRoot}/network/protos/node.proto`))
 
 /**
  * todo:
@@ -206,4 +205,5 @@ const runP2p = async () => {
     }, 1000 * 30)
 }
 
-runP2p()
+// runP2p()
+module.exports = runP2p
