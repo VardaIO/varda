@@ -1,5 +1,8 @@
 const os = require('os')
 const fs = require('fs')
+const {
+    EventEmitter
+} = require("events");
 const PeerInfo = require('peer-info')
 const peerId = require('peer-id')
 const pify = require('pify')
@@ -67,15 +70,11 @@ const encodePublicIps = (publicIps) => {
     })
     return buf
 }
-// msg.addrs.decode(v)
-// let encode = encodePublicIps(["hahahah:1111","lalalal:9991"])
 
-// console.log(encode)
-// console.log()
-// return
 const runP2p = async () => {
 
     let publicIpsList = []
+    const emitter = new EventEmitter()
 
     let node = await createNode()
 
@@ -83,6 +82,21 @@ const runP2p = async () => {
         console.log('node has started (true/false):', node.isStarted())
         console.log('listening on:')
         node.peerInfo.multiaddrs.forEach((ma) => console.log(ma.toString()))
+    })
+
+    emitter.addListener("newPublicAddr", (addr) => {
+        const ma = multiaddr(addr)
+        const id = peerId.createFromB58String(ma.getPeerId())
+        PeerInfo.create(peerId, (err, peer) => {
+            if (error) {
+                console.log(error)
+            }
+            peer.multiaddrs.add(ma)
+
+            node.dial(peer, (err, conn) => {
+                if (err) console.log(err)
+            })
+        })
     })
 
     // when discovery a peer, try to dial to this peer,if it can reply, 
@@ -111,8 +125,34 @@ const runP2p = async () => {
             pull.map((ip) => msg.addr.decode(ip)),
             pull.collect((err, array) => {
                 if (err) console.log(err)
-                if (publicIpsList.indexOf(array[0].addr) == -1) publicIpsList.push(array[0].addr)
+                if (publicIpsList.indexOf(array[0].addr) == -1) {
+                    publicIpsList.push(array[0].addr)
+                    emitter.emit('newPublicAddr', array[0].addr)
+                }
             })
+        )
+    })
+
+    node.handle('/getAddrList', (protocol, conn) => {
+        pull(
+            conn,
+            pull.map((v) => msg.addrs.decode(v)),
+            pull.collect(function (err, array) {
+                array[0].addrs.map((v) => {
+                    if (publicIpsList.indexOf(v) == -1) {
+                        publicIpsList.push(v)
+                        emitter.emit('newPublicAddr', v)
+                    }
+                })
+            })
+        )
+    })
+
+    node.handle('/t', (protocol, conn) => {
+        pull(
+            conn,
+            pull.map((s) => s.toString()),
+            pull.log()
         )
     })
 
@@ -136,18 +176,6 @@ const runP2p = async () => {
         }, 1000 * 60)
     }
 
-    node.handle('/getAddrList', (protocol, conn) => {
-        pull(
-            conn,
-            pull.map((v) => msg.addrs.decode(v)),
-            pull.collect(function (err, array) {
-                array[0].addrs.map((v) => {
-                    if (publicIpsList.indexOf(v) == -1) publicIpsList.push(v)
-                })
-            })
-        )
-    })
-
     setInterval(() => {
         if (publicIpsList.length != 0) {
             values(node.peerBook.getAll()).forEach((peer) => {
@@ -162,18 +190,9 @@ const runP2p = async () => {
         }
     }, 1000 * 30)
 
-    node.handle('/t', (protocol, conn) => {
-        pull(
-            conn,
-            pull.map((s) => s.toString()),
-            pull.log()
-        )
-    })
+   
 
     setInterval(() => {
-        // let addrs = await encodePeers(node)
-        // console.log(addrs)
-
         let i = node.peerInfo.id.toB58String()
         values(node.peerBook.getAll()).forEach((peer) => {
             node.dial(peer, '/t', (err, conn) => {
