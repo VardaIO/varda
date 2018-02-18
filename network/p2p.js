@@ -44,12 +44,7 @@ const createNode = async () => {
                     let ma = multiaddr(config.signal)
                     peerInfo.multiaddrs.add(ma)
                 }
-            } else {
-                let addr = `/ip4/${peerPublicIP}/tcp/${config.Port}`
-                let ma = multiaddr(addr)
-                peerInfo.multiaddrs.add(ma)
-            }
-
+            } 
             let addr = `/ip4/0.0.0.0/tcp/${config.Port}`
             let ma = multiaddr(addr)
             peerInfo.multiaddrs.add(ma)
@@ -63,6 +58,7 @@ const createNode = async () => {
 
 const getPublicIp = async () => {
     try {
+        console.log(await publicIP.v4())
         return await publicIP.v4()
     } catch (error) {
         return null
