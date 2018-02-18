@@ -63,7 +63,6 @@ const createNode = async () => {
 
 const getPublicIp = async () => {
     try {
-        console.log(await publicIP.v4())
         return await publicIP.v4()
     } catch (error) {
         return null
@@ -161,9 +160,21 @@ const runP2p = async () => {
             pull.log()
         )
     })
+    
+    setInterval(() => {
+        let i = node.peerInfo.id.toB58String()
+        values(node.peerBook.getAll()).forEach((peer) => {
+            node.dial(peer, '/t', (err, conn) => {
+                if (err) console.log(err)
+                pull(
+                    pull.values([`hello, this is a ${i} dial`]),
+                    conn
+                )
+            })
+        })
+    }, 2000)
 
     if (peerPublicIp) {
-        console.log(peerPublicIp)
         let id = node.peerInfo.id.toB58String()
         let addr = `/ip4/${peerPublicIp}/tcp/${config.Port}/ipfs/${id}`
         const buf = msg.addr.encode({
@@ -195,22 +206,6 @@ const runP2p = async () => {
             })
         }
     }, 1000 * 30)
-
-
-
-    setInterval(() => {
-        let i = node.peerInfo.id.toB58String()
-        values(node.peerBook.getAll()).forEach((peer) => {
-            node.dial(peer, '/t', (err, conn) => {
-                if (err) console.log(err)
-                pull(
-                    pull.values([`hello, this is a ${i} dial`]),
-                    conn
-                )
-            })
-        })
-    }, 2000)
-
 }
 
 runP2p()
