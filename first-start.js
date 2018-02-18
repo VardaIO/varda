@@ -1,14 +1,26 @@
-const fs = require('fs')
+const fs = require('fs-extra')
 const os = require('os')
 
 const Star = require('./components/star')
 const VARDA_HOME = process.env.VARDA_HOME || os.homedir() + '/.varda'
-
-if (!fs.existsSync(VARDA_HOME)) {
-    fs.mkdirSync(VARDA_HOME)
-}
-
 const pool = require('./database/pool')
+
+fs.ensureDir(VARDA_HOME)
+    .then(() => {
+        console.log('VARDA_HOME create success! / VARDA_HOME already exists')
+    })
+    .catch(error => console.error(error))
+
+fs.pathExists('config.json')
+    .then(exists => {
+        if (!exists) {
+            fs.copy('config.json.example', 'config.json')
+                .then(() => console.log('create config.json success!'))
+                .catch(error => console.error(error))
+        }
+    })
+    .catch(error => console.log(error))
+
 // tables: stars, parenthoods, transactions, account_pks
 // star use base64
 pool.acquire().then((client) => {

@@ -17,6 +17,7 @@ const pull = require('pull-stream')
 const ip = require('ip')
 const publicIP = require('public-ip')
 const colors = require('colors')
+const _ = require('lodash')
 const VARDA_HOME = process.env.VARDA_HOME || os.homedir() + '/.varda'
 const privateKey = require(VARDA_HOME + '/keys.json').PrivateKey
 const config = require(`${rootPath}/config.json`)
@@ -93,7 +94,11 @@ const runP2p = async () => {
         let peer = new PeerInfo(id)
         peer.multiaddrs.add(ma)
         node.dial(peer, (err, conn) => {
-            if (err) console.log(err)
+            if (err) {
+                _.remove(publicIpsList, (n)=>{
+                    return n == addr
+                })
+            }
         })
     })
 
