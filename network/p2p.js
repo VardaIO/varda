@@ -88,15 +88,10 @@ const runP2p = async () => {
     emitter.addListener("newPublicAddr", (addr) => {
         const ma = multiaddr(addr)
         const id = peerId.createFromB58String(ma.getPeerId())
-        new PeerInfo.create(peerId, (err, peer) => {
-            if (error) {
-                console.log(error)
-            }
-            peer.multiaddrs.add(ma)
-
-            node.dial(peer, (err, conn) => {
-                if (err) console.log(err)
-            })
+        let p = new PeerInfo(id)
+        p.multiaddrs.add(ma)
+        node.dial(peer, (err, conn) => {
+            if (err) console.log(err)
         })
     })
 
