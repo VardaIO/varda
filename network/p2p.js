@@ -44,7 +44,7 @@ const createNode = async () => {
                     let ma = multiaddr(config.signal)
                     peerInfo.multiaddrs.add(ma)
                 }
-            } 
+            }
             let addr = `/ip4/0.0.0.0/tcp/${config.Port}`
             let ma = multiaddr(addr)
             peerInfo.multiaddrs.add(ma)
@@ -58,8 +58,10 @@ const createNode = async () => {
 
 const getPublicIp = async () => {
     try {
-        console.log(await publicIP.v4())
-        return await publicIP.v4()
+        if (config.enablePublicIp) {
+            return await publicIP.v4()
+        }
+        return null
     } catch (error) {
         return null
     }
@@ -151,7 +153,7 @@ const runP2p = async () => {
             pull.log()
         )
     })
-    
+
     setInterval(() => {
         let i = node.peerInfo.id.toB58String()
         values(node.peerBook.getAll()).forEach((peer) => {
