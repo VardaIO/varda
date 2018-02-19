@@ -13,7 +13,7 @@ A: I am writting a peer to peer network based on gRpc
 
 ## TodoList
 
- - [ ] a peer to peer network
+ - [ x ] a peer to peer network
  - [ ] a demo DAG network
- - [ ] make rules for adding stars to DAG network
+ - [ x ] make rules for adding stars to DAG network
  - [ ] write consensus 

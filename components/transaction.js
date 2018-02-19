@@ -1,4 +1,5 @@
 const createKeccakHash = require('keccak')
+const _ = require('lodash')
 
 const Utils = require('./utils')
 const utils = new Utils()
@@ -25,12 +26,15 @@ class Transaction {
     }
 
     newTransaction(tx, sk) {
-        Object.assign(this, tx)
+        if (!sk) return null
+
+        //_.assign faster than Object.assign
+        _.assign(this, tx)
         this.payload_hash = this.toHash()
         this.sign(sk)
         let transaction = new Transaction()
-        Object.assign(transaction, this)
-        return transaction
+        _.assign(transaction, this)
+        return _.assign({},transaction)
     }
 
     check(tx) {

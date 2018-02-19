@@ -82,10 +82,10 @@ const sqliteMigrate = () => {
 }
 
 const initialVarda = async () => {
-    createVardaHome()
+    await createVardaHome()
+    await sqliteMigrate()
     createConfig()
     generateKey()
-    sqliteMigrate()
     await fs.ensureFile('initialComplete')
 }
 

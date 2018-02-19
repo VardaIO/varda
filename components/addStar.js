@@ -239,25 +239,22 @@ function getParents(client) {
 
 }
 
-const addStar = (transaction) => {
+const prepareStar = (transaction) => {
     return pool.acquire().then(client => {
         const senderAddress = transaction.sender
         const account = new Account(senderAddress)
+        const lastMci = client.prepare('SELECT main_chain_index FROM stars ORDER BY main_chain_index DESC LIMIT 1').get().main_chain_index
 
         if (!account.checkTransaction(transaction.amount)) {
             return Promise.reject('amount bigger than balance')
         }
-
-        const begin = client.prepare('BEGIN');
-        const commit = client.prepare('COMMIT');
-        const rollback = client.prepare('ROLLBACK');
-        const lastMci = client.prepare('SELECT main_chain_index FROM stars ORDER BY main_chain_index DESC LIMIT 1').get().main_chain_index
 
         const {
             parents,
             move
         } = getParents(client)
         const mci = lastMci + move
+
         const star = aStar.buildStar({
             timestamp: Math.floor(Date.now() / 1000),
             parentStars: parents,
@@ -266,6 +263,17 @@ const addStar = (transaction) => {
             authorAddress: transaction.sender,
             mci: mci
         })
+        return star
+    })
+}
+
+const addStar = (transaction) => {
+    return pool.acquire().then(async client => {
+        const begin = client.prepare('BEGIN');
+        const commit = client.prepare('COMMIT');
+        const rollback = client.prepare('ROLLBACK');
+       
+        const star = await prepareStar(transaction)
 
         begin.run()
         try {
@@ -289,9 +297,9 @@ const addStar = (transaction) => {
                 signature: transaction.signature
             })
             // parenthood
-            let addparenthood = client.prepare('INSERT INTO parenthoods VALUES (@child_star, @parent_star, @parent_index)')
-            parents.map((parent, index) => {
-                addparenthood.run({
+            let addParenthood = client.prepare('INSERT INTO parenthoods VALUES (@child_star, @parent_star, @parent_index)')
+            star.parentStars.map((parent, index) => {
+                addParenthood.run({
                     child_star: star.star_hash,
                     parent_star: parent,
                     parent_index: index
@@ -363,3 +371,19 @@ for (let i = 0; i < 1000; i++) {
 //         addStar(newTx).then(console.log).catch(console.log)
 //     }, 2000
 // )
+
+let Tx = require('./transaction')
+const tx = new Tx()
+
+const sk = 'f9ec5ccb42e3c976a027a5ba74a0ed636b35d93bacde225dbe85aed8dfbb00b4f2e4942768671e46faf596f2bdf73c665a5a7c26e768eca1cf6935620e17d1ba'
+const pk = 'f2e4942768671e46faf596f2bdf73c665a5a7c26e768eca1cf6935620e17d1ba'
+const address = 'VLRAJEAFXJBVYZQYT67YUQ3KJV53A'
+let newTx = tx.newTransaction({
+    type: 0,
+    sender: address,
+    amount: 10,
+    recpient: 'VCRAJEAFXJBVYZQYT67YUQ3KJV53A',
+    senderPublicKey: pk
+}, sk)
+// prepareStar(newTx).then(star => console.log(star))
+addStar(newTx)

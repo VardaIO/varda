@@ -2,7 +2,6 @@ const pool = require('../database/pool')
 const _ = require('lodash')
 const joi = require('joi')
 const createKeccakHash = require('keccak')
-
 /**
  * a star should have a hash, type, parent star / stars, transaction ,create_date and main chain index 
  */
@@ -59,7 +58,8 @@ class Star {
         const star_hash = createKeccakHash('sha3-256').update(beforeHash).digest('base64')
 
         const aStar = new Star()
-        Object.assign(aStar, star)
+        //_.assign faster than Object.assign
+        _.assign(aStar, star)
         aStar.star_hash = star_hash
         return aStar
     }
