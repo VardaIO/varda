@@ -20,6 +20,8 @@ const Account = require('./account')
 
 const Utils = require('./utils')
 const utils = new Utils()
+let Transaction = require('./transaction')
+
 const starProto = pb(fs.readFileSync(`${appRoot}/network/protos/star.proto`))
 
 
@@ -253,12 +255,13 @@ const prepareStar = (transaction) => {
 
     return pool.acquire().then(async client => {
         const senderAddress = transaction.sender
-        const account = new Account(senderAddress)
+        // const account = new Account(senderAddress)
         const lastMci = client.prepare('SELECT main_chain_index FROM stars ORDER BY main_chain_index DESC LIMIT 1').get().main_chain_index
 
-        const checkTransaction = await account.checkTransaction(transaction.amount)
+        const checkTransaction = await new Transaction().check(transaction)
+
         if (!checkTransaction) {
-            return Promise.reject('amount bigger than balance')
+            return Promise.reject('Transaction is wrong')
         }
 
         const {
@@ -374,66 +377,13 @@ const addStarFromBroadcast = (encodeStar) => {
             reject('amount bigger than balance')
         }
         // 4. add star
-        // addStar(star)
+        addStar(star)
     })
 }
 
-
-/* this is a small test
-let Tx = require('./transaction')
-const tx = new Tx()
-
-const sk = 'f9ec5ccb42e3c976a027a5ba74a0ed636b35d93bacde225dbe85aed8dfbb00b4f2e4942768671e46faf596f2bdf73c665a5a7c26e768eca1cf6935620e17d1ba'
-const pk = 'f2e4942768671e46faf596f2bdf73c665a5a7c26e768eca1cf6935620e17d1ba'
-const address = 'VLRAJEAFXJBVYZQYT67YUQ3KJV53A'
-
-for (let i = 0; i < 1000; i++) {
-    let newTx = tx.newTransaction({
-        type: 0,
-        sender: address,
-        amount: 10 + i,
-        recpient: 'VCRAJEAFXJBVYZQYT67YUQ3KJV53A',
-        senderPublicKey: pk
-    }, sk)
-    addStar(newTx).then(console.log).catch(console.log)
+module.exports = {
+    prepareStar,
+    broadcastStar,
+    addStarFromBroadcast,
+    addStar
 }
-*/
-// setInterval(
-
-//     () => {
-//         let newTx = tx.newTransaction({
-//             type: 0,
-//             sender: address,
-//             amount: 10,
-//             recpient: 'VCRAJEAFXJBVYZQYT67YUQ3KJV53A',
-//             senderPublicKey: pk
-//         }, sk)
-//         addStar(newTx).then(console.log).catch(console.log)
-//     }, 2000
-// )
-
-let Tx = require('./transaction')
-const tx = new Tx()
-
-const sk = 'f9ec5ccb42e3c976a027a5ba74a0ed636b35d93bacde225dbe85aed8dfbb00b4f2e4942768671e46faf596f2bdf73c665a5a7c26e768eca1cf6935620e17d1ba'
-const pk = 'f2e4942768671e46faf596f2bdf73c665a5a7c26e768eca1cf6935620e17d1ba'
-const address = 'VLRAJEAFXJBVYZQYT67YUQ3KJV53A'
-let newTx = tx.newTransaction({
-    type: 0,
-    sender: address,
-    amount: 10,
-    recpient: 'VCRAJEAFXJBVYZQYT67YUQ3KJV53A',
-    senderPublicKey: pk,
-    sk: sk
-})
-// console.log(newTx)
-
-prepareStar(newTx).then(star => {
-    console.log(star)
-    // console.log(star.length)
-    console.log(starProto.star.decode(star))
-    // addStar(starProto.star.decode(star))
-    // addStarFromBroadcast(star).catch(e => console.log(e))
-
-}).catch(console.log)
-module.exports = addStar

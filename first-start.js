@@ -75,6 +75,7 @@ const sqliteMigrate = () => {
             const genesis = star.getGenesis()
             let addGenesis = client.prepare('INSERT INTO stars VALUES (?, ?, ?, ?, ?, ?)');
             addGenesis.run(genesis.star_hash, 0, genesis.timestamp, genesis.payload_hash, genesis.authorAddress, 'null');
+
             let addGenesisTx = client.prepare('INSERT INTO transactions VALUES (@star, @type, @sender, @amount, @recpient)')
             addGenesisTx.run({
                 star: genesis.star_hash,
@@ -83,6 +84,7 @@ const sqliteMigrate = () => {
                 amount: genesis.transaction.amount,
                 recpient: genesis.transaction.recpient
             })
+            
             console.log('added a genesis star ')
         }
         pool.release(client)
