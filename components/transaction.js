@@ -4,6 +4,11 @@ const _ = require('lodash')
 const Utils = require('./utils')
 const utils = new Utils()
 
+/** 
+ * transaction type list:
+ * 0 is genesis transaction
+ * 1 is normal payment
+*/
 class Transaction {
     constructor() {
         this.payload_hash = null
@@ -12,26 +17,18 @@ class Transaction {
         this.amount = null
         this.recpient = null
         this.senderPublicKey = null
-        this.signature = null
+        // this.signature = null
+        this.sk = null
     }
 
     toHash() {
         return createKeccakHash('sha3-256').update(this.type + this.sender + this.amount + this.recpient + this.senderPublicKey).digest('hex')
     }
 
-    sign(sk) {
-        const sig = utils.sign(this.payload_hash, sk)
-        this.signature = sig
-        return sig
-    }
-
-    newTransaction(tx, sk) {
-        if (!sk) return null
-
+    newTransaction(tx) {
         //_.assign faster than Object.assign
         _.assign(this, tx)
         this.payload_hash = this.toHash()
-        this.sign(sk)
         let transaction = new Transaction()
         _.assign(transaction, this)
         return _.assign({},transaction)
@@ -44,12 +41,6 @@ class Transaction {
         if (utils.genAddress(tx.senderPublicKey) !== tx.sender) {
             return {
                 msg: 'sender address is wrong'
-            }
-        }
-
-        if (!utils.sigVerify(tx.payload_hash, tx.signature, tx.senderPublicKey)) {
-            return {
-                msg: 'signature is wrong'
             }
         }
 

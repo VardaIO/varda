@@ -13,7 +13,8 @@ message star {
     repeated string parentStars = 2;
     string payload_hash = 3;
     transaction transaction = 4;
-    bytes star_hash = 5;
+    string star_hash = 5;
     int64 mci = 6;
     string authorAddress = 7;
+    string signature = 8;
 }

@@ -2,9 +2,16 @@ const pool = require('../database/pool')
 const _ = require('lodash')
 const joi = require('joi')
 const createKeccakHash = require('keccak')
+const Transaction = require('./transaction')
+
+const Utils = require('./utils')
+const utils = new Utils()
 /**
  * a star should have a hash, type, parent star / stars, transaction ,create_date and main chain index 
  */
+
+
+// return
 
 class Star {
     constructor() {
@@ -17,13 +24,28 @@ class Star {
     }
 
     getGenesis() {
+        let tx = new Transaction()
+        let genesisTx = tx.newTransaction({
+            type: 0,
+            sender: 'system',
+            amount: 100000000000,
+            recpient: 'VLRAJEAFXJBVYZQYT67YUQ3KJV53A',
+        })
+
         return this.buildStar({
             // timestamp: Math.floor(Date.now() / 1000),
             timestamp: 1518578669,
             parentStars: [],
             payload_hash: 'ELggd3MSKdJf9HuOK3V7TkfhOeEnqmTUtmdF7yFkK9A=',
-            transaction: {},
-            authorAddress: 'VLRAJEAFXJBVYZQYT67YUQ3KJV53A',
+            // transaction: {},
+            transaction: {
+                payload_hash: genesisTx.payload_hash,
+                type: genesisTx.type,
+                sender: genesisTx.sender,
+                amount: genesisTx.amount,
+                recpient: genesisTx.recpient,
+            },
+            authorAddress: 'system',
             mci: 0
         })
     }
@@ -61,6 +83,12 @@ class Star {
         //_.assign faster than Object.assign
         _.assign(aStar, star)
         aStar.star_hash = star_hash
+
+        if (star.transaction.sk) {
+            const signature = utils.sign(star_hash, star.transaction.sk)
+            aStar.signature = signature
+        }
+
         return aStar
     }
 

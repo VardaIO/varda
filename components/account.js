@@ -49,8 +49,10 @@ class Account {
         })
     }
 
-    checkTransaction(amount) {
-        const balance = this.getBalance()
+    async checkTransaction(amount) {
+        const balance = await this.getBalance()
+        // console.log(balance - amount )
+        console.log(balance)
         if (balance - amount < 0) {
             return false
         }

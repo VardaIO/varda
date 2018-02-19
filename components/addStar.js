@@ -6,12 +6,21 @@
 
 // todo: Optimization sqlite query
 const _ = require('lodash')
+const fs = require('fs')
+const appRoot = require('app-root-path');
+const colors = require('colors')
+const pb = require('protocol-buffers')
+const pull = require('pull-stream')
+
 const pool = require('../database/pool')
 const Star = require('./star')
 const aStar = new Star()
 const genesis = aStar.getGenesis()
 const Account = require('./account')
-const colors = require('colors')
+
+const Utils = require('./utils')
+const utils = new Utils()
+const starProto = pb(fs.readFileSync(`${appRoot}/network/protos/star.proto`))
 
 
 function findUnLinked(client, index) {
@@ -240,12 +249,15 @@ function getParents(client) {
 }
 
 const prepareStar = (transaction) => {
-    return pool.acquire().then(client => {
+    if (!transaction) return null
+
+    return pool.acquire().then(async client => {
         const senderAddress = transaction.sender
         const account = new Account(senderAddress)
         const lastMci = client.prepare('SELECT main_chain_index FROM stars ORDER BY main_chain_index DESC LIMIT 1').get().main_chain_index
 
-        if (!account.checkTransaction(transaction.amount)) {
+        const checkTransaction = await account.checkTransaction(transaction.amount)
+        if (!checkTransaction) {
             return Promise.reject('amount bigger than balance')
         }
 
@@ -263,38 +275,53 @@ const prepareStar = (transaction) => {
             authorAddress: transaction.sender,
             mci: mci
         })
-        return star
+
+        return starProto.star.encode(star)
     })
 }
 
-const addStar = (transaction) => {
+const broadcastStar = (node, star) => {
+    _.values(node.peerBook.getAll()).forEach((peer) => {
+        node.dial(peer, '/sendStar', (err, conn) => {
+            if (err) console.log(err)
+            pull(
+                pull.values([star]),
+                conn
+            )
+        })
+    })
+}
+
+const addStar = (star) => {
     return pool.acquire().then(async client => {
         const begin = client.prepare('BEGIN');
         const commit = client.prepare('COMMIT');
         const rollback = client.prepare('ROLLBACK');
-       
-        const star = await prepareStar(transaction)
+
+        // const encodeStar = await prepareStar(transaction)
+        // star = starProto.star.decode(star)
+        const transaction = star.transaction
 
         begin.run()
         try {
-            let addStar = client.prepare('INSERT INTO stars VALUES(@star, @main_chain_index, @timestamp, @payload_hash, @author_address)')
+            let addStar = client.prepare('INSERT INTO stars VALUES(@star, @main_chain_index, @timestamp, @payload_hash, @author_address, @signature)')
 
             addStar.run({
                 star: star.star_hash,
                 main_chain_index: star.mci,
                 timestamp: star.timestamp,
                 payload_hash: transaction.payload_hash,
-                author_address: star.authorAddress
+                author_address: star.authorAddress,
+                signature: star.signature
             })
             // transaction
-            let addTransaction = client.prepare('INSERT INTO transactions VALUES (@star, @type, @sender, @amount, @recpient, @signature)')
+            let addTransaction = client.prepare('INSERT INTO transactions VALUES (@star, @type, @sender, @amount, @recpient)')
             addTransaction.run({
                 star: star.star_hash,
                 type: transaction.type,
                 sender: transaction.sender,
                 amount: transaction.amount,
-                recpient: transaction.recpient,
-                signature: transaction.signature
+                recpient: transaction.recpient
             })
             // parenthood
             let addParenthood = client.prepare('INSERT INTO parenthoods VALUES (@child_star, @parent_star, @parent_index)')
@@ -330,14 +357,27 @@ const addStar = (transaction) => {
     })
 }
 
-const addStarFromBroadcast = (message) => {
+const addStarFromBroadcast = (encodeStar) => {
     // 1. vailidate the message signature, the message should from commission
+
     // 2. vailidate the transaction signature
-    // 3. vailidate amount
-    // 4. add star
+    return new Promise(async (resolve, reject) => {
+        const star = starProto.star.decode(encodeStar)
+        const transaction = star.transaction
+        const checkSignature = utils.sigVerify(star.star_hash, star.signature, transaction.senderPublicKey)
+        console.log(checkSignature)
+        // 3. vailidate amount
+        const account = new Account(transaction.sender)
+        const checkTransaction = await account.checkTransaction(transaction.amount)
+        console.log(checkTransaction)
+        if (!checkTransaction) {
+            reject('amount bigger than balance')
+        }
+        // 4. add star
+        // addStar(star)
+    })
 }
 
-module.exports = addStar
 
 /* this is a small test
 let Tx = require('./transaction')
@@ -383,7 +423,17 @@ let newTx = tx.newTransaction({
     sender: address,
     amount: 10,
     recpient: 'VCRAJEAFXJBVYZQYT67YUQ3KJV53A',
-    senderPublicKey: pk
-}, sk)
-prepareStar(newTx).then(star => console.log(star))
-// addStar(newTx)
+    senderPublicKey: pk,
+    sk: sk
+})
+// console.log(newTx)
+
+prepareStar(newTx).then(star => {
+    console.log(star)
+    // console.log(star.length)
+    console.log(starProto.star.decode(star))
+    // addStar(starProto.star.decode(star))
+    // addStarFromBroadcast(star).catch(e => console.log(e))
+
+}).catch(console.log)
+module.exports = addStar

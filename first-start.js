@@ -36,7 +36,8 @@ const sqliteMigrate = () => {
             main_chain_index BIGINT NOT NULL,
             timestamp INT NOT NULL,
             payload_hash CHAR(64) NOT NULL,
-            author_address CHAR(29) NOT NULL
+            author_address CHAR(29) NOT NULL,
+            signature CHAR(128)
             )`).run()
         client.prepare("CREATE INDEX IF NOT EXISTS mci ON stars (main_chain_index)").run()
 
@@ -57,8 +58,7 @@ const sqliteMigrate = () => {
                 type INT NOT NULL,
                 sender CHAR(29) NOT NULL,
                 amount BIGINT NOT NULL,
-                recpient CHAR(29),
-                signature CHAR(128) NOT NULL
+                recpient CHAR(29)
         )`).run()
         client.prepare("CREATE INDEX IF NOT EXISTS byStar ON transactions (star)").run()
 
@@ -73,8 +73,16 @@ const sqliteMigrate = () => {
         if (!client.prepare('SELECT star FROM stars WHERE main_chain_index=0').get()) {
             const star = new Star()
             const genesis = star.getGenesis()
-            let addGenesis = client.prepare('INSERT INTO stars VALUES (?, ?, ?, ?, ?)');
-            addGenesis.run(genesis.star_hash, 0, genesis.timestamp, genesis.payload_hash, genesis.authorAddress);
+            let addGenesis = client.prepare('INSERT INTO stars VALUES (?, ?, ?, ?, ?, ?)');
+            addGenesis.run(genesis.star_hash, 0, genesis.timestamp, genesis.payload_hash, genesis.authorAddress, 'null');
+            let addGenesisTx = client.prepare('INSERT INTO transactions VALUES (@star, @type, @sender, @amount, @recpient)')
+            addGenesisTx.run({
+                star: genesis.star_hash,
+                type: 0,
+                sender: genesis.transaction.sender,
+                amount: genesis.transaction.amount,
+                recpient: genesis.transaction.recpient
+            })
             console.log('added a genesis star ')
         }
         pool.release(client)
