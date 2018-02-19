@@ -385,5 +385,5 @@ let newTx = tx.newTransaction({
     recpient: 'VCRAJEAFXJBVYZQYT67YUQ3KJV53A',
     senderPublicKey: pk
 }, sk)
-// prepareStar(newTx).then(star => console.log(star))
-addStar(newTx)
+prepareStar(newTx).then(star => console.log(star))
+// addStar(newTx)

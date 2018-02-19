@@ -1,0 +1,19 @@
+message transaction {
+    string payload_hash = 1;
+    int32 type = 2;
+    string sender = 3;
+    int64 amount = 4;
+    string recpient = 5;
+    string senderPublicKey = 6;
+    string signature = 7;
+}
+
+message star {
+    int32 timestamp = 1;
+    repeated string parentStars = 2;
+    string payload_hash = 3;
+    transaction transaction = 4;
+    bytes star_hash = 5;
+    int64 mci = 6;
+    string authorAddress = 7;
+}
