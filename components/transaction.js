@@ -39,11 +39,14 @@ class Transaction {
     async check(tx) {
         //first check address and signature 
         // 1. get address and vailate address with pubkey
-        // 2. get sig , use pubkey to vailate sig
         if (utils.genAddress(tx.senderPublicKey) !== tx.sender) {
             return false
         }
 
+        //secound check amount
+        // 1.get amount
+        // 2. if sender amount > his have, return false 
+        
         const account = new Account(tx.sender)
         const checkTransaction = await account.checkTransaction(tx.amount)
 
@@ -51,9 +54,6 @@ class Transaction {
             return false
         }
 
-        //secound check amount
-        // 1.get amount
-        // 2. if sender amount > his have, return false 
         return true
     }
 
