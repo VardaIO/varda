@@ -12,9 +12,14 @@
  * waiting pool 缺少一个内存清理工具
  * 当大于一时间时，清理掉waiting pool中broadcast = true的star
  */
+const _ = require('lodash')
+
 const pool = require('../database/pool')
 const Vailidate = require('./vailidate')
-const _ = require('lodash')
+const {
+    addStar
+} = require('./addStar')
+
 const commissionNumber = 4
 
 class Commission {
@@ -143,7 +148,9 @@ class Commission {
         }
     }
 
-    commit() {}
+    commit(star) {
+        addStar(star)
+    }
 
     haveStar(star_hash) {
         return pool.acquire().then((client) => {

@@ -16,9 +16,9 @@ A: I am writting a peer to peer network based on gRpc
  - [x] a peer to peer network
  - [x] a demo DAG network
  - [x] make rules for adding stars to DAG network
- - [] write consensus 
- - [] commission
- - [] vote
+ - [ ] write consensus 
+ - [ ] commission
+ - [ ] vote
  ## Note: 
 
     an address' star should  be include each other 
