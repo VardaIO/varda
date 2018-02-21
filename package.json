@@ -7,7 +7,13 @@
   },
   "main": "index.js",
   "scripts": {
-    "test": "ava ./test --verbose"
+    "test": "ava ./test --verbose",
+    "fix":
+      "prettier --config .prettierrc --write {components,database,network}/**/*.js *.js",
+    "precommit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,json,css,md}": ["prettier --write", "git add"]
   },
   "repository": {
     "type": "git",
@@ -58,6 +64,9 @@
     "tweetnacl": "^1.0.0"
   },
   "devDependencies": {
-    "ava": "^0.25.0"
+    "ava": "^0.25.0",
+    "husky": "^0.14.3",
+    "lint-staged": "^6.1.1",
+    "prettier": "^1.10.2"
   }
 }

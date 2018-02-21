@@ -1,3 +1,5 @@
+<h1 align=center><img src="./src/images/logo.jpeg" width=50/> Varda </h1>
+
 # Varda
 
 Varda(瓦尔达)，中土世界最美的维拉，繁星的缔造者。
@@ -6,19 +8,20 @@ Varda 引擎将做为区块链网络--星辰之海的动力之源泉，同时也
 
 Varda is the most beautiful Valar of Middle Earth, the creator of stars.
 Varda engine is the sea of stars' origin of power, at the same time, it will injecting new blood for blockchain's world.
-  
+
 Q: What am you doing now?
 
 A: I am writting a peer to peer network based on gRpc
 
 ## TodoList
 
- - [x] a peer to peer network
- - [x] a demo DAG network
- - [x] make rules for adding stars to DAG network
- - [ ] write consensus 
- - [ ] commission
- - [ ] vote
- ## Note: 
+* [x] a peer to peer network
+* [x] a demo DAG network
+* [x] make rules for adding stars to DAG network
+* [ ] write consensus
+* [ ] commission
+* [ ] vote
 
-    an address' star should  be include each other 
+  ## Note:
+
+  an address' star should be include each other
