@@ -13,7 +13,7 @@
     "precommit": "lint-staged"
   },
   "lint-staged": {
-    "*.{js,json,css,md}": ["prettier --write", "git add"]
+    "*.{js,json,css,md}": ["prettier --config .prettierrc --write", "git add"]
   },
   "repository": {
     "type": "git",
@@ -35,8 +35,10 @@
     "colors": "^1.1.2",
     "crc": "^3.5.0",
     "ed25519-hd-key": "^0.5.0",
+    "figlet": "^1.2.0",
     "fs-extra": "^5.0.0",
     "generic-pool": "^3.4.1",
+    "inquirer": "^5.1.0",
     "ip": "^1.1.5",
     "joi": "^13.1.2",
     "js-nacl": "^1.2.2",

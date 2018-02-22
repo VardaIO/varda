@@ -49,6 +49,7 @@ class HDWallet {
   }
 }
 
+module.exports = HDWallet
 // let Hd = new HDWallet()
 // // const seed = Hd.getSeed(Hd.genMnemonic())
 // // const path = "m/44'/233'/0'"
