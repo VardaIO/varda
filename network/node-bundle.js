@@ -1,5 +1,5 @@
 const libp2p = require('libp2p')
-const Multiplex = require('libp2p-multiplex')
+const Multiplex = require('libp2p-mplex')
 const SECIO = require('libp2p-secio')
 const TCP = require('libp2p-tcp')
 const WS = require('libp2p-websockets')

@@ -199,6 +199,15 @@ const runP2p = async () => {
       }
     }, 1000 * 30)
 
+    // let i = 0
+    // setInterval(() => {
+    //     node.pubsub.publish('news', Buffer.from(`Bird bird bird, bird is the word! ${i++}`), (err) => {
+    //         if (err) {
+    //             throw err
+    //         }
+    //     })
+    // }, 1000 *5)
+
     return node
   })
 }

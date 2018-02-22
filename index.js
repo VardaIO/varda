@@ -72,4 +72,4 @@ const askForMnemonic = () => {
 askForMnemonic()
   .then(console.log)
   .then(() => p2pNetwork())
-// .then(node => console.log(node))
+// .then(node => {console.log(node.pubsub)})
