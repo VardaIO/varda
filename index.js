@@ -7,6 +7,7 @@ const init = require('./first-start')
 const p2pNetwork = require('./network/p2p')
 
 const HD = require('./components/hd-wallet')
+const config = require('./config.json')
 
 setImmediate(async () => {
   try {
@@ -20,6 +21,7 @@ setImmediate(async () => {
 })
 
 console.clear()
+
 console.log(
   colors.blue(
     figlet.textSync('Varda', {
@@ -31,25 +33,40 @@ console.log(
 const hd = new HD()
 
 const askForMnemonic = () => {
-  const question = {
-    name: 'mnemonic',
-    type: 'password',
-    message: 'Enter your wallet mnemonic:',
-    validate: function(value) {
-      if (value.length) {
-        return true
-      } else {
-        console.log(
-          `\n Your mnemonic is here, please remember to backup it. \n ${hd.genMnemonic()}`
-        )
-        console.log(
-          '\n mnemonic has been generated, the Varda will exit, input mnemonic next time'
-        )
-        return process.exit()
+  const questions = [
+    {
+      name: 'mnemonic',
+      type: 'password',
+      message: 'Enter your wallet mnemonic:',
+      validate: function(value) {
+        if (value.length) {
+          if (hd.validateMnemonic(value)) {
+            return true
+          }
+          return 'mnemonic is wrong'
+        } else {
+          console.log(
+            `\n Your mnemonic is here, please remember to backup it. \n ${hd.genMnemonic()}`
+          )
+          console.log(
+            '\n mnemonic has been generated, the Varda will exit, input mnemonic next time'
+          )
+          return process.exit()
+        }
       }
+    },
+    {
+      name: 'password',
+      type: 'password',
+      message: 'Enter your mnemonic password (option):'
     }
+  ]
+
+  if (config.commission) {
+    return inquirer.prompt(questions)
   }
-  return inquirer.prompt(question)
+
+  return Promise.resolve('welcome to use Varda')
 }
 
 askForMnemonic()

@@ -26,13 +26,17 @@ class HDWallet {
     return (this.seed = seed)
   }
 
-  genMnemonic({ bits = 256, language = 'english', rng = undefined } = {}) {
-    // if you wanna get a 12 mnemonic word, you ca set bits with 128
+  genMnemonic({ bits = 128, language = 'english', rng = undefined } = {}) {
+    // if you wanna get a 24 mnemonic word, you ca set bits with 256
     if (language && !bip39.wordlists.hasOwnProperty(language)) {
       throw new TypeError('Language should be include in bip39 wordlist')
     }
 
     return bip39.generateMnemonic(bits, rng, bip39.wordlists[language])
+  }
+
+  validateMnemonic(mnemonic) {
+    return bip39.validateMnemonic(mnemonic)
   }
 
   getSeed(mnemonic, password = undefined) {
@@ -51,7 +55,13 @@ class HDWallet {
 
 module.exports = HDWallet
 // let Hd = new HDWallet()
-// // const seed = Hd.getSeed(Hd.genMnemonic())
+// let m ='warrior paper net nice differ return use robust dirt credit way foil'
+//   // 'gift puppy enforce violin rapid rare dance judge renew damp life giant common siege screen length scrub door risk run scatter reward penuncle'
+// // // Hd.genMnemonic()
+// // const seed = Hd.getSeed(m, '1234567')
+// console.log(Hd.validateMnemonic(m))
+// console.log(seed)
+// console.log(Hd.genMnemonic())
 // // const path = "m/44'/233'/0'"
 // const m = Hd.genMnemonic()
 // let w  =Hd.fromMnemonic(m)
