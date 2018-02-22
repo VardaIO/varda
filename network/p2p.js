@@ -95,7 +95,7 @@ const runP2p = async () => {
       const id = peerId.createFromB58String(ma.getPeerId())
       let peer = new PeerInfo(id)
       peer.multiaddrs.add(ma)
-      node.dial(peer, (err, conn) => {
+      node.dialProtocol(peer, (err, conn) => {
         if (err) {
           _.remove(publicIpsList, n => {
             return n == addr
@@ -104,10 +104,10 @@ const runP2p = async () => {
       })
     })
 
-    // when discovery a peer, try to dial to this peer,if it can reply,
+    // when discovery a peer, try to dialProtocol to this peer,if it can reply,
     // peers will connect with each other
     node.on('peer:discovery', peerInfo => {
-      node.dial(peerInfo, (err, conn) => {
+      node.dialProtocol(peerInfo, (err, conn) => {
         if (err) console.log(err)
       })
     })
@@ -154,9 +154,9 @@ const runP2p = async () => {
     })
 
     // sendstar receive a unconfirm star, it should push to pool, to be confirm( for commissions) .
-    node.handle('/sendStar', (protocol, conn) => {
-      pull(conn, pull.map(star => starProto.star.decode(star)), pull.log())
-    })
+    // node.handle('/sendStar', (protocol, conn) => {
+    //   pull(conn, pull.map(star => starProto.star.decode(star)), pull.log())
+    // })
 
     node.handle('/t', (protocol, conn) => {
       pull(conn, pull.map(s => s.toString()), pull.log())
@@ -165,9 +165,9 @@ const runP2p = async () => {
     setInterval(() => {
       let i = node.peerInfo.id.toB58String()
       values(node.peerBook.getAll()).forEach(peer => {
-        node.dial(peer, '/t', (err, conn) => {
+        node.dialProtocol(peer, '/t', (err, conn) => {
           if (err) console.log(err)
-          pull(pull.values([`hello, this is a ${i} dial`]), conn)
+          pull(pull.values([`hello, this is a ${i} dialProtocol`]), conn)
         })
       })
     }, 2000)
@@ -180,7 +180,7 @@ const runP2p = async () => {
       })
       setInterval(() => {
         values(node.peerBook.getAll()).forEach(peer => {
-          node.dial(peer, '/getPubIpAddr', (err, conn) => {
+          node.dialProtocol(peer, '/getPubIpAddr', (err, conn) => {
             if (err) console.log(err)
             pull(pull.values([buf]), conn)
           })
@@ -191,7 +191,7 @@ const runP2p = async () => {
     setInterval(() => {
       if (publicIpsList.length != 0) {
         values(node.peerBook.getAll()).forEach(peer => {
-          node.dial(peer, '/getAddrList', (err, conn) => {
+          node.dialProtocol(peer, '/getAddrList', (err, conn) => {
             if (err) console.log(err)
             pull(pull.values([encodePublicIps(publicIpsList)]), conn)
           })
@@ -199,14 +199,25 @@ const runP2p = async () => {
       }
     }, 1000 * 30)
 
-    // let i = 0
-    // setInterval(() => {
-    //     node.pubsub.publish('news', Buffer.from(`Bird bird bird, bird is the word! ${i++}`), (err) => {
-    //         if (err) {
-    //             throw err
-    //         }
-    //     })
-    // }, 1000 *5)
+    //   const pubSendStarHandler = (star) => {
+    //     starProto.star.encode(star)
+    //   }
+
+    //   node.pubsub.publish('/sendStar', pubSendStarHandler, (err) => {
+    //     if (error) {
+    //       return Promise.reject(error)
+    //     }
+    //   })
+
+    //   const subSendStarHandler = (star) => {
+    //     console.log(starProto.star.decode(star))
+    // }
+
+    //   node.pubsub.subscribe('news', handler, (err) => {
+    //     if (error) {
+    //       return Promise.reject(error)
+    //     }
+    // })
 
     return node
   })

@@ -1,5 +1,5 @@
 const libp2p = require('libp2p')
-const Multiplex = require('libp2p-mplex')
+const Mplex = require('libp2p-mplex')
 const SECIO = require('libp2p-secio')
 const TCP = require('libp2p-tcp')
 const WS = require('libp2p-websockets')
@@ -16,7 +16,7 @@ class Node extends libp2p {
     const modules = {
       transport: [new TCP(), wsstar, ws],
       connection: {
-        muxer: [Multiplex],
+        muxer: [Mplex],
         crypto: [SECIO]
       },
       discovery: [
