@@ -31,7 +31,7 @@ console.log(
 const hd = new HD()
 
 const askForMnemonic = () => {
-  const questions = {
+  const question = {
     name: 'mnemonic',
     type: 'password',
     message: 'Enter your wallet mnemonic:',

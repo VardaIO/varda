@@ -9,9 +9,9 @@ Varda 引擎将做为区块链网络--星辰之海的动力之源泉，同时也
 Varda is the most beautiful Valar of Middle Earth, the creator of stars.
 Varda engine is the sea of stars' origin of power, at the same time, it will injecting new blood for blockchain's world.
 
-Q: What am you doing now?
+Q: What are you doing now?
 
-A: I am writting a peer to peer network based on gRpc
+A: I am writting the consensus
 
 ## TodoList
 
