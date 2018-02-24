@@ -222,5 +222,5 @@ const runP2p = async () => {
     return node
   })
 }
-
+// runP2p()
 module.exports = runP2p
