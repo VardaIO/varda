@@ -8,12 +8,8 @@
   "main": "index.js",
   "scripts": {
     "test": "ava ./test --verbose",
-    "fix":
-      "prettier --config .prettierrc --write {components,database,network}/**/*.js *.js",
-    "precommit": "lint-staged"
-  },
-  "lint-staged": {
-    "*.{js,json,css,md}": ["prettier --config .prettierrc --write", "git add"]
+    "fix": "node node_modules/prettier/bin-prettier.js --config .prettierrc --write {components,database,network}/**/*.js *.js",
+    "precommit": "node node_modules/prettier/bin-prettier.js --config .prettierrc --write {components,database,network}/**/*.js *.js *.json *.md"
   },
   "repository": {
     "type": "git",
