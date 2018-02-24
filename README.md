@@ -1,6 +1,6 @@
 <h1 align=center><img src="./src/images/logo.jpeg" width=100/> Varda </h1>
 
-<center> [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)] </center>
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
 Varda(瓦尔达)，中土世界最美的维拉，繁星的缔造者。
 
