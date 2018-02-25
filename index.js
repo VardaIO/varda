@@ -66,8 +66,8 @@ const start = async () => {
     const answer = await askForMnemonic()
     console.log(answer)
     const node = await p2pNetwork()
-    
-    const httpServer = require('./network/http/http') 
+
+    const httpServer = require('./network/http/http')
     await httpServer(node)
   } catch (error) {
     console.log(error)

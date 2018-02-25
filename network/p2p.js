@@ -203,21 +203,22 @@ const runP2p = async () => {
     //     starProto.star.encode(star)
     //   }
 
-    //   node.pubsub.publish('/sendStar', pubSendStarHandler, (err) => {
+    //   node.pubsub.publish('sendStar', pubSendStarHandler, (err) => {
     //     if (error) {
     //       return Promise.reject(error)
     //     }
     //   })
 
-    //   const subSendStarHandler = (star) => {
-    //     console.log(starProto.star.decode(star))
-    // }
+    const subSendStarHandler = star => {
+      console.log(starProto.star.decode(star))
+    }
 
-    //   node.pubsub.subscribe('news', handler, (err) => {
-    //     if (error) {
-    //       return Promise.reject(error)
-    //     }
-    // })
+    node.pubsub.subscribe('sendStar', (msg) =>{console.log(msg.from, console.log(msg))
+       console.log(starProto.star.decode(Buffer.from(msg.data.toString(),'hex')))}, error => {
+      if (error) {
+        console.log(error)
+      }
+    })
 
     return node
   })
