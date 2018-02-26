@@ -130,7 +130,13 @@ const runP2p = async () => {
     node.handle('/getPubIpAddr', (protocol, conn) => {
       pull(
         conn,
-        pull.map(ip => msg.addr.decode(ip)),
+        pull.map(ip => {
+          try {
+            msg.addr.decode(ip)
+          } catch (error) {
+            console.log('receive a wrong protobuf')
+          }
+        }),
         pull.collect((err, array) => {
           if (err) console.log(err)
           if (publicIpsList.indexOf(array[0].addr) == -1) {
@@ -144,7 +150,13 @@ const runP2p = async () => {
     node.handle('/getAddrList', (protocol, conn) => {
       pull(
         conn,
-        pull.map(v => msg.addrs.decode(v)),
+        pull.map(v => {
+          try {
+            msg.addrs.decode(v)
+          } catch (error) {
+            console.log('receive a wrong protobuf')
+          }
+        }),
         pull.collect(function(err, array) {
           array[0].addrs.map(v => {
             if (publicIpsList.indexOf(v) == -1) {
@@ -220,15 +232,14 @@ const runP2p = async () => {
     node.pubsub.subscribe(
       'sendStar',
       msg => {
-        // console.log(msg.from, console.log(msg))
-        // console.log(
-        const newStar = starProto.star.decode(
-          Buffer.from(msg.data.toString(), 'hex')
-        )
-        commission.preparePool[newStar.star_hash] = newStar
-
-        console.log(newStar.star_hash)
-        // )
+        try {
+          const newStar = starProto.star.decode(
+            Buffer.from(msg.data.toString(), 'hex')
+          )
+          commission.preparePool[newStar.star_hash] = newStar
+        } catch (error) {
+          console.log('receive a wrong protobuf')
+        }
       },
       error => {
         if (error) {
@@ -246,10 +257,14 @@ const runP2p = async () => {
     node.pubsub.subscribe(
       'waitingStar',
       msg => {
-        const tobeConfirm = starProto.star.decode(
-          Buffer.from(msg.data.toString(), 'hex')
-        )
-        commission.waitingPool[tobeConfirm.star_hash] = tobeConfirm
+        try {
+          const tobeConfirm = starProto.star.decode(
+            Buffer.from(msg.data.toString(), 'hex')
+          )
+          commission.waitingPool[tobeConfirm.star_hash] = tobeConfirm
+        } catch (error) {
+          console.log('receive a wrong protobuf')
+        }
       },
       error => {
         if (error) {
