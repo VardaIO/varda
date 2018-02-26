@@ -153,12 +153,10 @@ class Commission {
             receiver[property].broadcast = true
 
             const commitStar = starProto.star.encode(value)
-            // this._broadcastCommitStar(commitStar)
-
+            this._broadcastCommitStar(commitStar)
             return
           } else if (receiver[property].broadcast == true) {
             console.log('have commit')
-            
             return
           }
           receiver[property].count++
