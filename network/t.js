@@ -1,5 +1,0 @@
-const pb = require('protocol-buffers')
-const fs = require('fs')
-const appRoot = require('app-root-path')
-const msg = pb(fs.readFileSync(`${appRoot}/network/protos/node.proto`))
-const starProto = pb(fs.readFileSync(`${appRoot}/network/protos/star.proto`))

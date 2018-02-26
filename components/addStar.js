@@ -423,11 +423,9 @@ const addStarFromBroadcast = encodeStar => {
       star.signature,
       transaction.senderPublicKey
     )
-    console.log(checkSignature)
     // 3. vailidate amount
     const account = new Account(transaction.sender)
     const checkTransaction = await account.checkTransaction(transaction.amount)
-    console.log(checkTransaction)
     if (!checkTransaction) {
       reject('amount bigger than balance')
     }

@@ -253,7 +253,6 @@ const runP2p = async () => {
     //   console.log(colors.blue('lalal'), commission.waitingPool)
     // })
     // for commission
-
     node.pubsub.subscribe(
       'waitingStar',
       msg => {
@@ -261,7 +260,29 @@ const runP2p = async () => {
           const tobeConfirm = starProto.star.decode(
             Buffer.from(msg.data.toString(), 'hex')
           )
+          //判断是否是自己发出的
           commission.waitingPool[tobeConfirm.star_hash] = tobeConfirm
+        } catch (error) {
+          console.log('receive a wrong protobuf')
+        }
+      },
+      error => {
+        if (error) {
+          console.log(error)
+        }
+      }
+    )
+
+    node.pubsub.subscribe(
+      'commitStar',
+      msg => {
+        try {
+          const tobeCommit = starProto.star.decode(
+            Buffer.from(msg.data.toString(), 'hex')
+          )
+          // commission.waitingPool[tobeConfirm.star_hash] = tobeConfirm
+          console.log(colors.green('tobeCommit'))
+          // add star, but it need a cache
         } catch (error) {
           console.log('receive a wrong protobuf')
         }

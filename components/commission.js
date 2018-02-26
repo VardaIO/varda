@@ -18,6 +18,10 @@ const pool = require('../database/pool')
 const Vailidate = require('./vailidate')
 const { addStar } = require('./addStar')
 const emitter = require('./event')
+const fs = require('fs')
+const pb = require('protocol-buffers')
+const appRoot = require('app-root-path')
+const starProto = pb(fs.readFileSync(`${appRoot}/network/protos/star.proto`))
 
 const commissionNumber = 4
 
@@ -107,6 +111,7 @@ class Commission {
           // console.log(receiver)
           // emitter.emit('waitingStar', property)
           // 写一个递归，不断地从prepare pool取出Star广播并转向waiting pool
+          value.starFrom = 'local'
           this.waitingPool[property] = value
         } catch (error) {
           console.log(error)
@@ -115,23 +120,23 @@ class Commission {
     }
   }
 
-  // todo:如果不是从本地来的star，要移除broadcast，count属性
   // todo:如果不是来自本地，需要验证消息发送者是不是来自议会成员，以及消息签名是否正确
   waiting() {
     return {
       set: async (receiver, property, value) => {
         // 0.验证
-        console.log(0)
-        console.log(receiver)
         if (!property || !value) {
           return
         }
         // if from local
-        // if (value['starFrom'] && value['starFrom'] == 'local') {
-        //   receiver[property] = value
-        //   receiver[property].count = 0
-        //   return
-        // }
+        if (value['starFrom'] && value['starFrom'] == 'local') {
+          receiver[property] = value
+          receiver[property].count = 0
+          delete this.preparePool[property]
+          //如果是自己发出的则不管
+          this._broadcastWaitingStar(starProto.star.encode(value))
+          return
+        }
 
         if (!new Vailidate().vailidateStarWithoutTransaction(value)) {
           return
@@ -146,15 +151,21 @@ class Commission {
           ) {
             //broadcast
             receiver[property].broadcast = true
+
+            const commitStar = starProto.star.encode(value)
+            this._broadcastCommitStar(commitStar)
+
             return
           }
           receiver[property].count++
+          this._broadcastWaitingStar(starProto.star.encode(value))
           return
         }
         // 1.2 不存在：查看数据库中是否有，没有则添加
         if (!await this.haveStar(property)) {
           receiver[property] = value
           receiver[property].count = 0
+          this._broadcastWaitingStar(starProto.star.encode(value))
         }
       }
     }
@@ -184,10 +195,28 @@ class Commission {
     return new Vailidate().vailidateStar(star)
   }
 
-  broadcast(node, from) {
-    if (from == 'prepare') {
-    }
-    // else is from waiting
+  _broadcastCommitStar(commitStar) {
+    global.n.pubsub.publish(
+      'commitStar',
+      Buffer.from(commitStar.toString('hex')),
+      error => {
+        if (error) {
+          return Promise.reject(error)
+        }
+      }
+    )
+  }
+
+  _broadcastWaitingStar(waitingStar) {
+    global.n.pubsub.publish(
+      'waitingStar',
+      Buffer.from(waitingStar.toString('hex')),
+      error => {
+        if (error) {
+          return Promise.reject(error)
+        }
+      }
+    )
   }
 
   _findLastMci(author) {
@@ -225,32 +254,3 @@ class Commission {
 }
 
 module.exports = Commission
-// setImmediate(async () => {
-//   let b = new Commission()
-//   console.log(b.pool)
-//   console.log(b.waiting)
-//   const Star = require('./star')
-//   let star = await new Star().getStar(
-//     'd3e07MIoj95eJDV29gX3Ydyi6MkZI23MsWFuAsEk0XQ='
-//   )
-//   // star.starFrom = 'local'
-//   b.waiting[star.star_hash] = star
-//   console.log(b.waiting)
-//   console.log(await b._findLastMci('VLRAJEAFXJBVYZQYT67YUQ3KJV53A'))
-//   let stars = await b._getStarHashByMci(1)
-//   console.log(
-//     stars.map(v => {
-//       return v.star
-//     })
-//   )
-// })
-// setImmediate(async () => {
-//     let a = await b.validate('dYixChMfNFnkpGCyaqQLYjcpq2Cxw5RAhgfqh+jKKYA=')
-//     console.log(a)
-// })
-// welcome to use Varda
-// node has started (true/false): true
-// listening on:
-// /ip4/127.0.0.1/tcp/4002/ipfs/QmR8aEY1sWt6eq8pnT5BadV9maAfUawJrYBifDckWb3URz
-// /ip4/172.17.0.2/tcp/4002/ipfs/QmR8aEY1sWt6eq8pnT5BadV9maAfUawJrYBifDckWb3URz
-// /ip4/106.75.148.236/tcp/9090/ws/p2p-websocket-star/ipfs/QmR8aEY1sWt6eq8pnT5BadV9maAfUawJrYBifDckWb3URz
