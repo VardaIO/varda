@@ -22,6 +22,8 @@ const Node = require('./node-bundle')
 const msg = pb(fs.readFileSync(`${appRoot}/network/protos/node.proto`))
 const starProto = pb(fs.readFileSync(`${appRoot}/network/protos/star.proto`))
 
+const Commissions = require('../components/commission')
+const commission = new Commissions()
 /**
  * todo:
  * if local peer have a public ip, then broadcast this ip and peer id to the world
@@ -213,15 +215,31 @@ const runP2p = async () => {
       console.log(starProto.star.decode(star))
     }
 
-    node.pubsub.subscribe('sendStar', (msg) =>{console.log(msg.from, console.log(msg))
-       console.log(starProto.star.decode(Buffer.from(msg.data.toString(),'hex')))}, error => {
-      if (error) {
-        console.log(error)
+    node.pubsub.subscribe(
+      'sendStar',
+      msg => {
+        // console.log(msg.from, console.log(msg))
+        // console.log(
+        const newStar = starProto.star.decode(
+          Buffer.from(msg.data.toString(), 'hex')
+        )
+        commission.preparePool[newStar.star_hash] = newStar
+        
+        console.log(newStar.star_hash)
+        // )
+      },
+      error => {
+        if (error) {
+          console.log(error)
+        }
       }
-    })
-
+    )
+    global.n = node
     return node
   })
 }
+// setInterval(()=>{
+//   console.log(commission.)
+// }, 1000*2)
 // runP2p()
 module.exports = runP2p

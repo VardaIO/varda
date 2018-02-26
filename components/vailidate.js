@@ -9,6 +9,8 @@ class Vailidate {
 
   vailidateStarWithoutTransaction(star) {
     const transaction = star.transaction
+    console.log(transaction)
+    console.log(star)
     const checkSignature = utils.sigVerify(
       star.star_hash,
       star.signature,
@@ -33,7 +35,7 @@ class Vailidate {
       return false
     }
 
-    const checkTransaction = await this.vailidateTransaction(transaction)
+    const checkTransaction = await this.vailidateTransaction(star.transaction)
 
     if (!checkTransaction) {
       return false
