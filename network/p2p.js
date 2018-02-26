@@ -1,6 +1,5 @@
 const os = require('os')
 const fs = require('fs')
-const { EventEmitter } = require('events')
 const appRoot = require('app-root-path')
 const PeerInfo = require('peer-info')
 const peerId = require('peer-id')
@@ -24,6 +23,9 @@ const starProto = pb(fs.readFileSync(`${appRoot}/network/protos/star.proto`))
 
 const Commissions = require('../components/commission')
 const commission = new Commissions()
+
+const emitter = require('../components/event')
+
 /**
  * todo:
  * if local peer have a public ip, then broadcast this ip and peer id to the world
@@ -74,7 +76,6 @@ const createNode = async () => {
 
 const runP2p = async () => {
   let publicIpsList = []
-  const emitter = new EventEmitter()
 
   let node = await createNode()
 
@@ -215,6 +216,7 @@ const runP2p = async () => {
       console.log(starProto.star.decode(star))
     }
 
+    // for commission
     node.pubsub.subscribe(
       'sendStar',
       msg => {
@@ -224,7 +226,7 @@ const runP2p = async () => {
           Buffer.from(msg.data.toString(), 'hex')
         )
         commission.preparePool[newStar.star_hash] = newStar
-        
+
         console.log(newStar.star_hash)
         // )
       },
@@ -234,6 +236,28 @@ const runP2p = async () => {
         }
       }
     )
+
+    // emitter.addListener('waitingStar', key => {
+    //   commission.waitingPool[key] = commission.preparePool[key]
+    //   console.log(colors.blue('lalal'), commission.waitingPool)
+    // })
+    // for commission
+
+    node.pubsub.subscribe(
+      'waitingStar',
+      msg => {
+        const tobeConfirm = starProto.star.decode(
+          Buffer.from(msg.data.toString(), 'hex')
+        )
+        commission.waitingPool[tobeConfirm.star_hash] = tobeConfirm
+      },
+      error => {
+        if (error) {
+          console.log(error)
+        }
+      }
+    )
+
     global.n = node
     return node
   })

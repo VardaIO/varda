@@ -17,6 +17,7 @@ const _ = require('lodash')
 const pool = require('../database/pool')
 const Vailidate = require('./vailidate')
 const { addStar } = require('./addStar')
+const emitter = require('./event')
 
 const commissionNumber = 4
 
@@ -67,9 +68,7 @@ class Commission {
           }
 
           // 5. a star should have at least one on star'main chain index - 1
-          const starsFromLastMci = await this._getStarHashByMci(
-            value.mci - 1
-          )
+          const starsFromLastMci = await this._getStarHashByMci(value.mci - 1)
           // _.isArray(starsFromLastMci)
           const starHashesFromLastMci = starsFromLastMci.map(v => {
             return v.star
@@ -105,8 +104,10 @@ class Commission {
 
           // add it!
           receiver[property] = value
-          console.log(receiver)
+          // console.log(receiver)
+          // emitter.emit('waitingStar', property)
           // 写一个递归，不断地从prepare pool取出Star广播并转向waiting pool
+          this.waitingPool[property] = value
         } catch (error) {
           console.log(error)
         }
@@ -213,7 +214,7 @@ class Commission {
         const stars = client
           .prepare(`SELECT * FROM stars WHERE main_chain_index='${mci}'`)
           .all()
-      pool.release(client)
+        pool.release(client)
         return Promise.resolve(stars)
       })
       .catch(error => {

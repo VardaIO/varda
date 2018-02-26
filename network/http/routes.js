@@ -23,16 +23,15 @@ router.post('/sendStar', async ctx => {
   //   star
   // )
   global.n.pubsub.publish(
-      'sendStar',
-      Buffer.from(star.toString('hex')),
-      error => {
-        if (error) {
-          return Promise.reject(error)
-        }
+    'sendStar',
+    Buffer.from(star.toString('hex')),
+    error => {
+      if (error) {
+        return Promise.reject(error)
       }
-    )
+    }
+  )
   // console.log(c.preparePool)
-
 
   ctx.body = starProto.star.decode(star)
 })
