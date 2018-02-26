@@ -153,12 +153,15 @@ class Commission {
             receiver[property].broadcast = true
 
             const commitStar = starProto.star.encode(value)
-            this._broadcastCommitStar(commitStar)
+            // this._broadcastCommitStar(commitStar)
 
             return
+          } else if(receiver[property].broadcast == true) {
+            console.log('have commit')
           }
           receiver[property].count++
           this._broadcastWaitingStar(starProto.star.encode(value))
+          console.log(receiver[property].count)
           return
         }
         // 1.2 不存在：查看数据库中是否有，没有则添加
