@@ -295,7 +295,7 @@ const runP2p = async sk => {
           const checkExist = pool.acquire().then(async client => {
             if (
               !client
-                .prepare(`SELECT * FROM stars WHERE star=${star.star_hash}`)
+                .prepare(`SELECT * FROM stars WHERE star='${star.star_hash}'`)
                 .get()
             ) {
               return ture
