@@ -26,10 +26,10 @@ const starProto = pb(fs.readFileSync(`${appRoot}/network/protos/star.proto`))
 const commissionNumber = 4
 
 class Commission {
-  constructor(node) {
+  constructor(sk) {
     this.preparePool = new Proxy({}, this.prepare())
     this.waitingPool = new Proxy({}, this.waiting())
-    this.node = node
+    this.node = sk
   }
 
   prepare() {

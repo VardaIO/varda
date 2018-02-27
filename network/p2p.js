@@ -21,10 +21,14 @@ const Node = require('./node-bundle')
 const msg = pb(fs.readFileSync(`${appRoot}/network/protos/node.proto`))
 const starProto = pb(fs.readFileSync(`${appRoot}/network/protos/star.proto`))
 
-const Commissions = require('../components/commission')
-const commission = new Commissions()
+const Commission = require('../components/commission')
+const commission = new Commission()
+const commissions = require('../commissions.json')
 
 const emitter = require('../components/event')
+
+const Utils = require('../components/utils')
+const utils = new Utils()
 
 /**
  * todo:
@@ -74,7 +78,7 @@ const createNode = async () => {
     })
 }
 
-const runP2p = async () => {
+const runP2p = async sk => {
   let publicIpsList = []
 
   let node = await createNode()
@@ -214,64 +218,49 @@ const runP2p = async () => {
       }
     }, 1000 * 30)
 
-    //   const pubSendStarHandler = (star) => {
-    //     starProto.star.encode(star)
-    //   }
+    // address should in commissions list
+    if (sk && commissions.indexOf(utils.getAddressFromSk(sk)) !== -1) {
+      // for commission
+      node.pubsub.subscribe(
+        'sendStar',
+        msg => {
+          try {
+            const newStar = starProto.star.decode(
+              Buffer.from(msg.data.toString(), 'hex')
+            )
+            commission.preparePool[newStar.star_hash] = newStar
+          } catch (error) {
+            console.log('receive a wrong protobuf')
+          }
+        },
+        error => {
+          if (error) {
+            console.log(error)
+          }
+        }
+      )
 
-    //   node.pubsub.publish('sendStar', pubSendStarHandler, (err) => {
-    //     if (error) {
-    //       return Promise.reject(error)
-    //     }
-    //   })
-
-    const subSendStarHandler = star => {
-      console.log(starProto.star.decode(star))
+      // for commission
+      node.pubsub.subscribe(
+        'waitingStar',
+        msg => {
+          try {
+            const tobeConfirm = starProto.star.decode(
+              Buffer.from(msg.data.toString(), 'hex')
+            )
+            //判断是否是自己发出的
+            commission.waitingPool[tobeConfirm.star_hash] = tobeConfirm
+          } catch (error) {
+            console.log('receive a wrong protobuf')
+          }
+        },
+        error => {
+          if (error) {
+            console.log(error)
+          }
+        }
+      )
     }
-
-    // for commission
-    node.pubsub.subscribe(
-      'sendStar',
-      msg => {
-        try {
-          const newStar = starProto.star.decode(
-            Buffer.from(msg.data.toString(), 'hex')
-          )
-          commission.preparePool[newStar.star_hash] = newStar
-        } catch (error) {
-          console.log('receive a wrong protobuf')
-        }
-      },
-      error => {
-        if (error) {
-          console.log(error)
-        }
-      }
-    )
-
-    // emitter.addListener('waitingStar', key => {
-    //   commission.waitingPool[key] = commission.preparePool[key]
-    //   console.log(colors.blue('lalal'), commission.waitingPool)
-    // })
-    // for commission
-    node.pubsub.subscribe(
-      'waitingStar',
-      msg => {
-        try {
-          const tobeConfirm = starProto.star.decode(
-            Buffer.from(msg.data.toString(), 'hex')
-          )
-          //判断是否是自己发出的
-          commission.waitingPool[tobeConfirm.star_hash] = tobeConfirm
-        } catch (error) {
-          console.log('receive a wrong protobuf')
-        }
-      },
-      error => {
-        if (error) {
-          console.log(error)
-        }
-      }
-    )
 
     node.pubsub.subscribe(
       'commitStar',
