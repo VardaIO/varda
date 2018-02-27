@@ -292,7 +292,7 @@ const runP2p = async sk => {
           )
           console.log(tobeCommit)
           // commission.waitingPool[tobeConfirm.star_hash] = tobeConfirm
-          console.log(colors.green('tobeCommit'))
+          console.log(colors.green('tobeCommit!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'))
           // first fin star in cache, if not have, add it to db
         } catch (error) {
           console.log('receive a wrong protobuf')

@@ -27,6 +27,7 @@ const Utils = require('./utils')
 const commissionsList = require('../commissions.json')
 const commissionNumber = commissionsList.length
 
+const colors = require('colors')
 class Commission {
   constructor(sk) {
     this.preparePool = new Proxy({}, this.prepare())
@@ -125,6 +126,7 @@ class Commission {
   waiting() {
     return {
       set: async (receiver, property, value) => {
+        console.log(colors.green('begin to add waitting pool'))
         // 0.验证
         if (!property || !value) {
           return
@@ -183,13 +185,14 @@ class Commission {
               commissionSignature: utils.sign(value.star_hash, this.sk)
             })
           )
-          console.log(receiver[property].count)
+          console.log(colors.green(receiver[property].count))
           return
         }
         // 1.2 不存在：查看数据库中是否有，没有则添加
         if (!await this.haveStar(property)) {
           receiver[property] = value
           receiver[property].count = 0
+          console.log(colors.log('add it!',property))
           this._broadcastWaitingStar(
             starProto.commissionStar.encode({
               star: value,
