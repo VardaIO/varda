@@ -128,10 +128,12 @@ class Commission {
       set: async (receiver, property, value) => {
         console.log(colors.green('begin to add waitting pool'))
         // 0.验证
+        console.log(colors.green('0'))
         if (!property || !value) {
           return
         }
         // if from local
+        console.log(colors.green('from local'))
         if (value['starFrom'] && value['starFrom'] == 'local') {
           receiver[property] = value
           receiver[property].count = 0
@@ -150,6 +152,7 @@ class Commission {
           return
         }
 
+        console.log(colors.green('vailidateStarWithoutTransactio'))
         if (!new Vailidate().vailidateStarWithoutTransaction(value)) {
           return
         }
@@ -162,6 +165,7 @@ class Commission {
             !receiver[property].broadcast
           ) {
             //broadcast
+            console.log(colors.green('broadcast'))
             receiver[property].broadcast = true
 
             const commitStar = starProto.commissionStar.encode({
@@ -192,7 +196,7 @@ class Commission {
         if (!await this.haveStar(property)) {
           receiver[property] = value
           receiver[property].count = 0
-          console.log(colors.log('add it!',property))
+          console.log(colors.log('add it!', property))
           this._broadcastWaitingStar(
             starProto.commissionStar.encode({
               star: value,
