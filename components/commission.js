@@ -170,7 +170,8 @@ class Commission {
             //broadcast
             console.log(colors.green('broadcast'))
             receiver[property].broadcast = true
-
+          const utils = new Utils()
+            
             const commitStar = starProto.commissionStar.encode({
               star: value,
               commissionAddress: utils.getAddressFromSk(this.sk),
@@ -184,6 +185,7 @@ class Commission {
             return
           }
           console.log(colors.green('1'))
+          const utils = new Utils()
           receiver[property].count++
           this._broadcastWaitingStar(
             starProto.commissionStar.encode({
@@ -202,6 +204,7 @@ class Commission {
           receiver[property] = value
           receiver[property].count = 0
           console.log(colors.log('add it!', property))
+          const utils = new Utils()
           this._broadcastWaitingStar(
             starProto.commissionStar.encode({
               star: value,
