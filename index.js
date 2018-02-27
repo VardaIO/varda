@@ -67,21 +67,25 @@ const start = async () => {
     // console.log(answer)
     let seed
     let sk
+    // const Utils = require('./components/utils')
     // console.log(answer.password)
     // console.log(hd.getSeed(answer.mnemonic, answer.password))
     if (typeof answer === 'object') {
       if (answer.password) {
-        seed = hd.getSeed(answer.mnemonic)
+        seed = hd.getSeed(answer.mnemonic, answer.password)
+        // console.log('have password')
         sk = hd.genKeypair(0, seed).secretKey
       } else {
-        seed = hd.getSeed(answer.mnemonic, answer.password)
+        seed = hd.getSeed(answer.mnemonic)
+        
         sk = hd.genKeypair(0, seed).secretKey
       }
     }
-    const node = await p2pNetwork(sk)
+    // console.log(new Utils().getAddressFromSk(sk))
+    // const node = await p2pNetwork(sk)
 
-    const httpServer = require('./network/http/http')
-    await httpServer()
+    // const httpServer = require('./network/http/http')
+    // await httpServer()
   } catch (error) {
     console.log(error)
   }

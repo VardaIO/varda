@@ -21,6 +21,7 @@ A: I am writting the consensus
 * [ ] write consensus
 * [x] commission
 * [ ] vote
+* [ ] commission commit number
 
   ## Note:
 
