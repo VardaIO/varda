@@ -22,7 +22,6 @@ const msg = pb(fs.readFileSync(`${appRoot}/network/protos/node.proto`))
 const starProto = pb(fs.readFileSync(`${appRoot}/network/protos/star.proto`))
 
 const Commission = require('../components/commission')
-const commission = new Commission()
 const commissions = require('../commissions.json')
 
 const emitter = require('../components/event')
@@ -173,9 +172,6 @@ const runP2p = async sk => {
     })
 
     // sendstar receive a unconfirm star, it should push to pool, to be confirm( for commissions) .
-    // node.handle('/sendStar', (protocol, conn) => {
-    //   pull(conn, pull.map(star => starProto.star.decode(star)), pull.log())
-    // })
 
     node.handle('/t', (protocol, conn) => {
       pull(conn, pull.map(s => s.toString()), pull.log())
@@ -218,8 +214,15 @@ const runP2p = async sk => {
       }
     }, 1000 * 30)
 
+    let commissionAddress
+    let commission
+
+    if (sk) {
+      commissionAddress = utils.getAddressFromSk(sk)
+      commission = new Commission(sk)
+    }
     // address should in commissions list
-    if (sk && commissions.indexOf(utils.getAddressFromSk(sk)) !== -1) {
+    if (sk && commissions.indexOf(commissionAddress) !== -1) {
       // for commission
       node.pubsub.subscribe(
         'sendStar',
@@ -241,6 +244,7 @@ const runP2p = async sk => {
       )
 
       // for commission
+      //todo：验证commissionAddress是否在commissionList中
       node.pubsub.subscribe(
         'waitingStar',
         msg => {
@@ -249,7 +253,21 @@ const runP2p = async sk => {
               Buffer.from(msg.data.toString(), 'hex')
             )
             //判断是否是自己发出的
-            commission.waitingPool[tobeConfirm.star_hash] = tobeConfirm
+            const star = tobeConfirm.star
+
+            if (commission.indexOf(tobeConfirm.commissionAddress) == -1) {
+              return
+            }
+
+            if (
+              utils.sigVerify(
+                star.star_hash,
+                tobeConfirm.commissionSignature,
+                tobeConfirm.commissionPublicKey
+              )
+            ) {
+              commission.waitingPool[star.star_hash] = star
+            }
           } catch (error) {
             console.log('receive a wrong protobuf')
           }

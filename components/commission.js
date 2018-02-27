@@ -22,21 +22,22 @@ const fs = require('fs')
 const pb = require('protocol-buffers')
 const appRoot = require('app-root-path')
 const starProto = pb(fs.readFileSync(`${appRoot}/network/protos/star.proto`))
+const Utils = require('./utils')
 
-const commissionNumber = 4
+const commissionsList = require('../commissions.json')
+const commissionNumber = commissionsList.length
 
 class Commission {
   constructor(sk) {
     this.preparePool = new Proxy({}, this.prepare())
     this.waitingPool = new Proxy({}, this.waiting())
-    this.node = sk
+    this.sk = sk
   }
 
   prepare() {
     return {
       set: async (receiver, property, value) => {
         try {
-          // if protobuf, decode it
           // 来自普通用户
           // 判断是否在waiting中
           if (_.has(receiver, property)) {
@@ -134,7 +135,16 @@ class Commission {
           receiver[property].count = 0
           delete this.preparePool[property]
           //如果是自己发出的则不管
-          this._broadcastWaitingStar(starProto.star.encode(value))
+          const utils = new Utils()
+          const waitingStar = {
+            star: value,
+            commissionAddress: utils.genAddress(this.sk),
+            commissionPublicKey: utils.getPub(this.sk),
+            commissionSignature: utils.sign(value.star_hash, this.sk)
+          }
+          this._broadcastWaitingStar(
+            starProto.commissionStar.encode(waitingStar)
+          )
           return
         }
 
@@ -152,7 +162,12 @@ class Commission {
             //broadcast
             receiver[property].broadcast = true
 
-            const commitStar = starProto.star.encode(value)
+            const commitStar = starProto.commissionStar.encode({
+              star: value,
+              commissionAddress: utils.genAddress(this.sk),
+              commissionPublicKey: utils.getPub(this.sk),
+              commissionSignature: utils.sign(value.star_hash, this.sk)
+            })
             this._broadcastCommitStar(commitStar)
             return
           } else if (receiver[property].broadcast == true) {
@@ -160,7 +175,14 @@ class Commission {
             return
           }
           receiver[property].count++
-          this._broadcastWaitingStar(starProto.star.encode(value))
+          this._broadcastWaitingStar(
+            starProto.commissionStar.encode({
+              star: value,
+              commissionAddress: utils.genAddress(this.sk),
+              commissionPublicKey: utils.getPub(this.sk),
+              commissionSignature: utils.sign(value.star_hash, this.sk)
+            })
+          )
           console.log(receiver[property].count)
           return
         }
@@ -168,7 +190,14 @@ class Commission {
         if (!await this.haveStar(property)) {
           receiver[property] = value
           receiver[property].count = 0
-          this._broadcastWaitingStar(starProto.star.encode(value))
+          this._broadcastWaitingStar(
+            starProto.commissionStar.encode({
+              star: value,
+              commissionAddress: utils.genAddress(this.sk),
+              commissionPublicKey: utils.getPub(this.sk),
+              commissionSignature: utils.sign(value.star_hash, this.sk)
+            })
+          )
         }
       }
     }
