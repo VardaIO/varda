@@ -256,17 +256,18 @@ const runP2p = async sk => {
             //判断是否是自己发出的
             const star = tobeConfirm.star
             console.log(tobeConfirm)
+            console.log(commissions.indexOf(tobeConfirm.commissionAddress))
             if (commissions.indexOf(tobeConfirm.commissionAddress) == -1) {
               return
             }
 
-            if (
-              utils.sigVerify(
-                star.star_hash,
-                tobeConfirm.commissionSignature,
-                tobeConfirm.commissionPublicKey
-              )
-            ) {
+            const verify = utils.sigVerify(
+              star.star_hash,
+              tobeConfirm.commissionSignature,
+              tobeConfirm.commissionPublicKey
+            )
+            console.log(verify)
+            if (verify) {
               commission.waitingPool[star.star_hash] = star
             }
           } catch (error) {

@@ -153,11 +153,13 @@ class Commission {
         }
 
         console.log(colors.green('vailidateStarWithoutTransactio'))
+        console.log(new Vailidate().vailidateStarWithoutTransaction(value))
         if (!new Vailidate().vailidateStarWithoutTransaction(value)) {
           return
         }
         //1. 判断key（star hash）是否存在
         const existKey = _.has(receiver, property)
+        console.log('existkey:',existKey)
         //1.1存在：查看key中的count，若大于3/1则commit并广播(在receiver[property].broadcas不存在时)，不大于则继续计数
         if (existKey) {
           if (
@@ -180,6 +182,7 @@ class Commission {
             console.log('have commit')
             return
           }
+          console.log(colors.green('1'))
           receiver[property].count++
           this._broadcastWaitingStar(
             starProto.commissionStar.encode({
@@ -189,6 +192,7 @@ class Commission {
               commissionSignature: utils.sign(value.star_hash, this.sk)
             })
           )
+          console.log(colors.green('2'))
           console.log(colors.green(receiver[property].count))
           return
         }
