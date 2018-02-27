@@ -127,6 +127,7 @@ class Commission {
     return {
       set: async (receiver, property, value) => {
         console.log(colors.green('begin to add waitting pool'))
+        console.log(colors.green(this.sk))
         // 0.验证
         console.log(colors.green('0'))
         if (!property || !value) {
@@ -142,7 +143,7 @@ class Commission {
           const utils = new Utils()
           const waitingStar = {
             star: value,
-            commissionAddress: utils.genAddress(this.sk),
+            commissionAddress: utils.getAddressFromSk(this.sk),
             commissionPublicKey: utils.getPub(this.sk),
             commissionSignature: utils.sign(value.star_hash, this.sk)
           }
@@ -172,7 +173,7 @@ class Commission {
 
             const commitStar = starProto.commissionStar.encode({
               star: value,
-              commissionAddress: utils.genAddress(this.sk),
+              commissionAddress: utils.getAddressFromSk(this.sk),
               commissionPublicKey: utils.getPub(this.sk),
               commissionSignature: utils.sign(value.star_hash, this.sk)
             })
@@ -187,7 +188,7 @@ class Commission {
           this._broadcastWaitingStar(
             starProto.commissionStar.encode({
               star: value,
-              commissionAddress: utils.genAddress(this.sk),
+              commissionAddress: utils.getAddressFromSk(this.sk),
               commissionPublicKey: utils.getPub(this.sk),
               commissionSignature: utils.sign(value.star_hash, this.sk)
             })
@@ -204,7 +205,7 @@ class Commission {
           this._broadcastWaitingStar(
             starProto.commissionStar.encode({
               star: value,
-              commissionAddress: utils.genAddress(this.sk),
+              commissionAddress: utils.getAddressFromSk(this.sk),
               commissionPublicKey: utils.getPub(this.sk),
               commissionSignature: utils.sign(value.star_hash, this.sk)
             })
