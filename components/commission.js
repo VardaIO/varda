@@ -126,15 +126,11 @@ class Commission {
   waiting() {
     return {
       set: async (receiver, property, value) => {
-        console.log(colors.green('begin to add waitting pool'))
-        console.log(colors.green(this.sk))
         // 0.验证
-        console.log(colors.green('0'))
         if (!property || !value) {
           return
         }
         // if from local
-        console.log(colors.green('from local'))
         if (value['starFrom'] && value['starFrom'] == 'local') {
           receiver[property] = value
           receiver[property].count = 0
@@ -153,14 +149,11 @@ class Commission {
           return
         }
 
-        console.log(colors.green('vailidateStarWithoutTransactio'))
-        console.log(new Vailidate().vailidateStarWithoutTransaction(value))
         if (!new Vailidate().vailidateStarWithoutTransaction(value)) {
           return
         }
         //1. 判断key（star hash）是否存在
         const existKey = _.has(receiver, property)
-        console.log('existkey:', existKey)
         //1.1存在：查看key中的count，若大于3/1则commit并广播(在receiver[property].broadcas不存在时)，不大于则继续计数
         if (existKey) {
           if (
@@ -170,8 +163,8 @@ class Commission {
             //broadcast
             console.log(colors.green('broadcast'))
             receiver[property].broadcast = true
-          const utils = new Utils()
-            
+            const utils = new Utils()
+
             const commitStar = starProto.commissionStar.encode({
               star: value,
               commissionAddress: utils.getAddressFromSk(this.sk),
@@ -184,7 +177,7 @@ class Commission {
             console.log('have commit')
             return
           }
-          console.log(colors.green('1'))
+
           const utils = new Utils()
           receiver[property].count++
           this._broadcastWaitingStar(
@@ -195,15 +188,14 @@ class Commission {
               commissionSignature: utils.sign(value.star_hash, this.sk)
             })
           )
-          console.log(colors.green('2'))
-          console.log(colors.green(receiver[property].count))
+
           return
         }
         // 1.2 不存在：查看数据库中是否有，没有则添加
         if (!await this.haveStar(property)) {
           receiver[property] = value
           receiver[property].count = 0
-          console.log(colors.log('add it!', property))
+
           const utils = new Utils()
           this._broadcastWaitingStar(
             starProto.commissionStar.encode({

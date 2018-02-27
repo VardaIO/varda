@@ -321,15 +321,6 @@ const prepareStar = transaction => {
   })
 }
 
-const broadcastStar = (node, star) => {
-  _.values(node.peerBook.getAll()).forEach(peer => {
-    node.dial(peer, '/sendStar', (err, conn) => {
-      if (err) console.log(err)
-      pull(pull.values([star]), conn)
-    })
-  })
-}
-
 const addStar = star => {
   return pool
     .acquire()
@@ -411,12 +402,8 @@ const addStar = star => {
     })
 }
 
-const addStarFromBroadcast = encodeStar => {
-  // 1. vailidate the message signature, the message should from commission
-
-  // 2. vailidate the transaction signature
+const addStarFromBroadcast = star => {
   return new Promise(async (resolve, reject) => {
-    const star = starProto.star.decode(encodeStar)
     const transaction = star.transaction
     const checkSignature = utils.sigVerify(
       star.star_hash,

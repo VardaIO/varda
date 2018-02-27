@@ -28,7 +28,8 @@ const emitter = require('../components/event')
 
 const Utils = require('../components/utils')
 const utils = new Utils()
-
+const { addStarFromBroadcast } = require('../components/addStar')
+const pool = require('../database/pool')
 /**
  * todo:
  * if local peer have a public ip, then broadcast this ip and peer id to the world
@@ -255,8 +256,7 @@ const runP2p = async sk => {
             )
             //判断是否是自己发出的
             const star = tobeConfirm.star
-            console.log(tobeConfirm)
-            console.log(commissions.indexOf(tobeConfirm.commissionAddress))
+
             if (commissions.indexOf(tobeConfirm.commissionAddress) == -1) {
               return
             }
@@ -266,7 +266,7 @@ const runP2p = async sk => {
               tobeConfirm.commissionSignature,
               tobeConfirm.commissionPublicKey
             )
-            console.log(verify)
+
             if (verify) {
               commission.waitingPool[star.star_hash] = star
             }
@@ -283,20 +283,29 @@ const runP2p = async sk => {
       )
     }
 
+    // todo: add a cache
     node.pubsub.subscribe(
       'commitStar',
-      msg => {
+      async msg => {
         try {
           const tobeCommit = starProto.commissionStar.decode(
             Buffer.from(msg.data.toString(), 'hex')
           )
-          console.log(tobeCommit)
-          // commission.waitingPool[tobeConfirm.star_hash] = tobeConfirm
-          console.log(
-            colors.green(
-              'tobeCommit!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
-            )
-          )
+          const star = tobeCommit.star
+          const checkExist = pool.acquire().then(async client => {
+            if (
+              !client
+                .prepare(`SELECT * FROM stars WHERE star=${star.star_hash}`)
+                .get()
+            ) {
+              return ture
+            }
+            return false
+          })
+          if (await checkExist) {
+            await addStarFromBroadcast(star)
+            console.log(colors.green('add success'))
+          }
           // first fin star in cache, if not have, add it to db
         } catch (error) {
           console.log('receive a wrong protobuf')
