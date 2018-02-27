@@ -78,7 +78,7 @@ const start = async () => {
         sk = hd.genKeypair(0, seed).secretKey
       }
     }
-    const node = await p2pNetwork()
+    const node = await p2pNetwork(sk)
 
     const httpServer = require('./network/http/http')
     await httpServer()

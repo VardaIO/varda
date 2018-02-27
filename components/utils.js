@@ -64,6 +64,11 @@ class Utils {
     return 'V' + base32.encode(unencodedAddress)
   }
 
+  getAddressFromSk(sk) {
+    const pk = this.getPub(sk)
+    return this.genAddress(pk)
+  }
+
   checksum(hash) {
     // hash should be a buffer
     const checksum = Buffer.alloc(2)
