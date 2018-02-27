@@ -64,11 +64,24 @@ const start = async () => {
     }
 
     const answer = await askForMnemonic()
-    console.log(answer)
+    // console.log(answer)
+    let seed
+    let sk
+    // console.log(answer.password)
+    // console.log(hd.getSeed(answer.mnemonic, answer.password))
+    if (typeof answer === 'object') {
+      if (answer.password) {
+        seed = hd.getSeed(answer.mnemonic)
+        sk = hd.genKeypair(0, seed).secretKey
+      } else {
+        seed = hd.getSeed(answer.mnemonic, answer.password)
+        sk = hd.genKeypair(0, seed).secretKey
+      }
+    }
     const node = await p2pNetwork()
 
     const httpServer = require('./network/http/http')
-    await httpServer(node)
+    await httpServer()
   } catch (error) {
     console.log(error)
   }

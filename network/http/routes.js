@@ -7,7 +7,6 @@ const Utils = require(`${appRoot}/components/utils`)
 const Account = require(`${appRoot}/components/account`)
 const utils = new Utils()
 
-
 const fs = require('fs')
 const pb = require('protocol-buffers')
 const starProto = pb(fs.readFileSync(`${appRoot}/network/protos/star.proto`))
@@ -38,7 +37,7 @@ router.post('/sendStar', async ctx => {
   ctx.body = starProto.star.decode(star)
 })
 
-router.post('/getBalance', async (ctx) => {
+router.post('/getBalance', async ctx => {
   const sk = ctx.request.body.sk
   const pk = utils.getPub(sk)
   const address = utils.genAddress(pk)

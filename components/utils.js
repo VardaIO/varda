@@ -26,7 +26,7 @@ class Utils {
       publicKey: publicKey
     }
   }
-  
+
   getPub(sk) {
     const secretKey = new Uint8Array(Buffer.from(sk, 'hex'))
 

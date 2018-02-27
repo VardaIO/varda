@@ -17,3 +17,10 @@ message star {
     string authorAddress = 7;
     string signature = 8;
 }
+
+message commissionStar {
+    star star = 1;
+    string commissionAddress = 2;
+    string commissionPublicKey = 3;
+    string commissionSignature = 4;
+}

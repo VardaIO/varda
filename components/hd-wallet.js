@@ -15,16 +15,16 @@ class HDWallet {
     this.seed = null
   }
 
-  fromMnemonic(mnemonic, password = undefined) {
-    return (this.seed = this.getSeed(mnemonic, password))
-  }
+  // fromMnemonic(mnemonic, password = undefined) {
+  //   return new HDWallet(this.seed = this.getSeed(mnemonic, password))
+  // }
 
-  fromSeed(seed) {
-    if (!_.isString(seed)) {
-      throw new TypeError('seed should be a hex string')
-    }
-    return (this.seed = seed)
-  }
+  // fromSeed(seed) {
+  //   if (!_.isString(seed)) {
+  //     throw new TypeError('seed should be a hex string')
+  //   }
+  //   return (this.seed = seed)
+  // }
 
   genMnemonic({ bits = 128, language = 'english', rng = undefined } = {}) {
     // if you wanna get a 24 mnemonic word, you ca set bits with 256
@@ -58,12 +58,12 @@ module.exports = HDWallet
 // let m ='warrior paper net nice differ return use robust dirt credit way foil'
 //   // 'gift puppy enforce violin rapid rare dance judge renew damp life giant common siege screen length scrub door risk run scatter reward penuncle'
 // // // Hd.genMnemonic()
-// // const seed = Hd.getSeed(m, '1234567')
+// const seed = Hd.getSeed(m, '1234567')
 // console.log(Hd.validateMnemonic(m))
 // console.log(seed)
-// console.log(Hd.genMnemonic())
-// // const path = "m/44'/233'/0'"
-// const m = Hd.genMnemonic()
-// let w  =Hd.fromMnemonic(m)
-// const keys = Hd.genKeypair( 1)
+// // console.log(Hd.genMnemonic())
+// // // const path = "m/44'/233'/0'"
+// // const m = Hd.genMnemonic()
+// // let w  =Hd.fromMnemonic(m)
+// const keys = Hd.genKeypair(0, seed)
 // console.log(keys)

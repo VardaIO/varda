@@ -32,5 +32,5 @@ const httpServer = node => {
 
   return Promise.resolve()
 }
-httpServer()
+
 module.exports = httpServer
