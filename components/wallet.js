@@ -26,9 +26,4 @@ class Wallet {
   }
 }
 
-// let wallet = new Wallet()
-// const sk =
-//   'f9ec5ccb42e3c976a027a5ba74a0ed636b35d93bacde225dbe85aed8dfbb00b4f2e4942768671e46faf596f2bdf73c665a5a7c26e768eca1cf6935620e17d1ba'
-
-// wallet.pay('VCRAJEAFXJBVYZQYT67YUQ3KJV53A', 10, sk)
 module.exports = Wallet

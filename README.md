@@ -19,7 +19,7 @@ A: I am writting the consensus
 * [x] a demo DAG network
 * [x] make rules for adding stars to DAG network
 * [ ] write consensus
-* [ ] commission
+* [x] commission
 * [ ] vote
 
   ## Note:

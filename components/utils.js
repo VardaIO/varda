@@ -15,6 +15,7 @@ class Utils {
       publicKey: publicKey
     }
   }
+
   fromSeed(seed) {
     // seed can be a random 32 bytes uint8Array value
     const keys = nacl.sign.keyPair.fromSeed(seed)
@@ -25,6 +26,7 @@ class Utils {
       publicKey: publicKey
     }
   }
+  
   getPub(sk) {
     const secretKey = new Uint8Array(Buffer.from(sk, 'hex'))
 
