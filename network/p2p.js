@@ -231,9 +231,11 @@ const runP2p = async sk => {
             const newStar = starProto.star.decode(
               Buffer.from(msg.data.toString(), 'hex')
             )
+            console.log(newStar)
             commission.preparePool[newStar.star_hash] = newStar
           } catch (error) {
             console.log('receive a wrong protobuf')
+            console.log(error)
           }
         },
         error => {
@@ -254,7 +256,7 @@ const runP2p = async sk => {
             )
             //判断是否是自己发出的
             const star = tobeConfirm.star
-
+            console.log(tobeConfirm)
             if (commission.indexOf(tobeConfirm.commissionAddress) == -1) {
               return
             }
@@ -270,6 +272,7 @@ const runP2p = async sk => {
             }
           } catch (error) {
             console.log('receive a wrong protobuf')
+            console.log(error)
           }
         },
         error => {
@@ -287,11 +290,13 @@ const runP2p = async sk => {
           const tobeCommit = starProto.commissionStar.decode(
             Buffer.from(msg.data.toString(), 'hex')
           )
+          console.log(tobeCommit)
           // commission.waitingPool[tobeConfirm.star_hash] = tobeConfirm
           console.log(colors.green('tobeCommit'))
           // first fin star in cache, if not have, add it to db
         } catch (error) {
           console.log('receive a wrong protobuf')
+          console.log(error)
         }
       },
       error => {
