@@ -77,15 +77,15 @@ const start = async () => {
         sk = hd.genKeypair(0, seed).secretKey
       } else {
         seed = hd.getSeed(answer.mnemonic)
-        
+
         sk = hd.genKeypair(0, seed).secretKey
       }
     }
     // console.log(new Utils().getAddressFromSk(sk))
-    // const node = await p2pNetwork(sk)
+    const node = await p2pNetwork(sk)
 
-    // const httpServer = require('./network/http/http')
-    // await httpServer()
+    const httpServer = require('./network/http/http')
+    await httpServer()
   } catch (error) {
     console.log(error)
   }
