@@ -257,7 +257,7 @@ const runP2p = async sk => {
             //判断是否是自己发出的
             const star = tobeConfirm.star
             console.log(tobeConfirm)
-            if (commission.indexOf(tobeConfirm.commissionAddress) == -1) {
+            if (commissions.indexOf(tobeConfirm.commissionAddress) == -1) {
               return
             }
 
