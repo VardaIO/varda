@@ -249,7 +249,7 @@ const runP2p = async sk => {
         'waitingStar',
         msg => {
           try {
-            const tobeConfirm = starProto.star.decode(
+            const tobeConfirm = starProto.commissionStar.decode(
               Buffer.from(msg.data.toString(), 'hex')
             )
             //判断是否是自己发出的
@@ -284,7 +284,7 @@ const runP2p = async sk => {
       'commitStar',
       msg => {
         try {
-          const tobeCommit = starProto.star.decode(
+          const tobeCommit = starProto.commissionStar.decode(
             Buffer.from(msg.data.toString(), 'hex')
           )
           // commission.waitingPool[tobeConfirm.star_hash] = tobeConfirm

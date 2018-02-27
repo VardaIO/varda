@@ -35,4 +35,5 @@ let a = starProto.commissionStar.encode({
     '787f410a0ea5684fda093929cee3b971482fba6d076c640c5299330ecfa650ad9107454420f0f904da4f5077b22653085e2643ed674a674759c9a8628eb9f002'
 })
 
-console.log(starProto.commissionStar.decode(a))
+console.log(starProto.star.decode(a))
+// console.log(starProto.commissionStar.decode(a))
