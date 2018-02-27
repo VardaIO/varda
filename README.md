@@ -18,7 +18,7 @@ A: I am writting the consensus
 * [x] a peer to peer network
 * [x] a demo DAG network
 * [x] make rules for adding stars to DAG network
-* [ ] write consensus
+* [x] write consensus
 * [x] commission
 * [ ] vote
 * [ ] commission commit number

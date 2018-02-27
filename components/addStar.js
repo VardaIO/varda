@@ -423,7 +423,6 @@ const addStarFromBroadcast = star => {
 
 module.exports = {
   prepareStar,
-  broadcastStar,
   addStarFromBroadcast,
   addStar
 }
