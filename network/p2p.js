@@ -298,7 +298,7 @@ const runP2p = async sk => {
                 .prepare(`SELECT * FROM stars WHERE star='${star.star_hash}'`)
                 .get()
             ) {
-              return ture
+              return true
             }
             return false
           })
