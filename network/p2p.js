@@ -310,6 +310,8 @@ const runP2p = async sk => {
         } catch (error) {
           console.log('receive a wrong protobuf')
           console.log(error)
+        } finally {
+          pool.release(client)
         }
       },
       error => {
