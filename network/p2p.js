@@ -183,7 +183,7 @@ const runP2p = async sk => {
       const lastMci = await sync.getLastMci()
       push.push(`${lastMci}`)
     })
-    
+
     // sendstar receive a unconfirm star, it should push to pool, to be confirm( for commissions) .
 
     /*
