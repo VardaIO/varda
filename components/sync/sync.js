@@ -22,7 +22,7 @@ const getLastMci = async () => {
 const getLastMciFromPeers = () => {
   // two pub sub,计数器
   values(node.peerBook.getAll()).forEach(peer => {
-    node.dialProtocol(peer, '/getLastMci', (err, conn) => {
+    global.n.dialProtocol(peer, '/getLastMci', (err, conn) => {
       if (err) console.log(err)
       // pull(pull.values(['please tell me the last mci']), conn)
       pull(
@@ -30,15 +30,17 @@ const getLastMciFromPeers = () => {
         pull.map(data => {
           return data.toString('utf8')
         }),
-        pull.drain((data) => {
-          console.log(data)
-        }, (error) => {
-          console.log(error)
-        })
+        pull.drain(
+          data => {
+            console.log(data)
+          },
+          error => {
+            console.log(error)
+          }
+        )
       )
-      
     })
   })
 }
 
-module.exports = { getLastMciFromPeers }
+module.exports = { getLastMci, getLastMciFromPeers }

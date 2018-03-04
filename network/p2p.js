@@ -32,6 +32,8 @@ const Utils = require('../components/utils')
 const utils = new Utils()
 const { addStarFromBroadcast } = require('../components/addStar')
 const pool = require('../database/pool')
+
+const sync = require('../components/sync/sync')
 /**
  * todo:
  * if local peer have a public ip, then broadcast this ip and peer id to the world
@@ -176,11 +178,12 @@ const runP2p = async sk => {
       )
     })
 
-    node.handle('/getLastMci', (protocol, conn) => {
+    node.handle('/getLastMci', async (protocol, conn) => {
       pull(push, conn)
-      push.push('lastMci')
+      const lastMci = await sync.getLastMci()
+      push.push(`${lastMci}`)
     })
-
+    
     // sendstar receive a unconfirm star, it should push to pool, to be confirm( for commissions) .
 
     /*
