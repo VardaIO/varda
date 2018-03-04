@@ -30,8 +30,13 @@ const getLastMciFromPeers = () => {
         pull.map(data => {
           return data.toString('utf8')
         }),
-        pull.drain(console.log)
+        pull.drain((data) => {
+          console.log(data)
+        }, (error) => {
+          console.log(error)
+        })
       )
+      
     })
   })
 }
