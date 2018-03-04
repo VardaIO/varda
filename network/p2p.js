@@ -13,6 +13,8 @@ const ip = require('ip')
 const publicIP = require('public-ip')
 const colors = require('colors')
 const _ = require('lodash')
+const Pushable = require('pull-pushable')
+const push = Pushable()
 const VARDA_HOME = process.env.VARDA_HOME || os.homedir() + '/.varda'
 const privateKey = require(VARDA_HOME + '/keys.json').PrivateKey
 const config = require(`${rootPath}/config.json`)
@@ -131,6 +133,8 @@ const runP2p = async sk => {
 
     let peerPublicIp = await getPublicIp()
 
+    // Handler:
+
     node.handle('/getPubIpAddr', (protocol, conn) => {
       pull(
         conn,
@@ -172,8 +176,13 @@ const runP2p = async sk => {
       )
     })
 
+    node.handle('/getLastMci', (protocol, conn) => {
+      pull(push, conn)
+    })
+
     // sendstar receive a unconfirm star, it should push to pool, to be confirm( for commissions) .
 
+    /*
     node.handle('/t', (protocol, conn) => {
       pull(conn, pull.map(s => s.toString()), pull.log())
     })
@@ -187,7 +196,7 @@ const runP2p = async sk => {
         })
       })
     }, 2000)
-
+*/
     if (peerPublicIp) {
       let id = node.peerInfo.id.toB58String()
       let addr = `/ip4/${peerPublicIp}/tcp/${config.Port}/ipfs/${id}`
@@ -215,6 +224,7 @@ const runP2p = async sk => {
       }
     }, 1000 * 30)
 
+    // For commissions:
     let commissionAddress
     let commission
 
@@ -322,6 +332,10 @@ const runP2p = async sk => {
     )
 
     global.n = node
+
+    const { getLastMciFromPeers } = require('../components/sync/sync')
+    getLastMciFromPeers()
+
     return node
   })
 }

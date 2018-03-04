@@ -8,10 +8,8 @@
   "main": "index.js",
   "scripts": {
     "test": "ava ./test --verbose",
-    "fix":
-      "node node_modules/prettier/bin-prettier.js --config .prettierrc --write {components,database,network}/**/*.js *.js",
-    "precommit":
-      "node node_modules/prettier/bin-prettier.js --config .prettierrc --write {components,database,network}/**/*.js *.js *.json *.md"
+    "fix": "node node_modules/prettier/bin-prettier.js --config .prettierrc --write {components,database,network}/**/*.js *.js",
+    "precommit": "node node_modules/prettier/bin-prettier.js --config .prettierrc --write {components,database,network}/**/*.js *.js *.json *.md"
   },
   "repository": {
     "type": "git",
@@ -61,6 +59,7 @@
     "pify": "^3.0.0",
     "protocol-buffers": "^3.2.1",
     "public-ip": "^2.4.0",
+    "pull-pushable": "^2.2.0",
     "pull-stream": "^3.6.2",
     "tweetnacl": "^1.0.0"
   },
