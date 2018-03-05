@@ -184,6 +184,23 @@ const runP2p = async sk => {
       push.push(`${lastMci}`)
     })
 
+    node.handle('/sync', async (protocol, conn) => {
+      let startMci
+      pull(
+        conn,
+        pull.map(data => data.toString()),
+        pull.collect((err, array) => {
+          // startMci = array
+        })
+      )
+
+      pull(push, conn)
+
+      let stars = await sync.buildStarsForSync(startMci)
+      for (let i = 0; i < stars.legth; i++) {
+        push.push(stars[i])
+      }
+    })
     // sendstar receive a unconfirm star, it should push to pool, to be confirm( for commissions) .
 
     /*

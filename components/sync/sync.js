@@ -1,6 +1,7 @@
 const pool = require('../../database/pool')
-const { values } = require('lodash')
+const { values, random, isEqual } = require('lodash')
 const Star = require('../star')
+const {addStar} = require('../addStar')
 // const Pushable = require('pull-pushable')
 // const push = Pushable()
 
@@ -93,6 +94,7 @@ const getStarsFromPeer = (peer, startMci) => {
         },
         error => {
           console.log(error)
+          return getStarsFromPeer(getAPeer(), startMci)
           //Change Another Peer to get Star
         }
       )
@@ -101,21 +103,44 @@ const getStarsFromPeer = (peer, startMci) => {
   return stars
 }
 
-const sync = async (lastMci) => {
-  // const lastMciInLocal = await getLastMci()
+const getAPeer = () => {
+  const peers = values(node.peerBook.getAll())
+  const index = random(peers.length)
+  return peers[index]
+}
+
+const addStarFromPeer = (star) => {
+  // vailidate
+  addStar(star)
+}
+
+const sync = async lastMci => {
+  const startMci = await getLastMci()
   // const dValue = await getLastMciFromPeers() - lastMciInLocal
   // getAPeer is a mock function
-  let peer = await getAPeer()
-  let starsA = getStarsFromPeer(peerA, startMci)
-  let starsB = getStarsFromPeer(peerB, startMci)
-  //reture 1 , a equal with b, return b, not equal
-  const compare = compare(starsA, starsB) 
-  if(compare) {
-    // add stars to database
-  }
-  else {
-    // get stars from bootstrap
+  while (startMci < lastMci) {
+    let peerA = getAPeer()
+    let peerB = getAPeer()
+
+    while(!isEqual(peerA, peerB)) {
+      peerB = getAPeer()
+    }
+    
+    let starsA = getStarsFromPeer(peerA, startMci)
+    let starsB = getStarsFromPeer(peerB, startMci)
+
+    const compare = isEqual(starsA, starsB)
+
+    if (compare) {
+      // add stars to database
+      for (let i = 0; i < starsA.length; i++) {
+        addStarFromPeer(starsA[i])
+      }
+    } else {
+      // get stars from bootstrap
+    }
+    startMci++
   }
 }
 
-module.exports = { getLastMci, getLastMciFromPeers }
+module.exports = { getLastMci, getLastMciFromPeers, buildStarsForSync }

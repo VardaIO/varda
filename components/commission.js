@@ -154,7 +154,7 @@ class Commission {
         }
         //1. 判断key（star hash）是否存在
         const existKey = _.has(receiver, property)
-        //1.1存在：查看key中的count，若大于3/1则commit并广播(在receiver[property].broadcas不存在时)，不大于则继续计数
+        //1.1存在：查看key中的count，若大于三分之二则commit并广播(在receiver[property].broadcas不存在时)，不大于则继续计数
         if (existKey) {
           if (
             receiver[property].count >= Math.floor(commissionNumber / 3) * 2 &&
