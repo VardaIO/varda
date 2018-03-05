@@ -62,7 +62,7 @@ const buildStarsForSync = async index => {
 
     const star = new Star()
     const stars = []
-    starHashList.forEach(async (v) => {
+    starHashList.forEach(async v => {
       let aStar = await star.getStar(v.star)
       stars.push(aStar)
     })
@@ -75,14 +75,47 @@ const buildStarsForSync = async index => {
   }
 }
 
-// const sync = async (lastMci) => {
-//   const lastMciInLocal = await getLastMci()
-//   const dValue = await getLastMciFromPeers() - lastMciInLocal
+const getStarsFromPeer = (peer, startMci) => {
+  let stars = []
 
-// }
-setImmediate(async () => {
-  console.log(await buildStarsForSync(1))
-  // let s = new Star()
-  // console.log(await s.getStar('CObTKEEZnyVOcAUbz8slgb/kwK7LWQKWkzoLC6Rm7q8='))
-})
+  global.n.dialProtocol(peer, '/sync', (err, conn) => {
+    if (err) console.log(err)
+    pull(
+      pull.values([`${startMCI}`]),
+      conn,
+      pull.map(data => {
+        return DECODE
+      }),
+      pull.drain(
+        data => {
+          // add it to database
+          stars.push(data)
+        },
+        error => {
+          console.log(error)
+          //Change Another Peer to get Star
+        }
+      )
+    )
+  })
+  return stars
+}
+
+const sync = async (lastMci) => {
+  // const lastMciInLocal = await getLastMci()
+  // const dValue = await getLastMciFromPeers() - lastMciInLocal
+  // getAPeer is a mock function
+  let peer = await getAPeer()
+  let starsA = getStarsFromPeer(peerA, startMci)
+  let starsB = getStarsFromPeer(peerB, startMci)
+  //reture 1 , a equal with b, return b, not equal
+  const compare = compare(starsA, starsB) 
+  if(compare) {
+    // add stars to database
+  }
+  else {
+    // get stars from bootstrap
+  }
+}
+
 module.exports = { getLastMci, getLastMciFromPeers }
