@@ -5,6 +5,7 @@ const { values, random, isEqual } = require('lodash')
 const multiaddr = require('multiaddr')
 const PeerInfo = require('peer-info')
 const peerId = require('peer-id')
+const colors = require('colors')
 
 const pool = require('../../database/pool')
 const Star = require('../star')
@@ -123,11 +124,11 @@ const addStarFromPeer = star => {
   addStar(star)
 }
 
-const sync = async lastMci => {
+const sync = async mciFromPeers => {
   const startMci = await getLastMci()
   // const dValue = await getLastMciFromPeers() - lastMciInLocal
   // getAPeer is a mock function
-  while (startMci < lastMci) {
+  while (startMci < mciFromPeers) {
     if (parseInt(startMci) == 0) {
       startMci = 1
     }
@@ -158,15 +159,15 @@ const sync = async lastMci => {
       const ma = multiaddr(addr)
       const id = peerId.createFromB58String(ma.getPeerId())
       const peer = new PeerInfo(id)
-      const stars =  getStarsFromPeer(peer, startMci)
+      const stars = getStarsFromPeer(peer, startMci)
       console.log('stars form bootstrap: \n', stars)
       for (let i = 0; i < stars.length; i++) {
         addStarFromPeer(starsA[i])
+        console.log(colors.green(`add star with index ${starsA[i].main_chain_index}`))
       }
-
     }
     startMci++
   }
 }
 
-module.exports = { getLastMci, getLastMciFromPeers, buildStarsForSync }
+module.exports = { getLastMci, getLastMciFromPeers, buildStarsForSync, sync }
