@@ -1,7 +1,16 @@
-const pool = require('../../database/pool')
+const fs = require('fs')
+const pb = require('protocol-buffers')
+const appRoot = require('app-root-path')
 const { values, random, isEqual } = require('lodash')
+const multiaddr = require('multiaddr')
+const PeerInfo = require('peer-info')
+const peerId = require('peer-id')
+
+const pool = require('../../database/pool')
 const Star = require('../star')
-const {addStar} = require('../addStar')
+const { addStar } = require('../addStar')
+const starProto = pb(fs.readFileSync(`${appRoot}/network/protos/star.proto`))
+const config = require('../../config.json')
 // const Pushable = require('pull-pushable')
 // const push = Pushable()
 
@@ -85,7 +94,7 @@ const getStarsFromPeer = (peer, startMci) => {
       pull.values([`${startMCI}`]),
       conn,
       pull.map(data => {
-        return DECODE
+        return starProto.star.encode(data)
       }),
       pull.drain(
         data => {
@@ -109,7 +118,7 @@ const getAPeer = () => {
   return peers[index]
 }
 
-const addStarFromPeer = (star) => {
+const addStarFromPeer = star => {
   // vailidate
   addStar(star)
 }
@@ -119,13 +128,17 @@ const sync = async lastMci => {
   // const dValue = await getLastMciFromPeers() - lastMciInLocal
   // getAPeer is a mock function
   while (startMci < lastMci) {
+    if (parseInt(startMci) == 0) {
+      startMci = 1
+    }
+
     let peerA = getAPeer()
     let peerB = getAPeer()
 
-    while(!isEqual(peerA, peerB)) {
+    while (!isEqual(peerA, peerB)) {
       peerB = getAPeer()
     }
-    
+
     let starsA = getStarsFromPeer(peerA, startMci)
     let starsB = getStarsFromPeer(peerB, startMci)
 
@@ -133,11 +146,24 @@ const sync = async lastMci => {
 
     if (compare) {
       // add stars to database
+      console.log('stars form peers: \n', starsA)
       for (let i = 0; i < starsA.length; i++) {
         addStarFromPeer(starsA[i])
       }
     } else {
       // get stars from bootstrap
+      const bootstrap = config.bootstrap
+      const peerIndex = random(bootstrap.length - 1)
+      const addr = bootstrap[peerIndex]
+      const ma = multiaddr(addr)
+      const id = peerId.createFromB58String(ma.getPeerId())
+      const peer = new PeerInfo(id)
+      const stars =  getStarsFromPeer(peer, startMci)
+      console.log('stars form bootstrap: \n', stars)
+      for (let i = 0; i < stars.length; i++) {
+        addStarFromPeer(starsA[i])
+      }
+
     }
     startMci++
   }
