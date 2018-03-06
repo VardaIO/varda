@@ -87,7 +87,7 @@ const start = async () => {
 
     const httpServer = require('./network/http/http')
     await httpServer()
-    
+
     const mciFromPeers = await sync.getLastMciFromPeers()
     sync.sync(mciFromPeers)
   } catch (error) {

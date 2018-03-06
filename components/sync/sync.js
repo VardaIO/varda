@@ -34,7 +34,7 @@ const getLastMci = async () => {
 const getLastMciFromPeers = () => {
   // two pub sub,计数器
   const count = []
-  values(node.peerBook.getAll()).forEach(peer => {
+  values(global.n.peerBook.getAll()).forEach(peer => {
     global.n.dialProtocol(peer, '/getLastMci', (err, conn) => {
       if (error) console.log(error)
       pull(
@@ -114,7 +114,7 @@ const getStarsFromPeer = (peer, startMci) => {
 }
 
 const getAPeer = () => {
-  const peers = values(node.peerBook.getAll())
+  const peers = values(global.n.peerBook.getAll())
   const index = random(peers.length)
   return peers[index]
 }
@@ -163,7 +163,9 @@ const sync = async mciFromPeers => {
       console.log('stars form bootstrap: \n', stars)
       for (let i = 0; i < stars.length; i++) {
         addStarFromPeer(starsA[i])
-        console.log(colors.green(`add star with index ${starsA[i].main_chain_index}`))
+        console.log(
+          colors.green(`add star with index ${starsA[i].main_chain_index}`)
+        )
       }
     }
     startMci++
