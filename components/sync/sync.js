@@ -6,6 +6,7 @@ const multiaddr = require('multiaddr')
 const PeerInfo = require('peer-info')
 const peerId = require('peer-id')
 const colors = require('colors')
+const pull = require('pull-stream')
 
 const pool = require('../../database/pool')
 const Star = require('../star')
@@ -35,11 +36,12 @@ const getLastMciFromPeers = () => {
   // two pub sub,计数器
   const count = []
   values(global.n.peerBook.getAll()).forEach(peer => {
-    global.n.dialProtocol(peer, '/getLastMci', (err, conn) => {
+    global.n.dialProtocol(peer, '/getLastMci', (error, conn) => {
       if (error) console.log(error)
       pull(
         conn,
         pull.map(data => {
+          console.log(data)
           return data.toString('utf8')
         }),
         pull.drain(
@@ -53,6 +55,7 @@ const getLastMciFromPeers = () => {
       )
     })
   })
+  console.log(count)
   // get the bigest
   const lastMci = Math.max(...count)
 

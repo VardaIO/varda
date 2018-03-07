@@ -4,7 +4,6 @@ const inquirer = require('inquirer')
 const colors = require('colors')
 
 const init = require('./first-start')
-const sync = require('./components/sync/sync')
 
 const start = async () => {
   try {
@@ -87,9 +86,14 @@ const start = async () => {
 
     const httpServer = require('./network/http/http')
     await httpServer()
-
-    const mciFromPeers = await sync.getLastMciFromPeers()
-    sync.sync(mciFromPeers)
+    const sync = require('./components/sync/sync')
+    
+    setTimeout(async () => {
+      const mciFromPeers = await sync.getLastMciFromPeers()
+      console.log(mciFromPeers)
+      sync.sync(mciFromPeers)
+    }, 1000*10)
+   
   } catch (error) {
     console.log(error)
   }
