@@ -129,7 +129,7 @@ class Star {
           `SELECT pk  FROM account_pks WHERE address='${star.authorAddress}'`
         )
         .get().pk
-        pool.release(client)
+      pool.release(client)
       star.parentStars = parents
       transaction.senderPublicKey = pk
       transaction.payload_hash = star.payload_hash

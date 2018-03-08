@@ -82,7 +82,7 @@ const buildStarsForSync = async index => {
     index = parseInt(index)
   }
   console.log('buildStarsForSync index is:', index)
-  
+
   const client = await pool.acquire()
   try {
     let starHashList = client
@@ -110,29 +110,6 @@ const buildStarsForSync = async index => {
   }
 }
 
-const _prepareDataForGetStar = (startMci, conn) => {
-  return new Promise((reslve, reject) => {
-    pull(
-      pull.values([`${startMci}`]),
-      conn,
-      pull.map(data => {
-        return starProto.star.decode(data)
-        // return data
-      }),
-      pull.drain(
-        data => {
-          // add it to database
-          console.log('decode data is:', data)
-          stars.push(data)
-        },
-        error => {
-          console.log(error)
-        }
-      )
-    )
-  })
-}
-
 const getStarsFromPeer = (peer, startMci) => {
   console.log(`in getStarsFromPeer, startMci is ${startMci}`)
 
@@ -140,8 +117,9 @@ const getStarsFromPeer = (peer, startMci) => {
   global.n.dialProtocol(peer, '/sync', (err, conn) => {
     if (err) console.log(err)
 
+    pull(pull.values([`${startMci}`]), conn)
+
     pull(
-      pull.values([`${startMci}`]),
       conn,
       pull.map(data => {
         console.log('data is:', data)
@@ -149,16 +127,20 @@ const getStarsFromPeer = (peer, startMci) => {
         return starProto.stars.decode(data)
         // return data
       }),
-      pull.drain(
-        data => {
-          // add it to database
-          console.log('decode data is:', data)
-          stars.push(data)
-        },
-        error => {
-          console.log(error)
-        }
-      )
+      // pull.drain(
+      //   data => {
+      //     // add it to database
+      //     console.log('decode data is:', data)
+      //     stars.push(data)
+      //   },
+      //   error => {
+      //     console.log(error)
+      //   }
+      // )
+      pull.collect((error, array) => {
+        if (error) console.log(error)
+        console.log(array)
+      })
     )
   })
   return stars
