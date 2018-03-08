@@ -32,7 +32,7 @@ const getLastMci = async () => {
   }
 }
 
-const getDataFromPeers = conn => {
+const _getDataFromPeers = conn => {
   return new Promise((resolve, reject) => {
     pull(
       conn,
@@ -47,31 +47,29 @@ const getDataFromPeers = conn => {
   })
 }
 
-const getLastMciFromPeers = () => {
-  // two pub sub,计数器
-  const count = []
-  values(global.n.peerBook.getAll()).forEach(peer => {
+const _prepareDataForgetLastMci = (peer) => {
+  return new Promise((reslove, reject) => {
     global.n.dialProtocol(peer, '/getLastMci', async (error, conn) => {
-      if (error) console.log(error)
-      let data = await getDataFromPeers(conn)
-      count.push(data[0])
-      // pull(
-      //   conn,
-      //   pull.map(data => {
-      //     console.log('data is:', data)
-      //     return data.toString('utf8')
-      //   }),
-      //   pull.drain(
-      //     data => {
-      //       count.push(data)
-      //     },
-      //     error => {
-      //       console.log(error)
-      //     }
-      //   )
-      // )
+      if (error) reject(error)
+      let data = await _getDataFromPeers(conn)
+      reslove(data)
     })
   })
+}
+
+const getLastMciFromPeers = async () => {
+  // two pub sub,计数器
+  const count = []
+  const peers  = values(global.n.peerBook.getAll())
+  for (let i =0; i<peers.length; i++) {
+    const peer = peers[i]
+    const data = await _prepareDataForgetLastMci(peer)
+    let mci = data[0]
+    if (mci === undefined) {
+      mci = 0
+    }
+    count.push(mci)
+  }
   console.log(count)
   // get the bigest
   const lastMci = Math.max(...count)
