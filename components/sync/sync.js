@@ -47,7 +47,7 @@ const _getDataFromPeers = conn => {
   })
 }
 
-const _prepareDataForgetLastMci = (peer) => {
+const _prepareDataForgetLastMci = peer => {
   return new Promise((reslove, reject) => {
     global.n.dialProtocol(peer, '/getLastMci', async (error, conn) => {
       if (error) reject(error)
@@ -60,8 +60,8 @@ const _prepareDataForgetLastMci = (peer) => {
 const getLastMciFromPeers = async () => {
   // two pub sub,计数器
   const count = []
-  const peers  = values(global.n.peerBook.getAll())
-  for (let i =0; i<peers.length; i++) {
+  const peers = values(global.n.peerBook.getAll())
+  for (let i = 0; i < peers.length; i++) {
     const peer = peers[i]
     const data = await _prepareDataForgetLastMci(peer)
     let mci = data[0]
@@ -83,7 +83,8 @@ const buildStarsForSync = async index => {
     let starHashList = client
       .prepare(`SELECT star FROM stars WHERE main_chain_index=${index}`)
       .all()
-
+    console.log(starHashList.length )
+    console.log(starHashList)
     if (starHashList.length == 0) {
       console.log(1)
       return []
@@ -105,28 +106,30 @@ const buildStarsForSync = async index => {
 }
 
 const getStarsFromPeer = (peer, startMci) => {
+  console.log(`in getStarsFromPeer, startMci is ${startMci}`)
+
   let stars = []
 
   global.n.dialProtocol(peer, '/sync', (err, conn) => {
     if (err) console.log(err)
-    pull(
-      pull.values([`${startMCI}`]),
-      conn,
-      pull.map(data => {
-        return starProto.star.encode(data)
-      }),
-      pull.drain(
-        data => {
-          // add it to database
-          stars.push(data)
-        },
-        error => {
-          console.log(error)
-          return getStarsFromPeer(getAPeer(), startMci)
-          //Change Another Peer to get Star
-        }
-      )
-    )
+    // pull(
+    //   pull.values([`${startMci}`]),
+    //   conn,
+    //   pull.map(data => {
+    //     return starProto.star.encode(data)
+    //   }),
+    //   pull.drain(
+    //     data => {
+    //       // add it to database
+    //       stars.push(data)
+    //     },
+    //     error => {
+    //       console.log(error)
+    //       return getStarsFromPeer(getAPeer(), startMci)
+    //       //Change Another Peer to get Star
+    //     }
+    //   )
+    // )
   })
   return stars
 }
@@ -143,9 +146,9 @@ const addStarFromPeer = star => {
 }
 
 const sync = async mciFromPeers => {
-  const startMci = await getLastMci()
+  console.log('wanna to sync now, and mci is:', mciFromPeers)
+  let startMci = await getLastMci()
   // const dValue = await getLastMciFromPeers() - lastMciInLocal
-  // getAPeer is a mock function
   while (startMci < mciFromPeers) {
     if (parseInt(startMci) == 0) {
       startMci = 1
@@ -157,10 +160,11 @@ const sync = async mciFromPeers => {
     while (!isEqual(peerA, peerB)) {
       peerB = getAPeer()
     }
+    console.log(startMci)
 
     let starsA = getStarsFromPeer(peerA, startMci)
     let starsB = getStarsFromPeer(peerB, startMci)
-
+    return
     const compare = isEqual(starsA, starsB)
 
     if (compare) {
@@ -189,5 +193,8 @@ const sync = async mciFromPeers => {
     startMci++
   }
 }
+(async () => {
+  console.log(await buildStarsForSync(1))
 
+})()
 module.exports = { getLastMci, getLastMciFromPeers, buildStarsForSync, sync }
