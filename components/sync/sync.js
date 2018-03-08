@@ -81,7 +81,7 @@ const buildStarsForSync = async index => {
   if (isString(index)) {
     index = parseInt(index)
   }
-
+  console.log('buildStarsForSync index is:', index)
   const client = await pool.acquire()
   try {
     let starHashList = client
@@ -140,7 +140,8 @@ const getStarsFromPeer = (peer, startMci) => {
 
 const getAPeer = () => {
   const peers = values(global.n.peerBook.getAll())
-  const index = random(peers.length)
+  const index = random(0,peers.length)
+  console.log(`index is ${index}`)
   return peers[index]
 }
 
