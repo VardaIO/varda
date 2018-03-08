@@ -16,7 +16,6 @@ const _ = require('lodash')
 const Pushable = require('pull-pushable')
 const push = Pushable()
 const VARDA_HOME = process.env.VARDA_HOME || os.homedir() + '/.varda'
-const privateKey = require(VARDA_HOME + '/keys.json').PrivateKey
 const config = require(`${rootPath}/config.json`)
 const Node = require('./node-bundle')
 
@@ -59,6 +58,8 @@ const encodePublicIps = publicIps => {
 }
 
 const createNode = async () => {
+  const privateKey = require(VARDA_HOME + '/keys.json').PrivateKey
+
   return pify(peerId.createFromPrivKey)(privateKey) // peerid
     .then(id => {
       return new PeerInfo(id)
@@ -179,10 +180,11 @@ const runP2p = async sk => {
     })
 
     node.handle('/getLastMci', async (protocol, conn) => {
-      pull(push, conn)
+      // pull(push, conn)
+      // push.push(`${lastMci}`)
       const lastMci = await sync.getLastMci()
+      pull(pull.values([`${lastMci}`]), conn)
       console.log(`a peer wanna to get a last mci. and mci is ${lastMci}`)
-      push.push(`${lastMci}`)
     })
 
     node.handle('/sync', async (protocol, conn) => {

@@ -32,27 +32,44 @@ const getLastMci = async () => {
   }
 }
 
-const getLastMciFromPeers = () => {
+const getDataFromPeers = (conn) => {
+  return new Promise((resolve, reject) => {
+    pull(
+      conn,
+      pull.map(data=> {
+        return data.toString('utf8')
+      }),
+      pull.collect((error, array) => {
+        if(error) reject(error)
+        resolve(array)
+      })
+    )
+  })
+}
+
+const getLastMciFromPeers = async () => {
   // two pub sub,计数器
   const count = []
   values(global.n.peerBook.getAll()).forEach(peer => {
     global.n.dialProtocol(peer, '/getLastMci', (error, conn) => {
       if (error) console.log(error)
-      pull(
-        conn,
-        pull.map(data => {
-          console.log(data)
-          return data.toString('utf8')
-        }),
-        pull.drain(
-          data => {
-            count.push(data)
-          },
-          error => {
-            console.log(error)
-          }
-        )
-      )
+      let data = await getDataFromPeers(conn)
+      count.push(data[0])
+      // pull(
+      //   conn,
+      //   pull.map(data => {
+      //     console.log('data is:', data)
+      //     return data.toString('utf8')
+      //   }),
+      //   pull.drain(
+      //     data => {
+      //       count.push(data)
+      //     },
+      //     error => {
+      //       console.log(error)
+      //     }
+      //   )
+      // )
     })
   })
   console.log(count)

@@ -87,13 +87,12 @@ const start = async () => {
     const httpServer = require('./network/http/http')
     await httpServer()
     const sync = require('./components/sync/sync')
-    
-    setTimeout(async () => {
-      const mciFromPeers = await sync.getLastMciFromPeers()
-      console.log(mciFromPeers)
-      sync.sync(mciFromPeers)
-    }, 1000*10)
-   
+
+    // setTimeout(async () => {
+    //   const mciFromPeers = await sync.getLastMciFromPeers()
+    //   console.log(mciFromPeers)
+    //   // sync.sync(mciFromPeers)
+    // }, 1000 * 10)
   } catch (error) {
     console.log(error)
   }
