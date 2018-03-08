@@ -191,7 +191,6 @@ const runP2p = async sk => {
     })
 
     node.handle('/sync', async (protocol, conn) => {
-
       const data = await sync.getDataFromPeers(conn)
       const startMci = data[0]
       console.log(`in sync protocol, startMci is ${startMci}`)

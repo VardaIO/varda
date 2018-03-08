@@ -82,6 +82,7 @@ const buildStarsForSync = async index => {
     index = parseInt(index)
   }
   console.log('buildStarsForSync index is:', index)
+  
   const client = await pool.acquire()
   try {
     let starHashList = client

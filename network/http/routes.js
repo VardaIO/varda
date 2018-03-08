@@ -10,6 +10,7 @@ const utils = new Utils()
 const fs = require('fs')
 const pb = require('protocol-buffers')
 const starProto = pb(fs.readFileSync(`${appRoot}/network/protos/star.proto`))
+const sync = require('../../components/sync/sync')
 
 router.get('/createAccount', ctx => {
   const hd = new HD()
@@ -47,4 +48,11 @@ router.post('/getBalance', async ctx => {
   ctx.body = { balance }
 })
 
+router.post('/getStar', async ctx => {
+  const index = ctx.request.body.index
+  const stars = await sync.buildStarsForSync(index)
+  ctx.body = {
+    stars
+  }
+})
 module.exports = router
