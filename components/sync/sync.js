@@ -109,25 +109,31 @@ const buildStarsForSync = async index => {
   }
 }
 
-const _prepareDataForGetStar = () => {
-  return new Promise((reslve, reject) => {
+const _prepareDataForGetStar = (startMci, conn) => {
+  return new Promise((resolve, reject) => {
+    console.log('emmmm, mci is ', startMci)
     pull(
       pull.values([`${startMci}`]),
       conn,
       pull.map(data => {
-        return starProto.star.decode(data)
+        return starProto.stars.decode(data)
         // return data
       }),
-      pull.drain(
-        data => {
-          // add it to database
-          console.log('decode data is:', data)
-          stars.push(data)
-        },
-        error => {
-          console.log(error)
-        }
-      )
+      pull.collect((error, array) => {
+        if (error) reject(error)
+        resolve(array)
+      })
+      // pull.drain(
+      //   data => {
+      //     // add it to database
+      //     // console.log('decode data is:', data)
+      //     // stars.push(data)
+      //     reslove(data)
+      //   },
+      //   error => {
+      //     reject(error)
+      //   }
+      // )
     )
   })
 }
@@ -136,29 +142,30 @@ const getStarsFromPeer = (peer, startMci) => {
   console.log(`in getStarsFromPeer, startMci is ${startMci}`)
 
   let stars = []
-  global.n.dialProtocol(peer, '/sync', (err, conn) => {
+  global.n.dialProtocol(peer, '/sync', async (err, conn) => {
     if (err) console.log(err)
-
-    pull(
-      pull.values([`${startMci}`]),
-      conn,
-      pull.map(data => {
-        console.log('data is:', data)
-        console.log('decode data is:', starProto.stars.decode(data))
-        return starProto.stars.decode(data)
-        // return data
-      }),
-      pull.drain(
-        data => {
-          // add it to database
-          console.log('decode data is:', data)
-          stars.push(data)
-        },
-        error => {
-          console.log(error)
-        }
-      )
-    )
+    let s = await _prepareDataForGetStar(startMci, conn)
+    console.log(s)
+    // pull(
+    //   pull.values([`${startMci}`]),
+    //   conn,
+    //   pull.map(data => {
+    //     console.log('data is:', data)
+    //     console.log('decode data is:', starProto.stars.decode(data))
+    //     return starProto.stars.decode(data)
+    //     // return data
+    //   }),
+    //   pull.drain(
+    //     data => {
+    //       // add it to database
+    //       console.log('decode data is:', data)
+    //       stars.push(data)
+    //     },
+    //     error => {
+    //       console.log(error)
+    //     }
+    //   )
+    // )
   })
   return stars
 }

@@ -131,6 +131,9 @@ const runP2p = async sk => {
     })
 
     node.on('peer:disconnect', peerInfo => {
+      node.hangUp(peerInfo, error => {
+        if (error) console.log(error)
+      })
       console.log(colors.gray('Disconnect:'), peerInfo.id.toB58String())
     })
 
