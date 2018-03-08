@@ -1,7 +1,7 @@
 const fs = require('fs')
 const pb = require('protocol-buffers')
 const appRoot = require('app-root-path')
-const { values, random, isEqual } = require('lodash')
+const { values, random, isEqual, isString } = require('lodash')
 const multiaddr = require('multiaddr')
 const PeerInfo = require('peer-info')
 const peerId = require('peer-id')
@@ -78,10 +78,10 @@ const getLastMciFromPeers = async () => {
 }
 
 const buildStarsForSync = async index => {
-  if(_.isString(index)) {
+  if (isString(index)) {
     index = parseInt(index)
   }
-  
+
   const client = await pool.acquire()
   try {
     let starHashList = client
