@@ -109,51 +109,56 @@ const buildStarsForSync = async index => {
   }
 }
 
+const _prepareDataForGetStar = () => {
+  return new Promise((reslve, reject) => {
+    pull(
+      pull.values([`${startMci}`]),
+      conn,
+      pull.map(data => {
+        return starProto.star.decode(data)
+        // return data
+      }),
+      pull.drain(
+        data => {
+          // add it to database
+          console.log('decode data is:', data)
+          stars.push(data)
+        },
+        error => {
+          console.log(error)
+        }
+      )
+    )
+  })
+}
+
 const getStarsFromPeer = (peer, startMci) => {
   console.log(`in getStarsFromPeer, startMci is ${startMci}`)
 
   let stars = []
   global.n.dialProtocol(peer, '/sync', (err, conn) => {
     if (err) console.log(err)
+  
     pull(
       pull.values([`${startMci}`]),
       conn,
       pull.map(data => {
-        console.log(data)
-        // return starProto.star.encode(data)
-        return data
+        return starProto.stars.decode(data)
       }),
       pull.drain(
         data => {
           // add it to database
+          // stars.push(data)
           console.log(data)
-          stars.push(data)
         },
         error => {
           console.log(error)
           // return getStarsFromPeer(getAPeer(), startMci)
+          
           //Change Another Peer to get Star
         }
       )
     )
-    // pull(
-    //   pull.values([`${startMci}`]),
-    //   conn,
-    //   pull.map(data => {
-    //     return starProto.star.encode(data)
-    //   }),
-    //   pull.drain(
-    //     data => {
-    //       // add it to database
-    //       stars.push(data)
-    //     },
-    //     error => {
-    //       console.log(error)
-    //       return getStarsFromPeer(getAPeer(), startMci)
-    //       //Change Another Peer to get Star
-    //     }
-    //   )
-    // )
   })
   return stars
 }
@@ -197,8 +202,9 @@ const sync = async mciFromPeers => {
 
     console.log(startMci)
 
-    let starsA = getStarsFromPeer(peerA, startMci)
-    let starsB = getStarsFromPeer(peerB, startMci)
+    // let starsA = getStarsFromPeer(peerA, startMci)
+    // let starsB = getStarsFromPeer(peerB, startMci)
+    getStarsFromPeer(peerA, startMci)
     return
     const compare = isEqual(starsA, starsB)
 

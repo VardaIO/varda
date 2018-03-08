@@ -201,11 +201,12 @@ const runP2p = async sk => {
       pull(push, conn)
 
       let stars = await sync.buildStarsForSync(startMci)
-      console.log('I have prepare some stars：', stars)
-      for (let i = 0; i < stars.length; i++) {
-        console.log('encode:', starProto.star.encode(stars[i]))
-        push.push(starProto.star.encode(stars[i]))
+      const beforeEncode = {
+        stars: stars
       }
+      console.log('I have prepare some stars：', starProto.stars.encode(stars))
+      push.push(starProto.stars.encode(stars))
+     
     })
     // sendstar receive a unconfirm star, it should push to pool, to be confirm( for commissions) .
 

@@ -24,3 +24,7 @@ message commissionStar {
     string commissionPublicKey = 3;
     string commissionSignature = 4;
 }
+
+message stars {
+    repeated star stars = 1;
+}
