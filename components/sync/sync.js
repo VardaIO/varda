@@ -144,16 +144,17 @@ const getAPeer = () => {
   return peers[index]
 }
 
-const _shuffle = (array) => {
+const _shuffle = array => {
   var m = array.length,
-      t, i;
+    t,
+    i
   while (m) {
-      i = Math.floor(Math.random() * m--);
-      t = array[m];
-      array[m] = array[i];
-      array[i] = t;
+    i = Math.floor(Math.random() * m--)
+    t = array[m]
+    array[m] = array[i]
+    array[i] = t
   }
-  return array;
+  return array
 }
 
 const addStarFromPeer = star => {
@@ -207,4 +208,10 @@ const sync = async mciFromPeers => {
   }
 }
 
-module.exports = { getLastMci, getLastMciFromPeers, buildStarsForSync, sync, getDataFromPeers }
+module.exports = {
+  getLastMci,
+  getLastMciFromPeers,
+  buildStarsForSync,
+  sync,
+  getDataFromPeers
+}
