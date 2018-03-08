@@ -191,24 +191,19 @@ const runP2p = async sk => {
     })
 
     node.handle('/sync', async (protocol, conn) => {
-      // pull(
-      //   conn,
-      //   pull.map(data => data.toString()),
-      //   pull.collect((err, array) => {
-      //     startMci = array[0]
-      //   })
-      // )
+
       const data = await sync.getDataFromPeers(conn)
       const startMci = data[0]
       console.log(`in sync protocol, startMci is ${startMci}`)
       pull(push, conn)
 
       let stars = await sync.buildStarsForSync(startMci)
-      const beforeEncode = {
+
+      const encodeStars = starProto.stars.encode({
         stars: stars
-      }
-      const encodeStars = starProto.stars.encode(beforeEncode)
+      })
       console.log('I have prepare some stars：', encodeStars)
+      console.log('and stars ：', stars)
       push.push(encodeStars)
     })
     // sendstar receive a unconfirm star, it should push to pool, to be confirm( for commissions) .
