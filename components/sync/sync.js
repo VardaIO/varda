@@ -32,26 +32,26 @@ const getLastMci = async () => {
   }
 }
 
-const getDataFromPeers = (conn) => {
+const getDataFromPeers = conn => {
   return new Promise((resolve, reject) => {
     pull(
       conn,
-      pull.map(data=> {
+      pull.map(data => {
         return data.toString('utf8')
       }),
       pull.collect((error, array) => {
-        if(error) reject(error)
+        if (error) reject(error)
         resolve(array)
       })
     )
   })
 }
 
-const getLastMciFromPeers = async () => {
+const getLastMciFromPeers = () => {
   // two pub sub,计数器
   const count = []
   values(global.n.peerBook.getAll()).forEach(peer => {
-    global.n.dialProtocol(peer, '/getLastMci', (error, conn) => {
+    global.n.dialProtocol(peer, '/getLastMci', async (error, conn) => {
       if (error) console.log(error)
       let data = await getDataFromPeers(conn)
       count.push(data[0])
