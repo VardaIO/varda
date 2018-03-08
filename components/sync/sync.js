@@ -116,10 +116,10 @@ const getStarsFromPeer = (peer, startMci) => {
   global.n.dialProtocol(peer, '/sync', (err, conn) => {
     if (err) console.log(err)
     pull(
-        pull.values([`${startMci}`]),
-        conn,
-        pull.map(data => {
-          console.log(data)
+      pull.values([`${startMci}`]),
+      conn,
+      pull.map(data => {
+        console.log(data)
         // return starProto.star.encode(data)
         return data
       }),
@@ -135,7 +135,7 @@ const getStarsFromPeer = (peer, startMci) => {
           //Change Another Peer to get Star
         }
       )
-      )
+    )
     // pull(
     //   pull.values([`${startMci}`]),
     //   conn,
