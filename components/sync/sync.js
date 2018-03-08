@@ -48,11 +48,11 @@ const getDataFromPeers = conn => {
 }
 
 const _prepareDataForgetLastMci = peer => {
-  return new Promise((reslove, reject) => {
+  return new Promise((resolve, reject) => {
     global.n.dialProtocol(peer, '/getLastMci', async (error, conn) => {
       if (error) reject(error)
       let data = await getDataFromPeers(conn)
-      reslove(data)
+      resolve(data)
     })
   })
 }
@@ -110,39 +110,32 @@ const buildStarsForSync = async index => {
   }
 }
 
-const getStarsFromPeer = (peer, startMci) => {
+const _getStarsFromPeer = (peer, startMci) => {
+  return new Promise((resolve, reject) => {
+    global.n.dialProtocol(peer, '/sync', (err, conn) => {
+      if (err) reject(err)
+
+      pull(pull.values([`${startMci}`]), conn)
+
+      pull(
+        conn,
+        pull.map(data => {
+          return starProto.stars.decode(data)
+        }),
+        pull.collect((error, array) => {
+          if (error) reject(error)
+          resolve(array[0].stars)
+        })
+      )
+    })
+  })
+}
+
+const getStarsFromPeer = async (peer, startMci) => {
   console.log(`in getStarsFromPeer, startMci is ${startMci}`)
 
-  let stars = []
-  global.n.dialProtocol(peer, '/sync', (err, conn) => {
-    if (err) console.log(err)
-
-    pull(pull.values([`${startMci}`]), conn)
-
-    pull(
-      conn,
-      pull.map(data => {
-        console.log('data is:', data)
-        console.log('decode data is:', starProto.stars.decode(data))
-        return starProto.stars.decode(data)
-        // return data
-      }),
-      // pull.drain(
-      //   data => {
-      //     // add it to database
-      //     console.log('decode data is:', data)
-      //     stars.push(data)
-      //   },
-      //   error => {
-      //     console.log(error)
-      //   }
-      // )
-      pull.collect((error, array) => {
-        if (error) console.log(error)
-        console.log(array)
-      })
-    )
-  })
+  let stars = await _getStarsFromPeer(peer, startMci)
+  // console.log(stars)
   return stars
 }
 
@@ -185,9 +178,9 @@ const sync = async mciFromPeers => {
 
     console.log(startMci)
 
-    // let starsA = getStarsFromPeer(peerA, startMci)
-    // let starsB = getStarsFromPeer(peerB, startMci)
-    getStarsFromPeer(peerA, startMci)
+    let starsA = getStarsFromPeer(peerA, startMci)
+    let starsB = getStarsFromPeer(peerB, startMci)
+    // getStarsFromPeer(peerA, startMci)
     return
     const compare = isEqual(starsA, starsB)
 
