@@ -202,7 +202,7 @@ const runP2p = async sk => {
 
       let stars = await sync.buildStarsForSync(startMci)
       console.log('I have prepare some stars：', stars)
-      for (let i = 0; i < stars.legth; i++) {
+      for (let i = 0; i < stars.length; i++) {
         console.log('encode:', starProto.star.encode(stars[i]))
         push.push(starProto.star.encode(stars[i]))
       }
