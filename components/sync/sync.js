@@ -178,12 +178,15 @@ const sync = async mciFromPeers => {
 
     console.log(startMci)
 
-    let starsA = getStarsFromPeer(peerA, startMci)
-    let starsB = getStarsFromPeer(peerB, startMci)
+    let starsA = await getStarsFromPeer(peerA, startMci)
+    let starsB = await getStarsFromPeer(peerB, startMci)
     // getStarsFromPeer(peerA, startMci)
-    return
+    // console.log(starsA)
+    // console.log(starsB)
+    // return
     const compare = isEqual(starsA, starsB)
 
+    console.log('compare result:', compare)
     if (compare) {
       // add stars to database
       console.log('stars form peers: \n', starsA)
@@ -191,6 +194,7 @@ const sync = async mciFromPeers => {
         addStarFromPeer(starsA[i])
       }
     } else {
+      console.log('gg')
       // get stars from bootstrap
       const bootstrap = config.bootstrap
       const peerIndex = random(bootstrap.length - 1)
@@ -198,12 +202,15 @@ const sync = async mciFromPeers => {
       const ma = multiaddr(addr)
       const id = peerId.createFromB58String(ma.getPeerId())
       const peer = new PeerInfo(id)
-      const stars = getStarsFromPeer(peer, startMci)
+      // console.log(peer)
+      const stars = await getStarsFromPeer(peer, startMci)
+      console.log(stars)
+      // return
       console.log('stars form bootstrap: \n', stars)
       for (let i = 0; i < stars.length; i++) {
-        addStarFromPeer(starsA[i])
+        addStarFromPeer(stars[i])
         console.log(
-          colors.green(`add star with index ${starsA[i].main_chain_index}`)
+          colors.green(`add star with index ${starsA[i].mci}`)
         )
       }
     }
