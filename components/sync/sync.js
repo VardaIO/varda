@@ -143,19 +143,19 @@ const getStarsFromPeer = (peer, startMci) => {
       pull.values([`${startMci}`]),
       conn,
       pull.map(data => {
+        console.log('data is:', data)
+        console.log('decode data is:', starProto.stars.decode(data))
         return starProto.stars.decode(data)
+        // return data
       }),
       pull.drain(
         data => {
           // add it to database
-          // stars.push(data)
-          console.log(data)
+          console.log('decode data is:', data)
+          stars.push(data)
         },
         error => {
           console.log(error)
-          // return getStarsFromPeer(getAPeer(), startMci)
-
-          //Change Another Peer to get Star
         }
       )
     )
