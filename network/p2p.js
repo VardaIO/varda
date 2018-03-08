@@ -188,15 +188,16 @@ const runP2p = async sk => {
     })
 
     node.handle('/sync', async (protocol, conn) => {
-      let startMci
-      pull(
-        conn,
-        pull.map(data => data.toString()),
-        pull.collect((err, array) => {
-          startMci = array[0]
-        })
-      )
-
+      // pull(
+      //   conn,
+      //   pull.map(data => data.toString()),
+      //   pull.collect((err, array) => {
+      //     startMci = array[0]
+      //   })
+      // )
+      const data = await sync.getDataFromPeers(conn)
+      const startMci = data[0]
+      console.log(`in sync protocol, startMci is ${startMci}`)
       pull(push, conn)
 
       let stars = await sync.buildStarsForSync(startMci)

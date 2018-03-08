@@ -32,7 +32,7 @@ const getLastMci = async () => {
   }
 }
 
-const _getDataFromPeers = conn => {
+const getDataFromPeers = conn => {
   return new Promise((resolve, reject) => {
     pull(
       conn,
@@ -51,7 +51,7 @@ const _prepareDataForgetLastMci = peer => {
   return new Promise((reslove, reject) => {
     global.n.dialProtocol(peer, '/getLastMci', async (error, conn) => {
       if (error) reject(error)
-      let data = await _getDataFromPeers(conn)
+      let data = await getDataFromPeers(conn)
       reslove(data)
     })
   })
@@ -113,7 +113,6 @@ const getStarsFromPeer = (peer, startMci) => {
   console.log(`in getStarsFromPeer, startMci is ${startMci}`)
 
   let stars = []
-
   global.n.dialProtocol(peer, '/sync', (err, conn) => {
     if (err) console.log(err)
     // pull(
@@ -140,9 +139,21 @@ const getStarsFromPeer = (peer, startMci) => {
 
 const getAPeer = () => {
   const peers = values(global.n.peerBook.getAll())
-  const index = random(0,peers.length)
+  const index = random(0, peers.length)
   console.log(`index is ${index}`)
   return peers[index]
+}
+
+const _shuffle = (array) => {
+  var m = array.length,
+      t, i;
+  while (m) {
+      i = Math.floor(Math.random() * m--);
+      t = array[m];
+      array[m] = array[i];
+      array[i] = t;
+  }
+  return array;
 }
 
 const addStarFromPeer = star => {
@@ -158,13 +169,10 @@ const sync = async mciFromPeers => {
     if (parseInt(startMci) == 0) {
       startMci = 1
     }
+    const peers = _shuffle(values(global.n.peerBook.getAll()))
+    let peerA = peers[0]
+    let peerB = peers[1]
 
-    let peerA = getAPeer()
-    let peerB = getAPeer()
-
-    while (!isEqual(peerA, peerB)) {
-      peerB = getAPeer()
-    }
     console.log(startMci)
 
     let starsA = getStarsFromPeer(peerA, startMci)
@@ -199,4 +207,4 @@ const sync = async mciFromPeers => {
   }
 }
 
-module.exports = { getLastMci, getLastMciFromPeers, buildStarsForSync, sync }
+module.exports = { getLastMci, getLastMciFromPeers, buildStarsForSync, sync, getDataFromPeers }
