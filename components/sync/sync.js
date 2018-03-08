@@ -78,12 +78,16 @@ const getLastMciFromPeers = async () => {
 }
 
 const buildStarsForSync = async index => {
+  if(_.isString(index)) {
+    index = parseInt(index)
+  }
+  
   const client = await pool.acquire()
   try {
     let starHashList = client
       .prepare(`SELECT star FROM stars WHERE main_chain_index=${index}`)
       .all()
-    console.log(starHashList.length )
+    console.log(starHashList.length)
     console.log(starHashList)
     if (starHashList.length == 0) {
       console.log(1)
@@ -193,8 +197,5 @@ const sync = async mciFromPeers => {
     startMci++
   }
 }
-(async () => {
-  console.log(await buildStarsForSync(1))
 
-})()
 module.exports = { getLastMci, getLastMciFromPeers, buildStarsForSync, sync }
