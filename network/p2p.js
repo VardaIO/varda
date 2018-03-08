@@ -214,7 +214,7 @@ const runP2p = async sk => {
       })
       console.log('I have prepare some stars：', encodeStars)
       console.log('and stars ：', stars)
-      pull(pull.values([encodeStars]))
+      pull(pull.values([encodeStars]), conn)
     })
     // sendstar receive a unconfirm star, it should push to pool, to be confirm( for commissions) .
 
