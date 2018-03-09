@@ -78,6 +78,7 @@ const getLastMciFromPeers = async () => {
 }
 
 const buildStarsForSync = async index => {
+   if(index === 0 || index === '0') return
   if (isString(index)) {
     index = parseInt(index)
   }

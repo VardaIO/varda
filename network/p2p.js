@@ -338,26 +338,33 @@ const runP2p = async sk => {
             Buffer.from(msg.data.toString(), 'hex')
           )
           const star = tobeCommit.star
+
           const checkExist = pool.acquire().then(async client => {
-            if (
-              !client
-                .prepare(`SELECT * FROM stars WHERE star='${star.star_hash}'`)
-                .get()
-            ) {
-              return true
+            try {
+              if (
+                !client
+                  .prepare(`SELECT * FROM stars WHERE star='${star.star_hash}'`)
+                  .get()
+              ) {
+                return true
+              }
+              return false
+            } catch (error) {
+              console.log(error)
+            } finally {
+              pool.release(client)
             }
-            return false
           })
+
           if (await checkExist) {
             await addStarFromBroadcast(star)
             console.log(colors.green('add success'))
           }
+
           // first fin star in cache, if not have, add it to db
         } catch (error) {
           console.log('receive a wrong protobuf')
           console.log(error)
-        } finally {
-          pool.release(client)
         }
       },
       error => {
