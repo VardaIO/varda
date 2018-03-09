@@ -161,14 +161,18 @@ const _shuffle = array => {
 
 const addStarFromPeer = star => {
   // vailidate
-  addStar(star)
+  try {
+    addStar(star)
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 const sync = async mciFromPeers => {
   console.log('wanna to sync now, and mci is:', mciFromPeers)
   let startMci = await getLastMci()
   // const dValue = await getLastMciFromPeers() - lastMciInLocal
-  while (startMci < mciFromPeers) {
+  while (startMci <= mciFromPeers) {
     if (parseInt(startMci) == 0) {
       startMci = 1
     }
@@ -180,21 +184,18 @@ const sync = async mciFromPeers => {
 
     let starsA = await getStarsFromPeer(peerA, startMci)
     let starsB = await getStarsFromPeer(peerB, startMci)
-    // getStarsFromPeer(peerA, startMci)
-    // console.log(starsA)
-    // console.log(starsB)
-    // return
+
     const compare = isEqual(starsA, starsB)
 
     console.log('compare result:', compare)
     if (compare) {
       // add stars to database
-      console.log('stars form peers: \n', starsA)
       for (let i = 0; i < starsA.length; i++) {
         addStarFromPeer(starsA[i])
+        colors.green(`add star with index ${starsA[i].mci}`)
       }
     } else {
-      console.log('gg')
+      console.log('not equal')
       // get stars from bootstrap
       const bootstrap = config.bootstrap
       const peerIndex = random(bootstrap.length - 1)
@@ -202,16 +203,12 @@ const sync = async mciFromPeers => {
       const ma = multiaddr(addr)
       const id = peerId.createFromB58String(ma.getPeerId())
       const peer = new PeerInfo(id)
-      // console.log(peer)
       const stars = await getStarsFromPeer(peer, startMci)
-      console.log(stars)
-      // return
+
       console.log('stars form bootstrap: \n', stars)
       for (let i = 0; i < stars.length; i++) {
         addStarFromPeer(stars[i])
-        console.log(
-          colors.green(`add star with index ${starsA[i].mci}`)
-        )
+        console.log(colors.green(`add star with index ${stars[i].mci}`))
       }
     }
     startMci++
