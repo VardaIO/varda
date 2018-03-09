@@ -1,7 +1,7 @@
 const fs = require('fs')
 const pb = require('protocol-buffers')
 const appRoot = require('app-root-path')
-const { values, random, isEqual, isString } = require('lodash')
+const { values, random, isEqual, isString, isFinite } = require('lodash')
 const multiaddr = require('multiaddr')
 const PeerInfo = require('peer-info')
 const peerId = require('peer-id')
@@ -170,6 +170,7 @@ const addStarFromPeer = star => {
 
 const sync = async mciFromPeers => {
   if (mciFromPeers === 0 || mciFromPeers === '0') return
+  if (isFinite(mciFromPeers)) return
   console.log('wanna to sync now, and mci is:', mciFromPeers)
   let startMci = await getLastMci()
   // const dValue = await getLastMciFromPeers() - lastMciInLocal
