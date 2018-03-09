@@ -78,7 +78,7 @@ const getLastMciFromPeers = async () => {
 }
 
 const buildStarsForSync = async index => {
-   if(index === 0 || index === '0') return
+  if (index === 0 || index === '0') return
   if (isString(index)) {
     index = parseInt(index)
   }
@@ -136,7 +136,6 @@ const getStarsFromPeer = async (peer, startMci) => {
   console.log(`in getStarsFromPeer, startMci is ${startMci}`)
 
   let stars = await _getStarsFromPeer(peer, startMci)
-  // console.log(stars)
   return stars
 }
 

@@ -65,7 +65,7 @@ class Commission {
 
           // a star should have at least one on star'main chain index - 1
           if (authorLastMci) {
-            if (value.mci - lastMci < 6) {
+            if (value.mci - authorLastMci < 6) {
               console.log(
                 ` a star should have at least one on star'main chain index - 1`
               )
@@ -105,6 +105,16 @@ class Commission {
 
           if (authorAddressAppearTime >= 1) {
             return
+          }
+
+          //7. 当mci中有其他star时，如果star的时间戳比当前mci中时间戳最大的star多10s，不添加
+          const haveStarInMci = await this._haveStarInMci(mci)
+          if (haveStarInMci) {
+            const starTimestamp = value.timestamp
+            const anotherTimestamp = haveStarInMci.timestamp
+            if (starTimestamp - anotherTimestamp > 10) {
+              return
+            }
           }
           //methods from above is vailidate, now vailidate is finished.
 
@@ -262,7 +272,7 @@ class Commission {
     return pool.acquire().then(client => {
       const mci = client
         .prepare(
-          `SELECT main_chain_index AS mci FROM stars WHERE author_address='${author}' ORDER BY main_chain_index ASC LIMIT 1`
+          `SELECT main_chain_index AS mci FROM stars WHERE author_address='${author}' ORDER BY main_chain_index DESC LIMIT 1`
         )
         .get()
       if (mci === undefined) {
@@ -289,6 +299,31 @@ class Commission {
         pool.release(client)
         return Promise.reject(error)
       })
+  }
+
+  async _haveStarInMci(mci) {
+    // if not have, return null
+    // if have, return the bigest timestamp
+    const client = await pool.acquire()
+    try {
+      let stars = client
+        .prepare(`SELECT * FROM stars WHERE main_chain_index=${mci}`)
+        .all()
+      // console.log(stars)
+      if (_.isEmpty(stars)) {
+        return null
+      }
+      // console.log(stars)
+      // return stars
+      stars = _.sortBy(stars, star => {
+        return star.timestamp
+      })
+      return stars.pop()
+    } catch (error) {
+      console.log(error)
+    } finally {
+      pool.release(client)
+    }
   }
 }
 
