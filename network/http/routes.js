@@ -1,9 +1,8 @@
 const router = require('koa-router')()
 const appRoot = require('app-root-path')
 
-const Wallet = require(`${appRoot}/components/wallet`)
-const HD = require(`${appRoot}/components/hd-wallet`)
-const Utils = require(`${appRoot}/components/utils`)
+const Wallet = require('../../components/wallet')
+const Utils = require('../../components/utils')
 const Account = require(`${appRoot}/components/account`)
 const utils = new Utils()
 
@@ -11,6 +10,7 @@ const fs = require('fs')
 const pb = require('protocol-buffers')
 const starProto = pb(fs.readFileSync(`${appRoot}/network/protos/star.proto`))
 const sync = require('../../components/sync/sync')
+const HD = require('../../components/hd-wallet')
 
 router.get('/createAccount', ctx => {
   const hd = new HD()
@@ -55,4 +55,17 @@ router.post('/getStar', async ctx => {
     stars
   }
 })
+
+router.get('/genMnemonic', async ctx => {
+  ctx.body =  new HD().genMnemonic()
+})
+
+router.post('/mnemonicToSk', async ctx => {
+  const mnemonic = ctx.request.body.mnemonic
+  const hd = new HD()
+  const seed = hd.getSeed(mnemonic)
+  const sk = hd.genKeypair(0, seed).secretKey
+  ctx.body = sk
+})
+
 module.exports = router
