@@ -50,6 +50,14 @@ class Commission {
               _.omit(receiver, key)
             }
           })
+          // vaildate amount for transaction
+
+          if (value.transaction.type === 1) {
+            if (value.transaction.amount <= 0) {
+              return false
+            }
+          }
+
           // 查库
           if (await this.haveStar(property)) {
             return

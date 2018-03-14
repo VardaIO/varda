@@ -9,6 +9,13 @@ class Vailidate {
 
   vailidateStarWithoutTransaction(star) {
     const transaction = star.transaction
+
+    if (transaction.type === 1) {
+      if (transaction.amount <= 0) {
+        return false
+      }
+    }
+
     const checkSignature = utils.sigVerify(
       star.star_hash,
       star.signature,

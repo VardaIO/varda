@@ -3,6 +3,7 @@ const app = new Koa()
 const appRoot = require('app-root-path')
 const bodyparser = require('koa-bodyparser')
 const json = require('koa-json')
+var cors = require('koa2-cors')
 const router = require('./routes')
 
 const httpServer = node => {
@@ -10,6 +11,8 @@ const httpServer = node => {
     this.node = node
     await next()
   })
+
+  app.use(cors())
 
   app.use(
     bodyparser({

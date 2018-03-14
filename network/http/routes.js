@@ -57,7 +57,7 @@ router.post('/getStar', async ctx => {
 })
 
 router.get('/genMnemonic', async ctx => {
-  ctx.body =  new HD().genMnemonic()
+  ctx.body = new HD().genMnemonic()
 })
 
 router.post('/mnemonicToSk', async ctx => {
@@ -66,6 +66,12 @@ router.post('/mnemonicToSk', async ctx => {
   const seed = hd.getSeed(mnemonic)
   const sk = hd.genKeypair(0, seed).secretKey
   ctx.body = sk
+})
+
+router.post('/verifyMnemonic', async ctx => {
+  const mnemonic = ctx.request.body.mnemonic
+  const hd = new HD()
+  ctx.body = hd.validateMnemonic(mnemonic)
 })
 
 module.exports = router
