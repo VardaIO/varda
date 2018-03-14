@@ -54,7 +54,7 @@ class Commission {
 
           if (value.transaction.type === 1) {
             if (value.transaction.amount <= 0) {
-              return false
+              return
             }
           }
 
