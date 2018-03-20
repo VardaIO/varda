@@ -23,6 +23,13 @@ router.post('/sendStar', async ctx => {
   const to = request.to
   const amount = request.amount
   const wallet = new Wallet()
+  if (amount <= 0 ) {
+    ctx.body = {
+      message: "amount is wrong"
+    }
+    return
+  }
+  
   let star = await wallet.pay(to, amount, sk)
 
   global.n.pubsub.publish(
@@ -36,6 +43,11 @@ router.post('/sendStar', async ctx => {
   )
 
   ctx.body = starProto.star.decode(star)
+})
+
+router.post('/skToAddress', async ctx => {
+  const sk = ctx.request.body.sk
+  ctx.body = utils.getAddressFromSk(sk)
 })
 
 router.post('/getBalance', async ctx => {
