@@ -99,14 +99,14 @@ class Commission {
             return
           }
           // 6. in one mci, the same should appear only once
-          const starsFromMci = await this._getStarHashByMci(property.mci)
+          const starsFromMci = await this._getStarHashByMci(value.mci)
           const authorsFromMci = starsFromMci.map(v => {
             return v.author_address
           })
 
           let authorAddressAppearTime = 0
           authorsFromMci.map(v => {
-            if (property.authorAdress == v) {
+            if (value.authorAdress == v) {
               authorAddressAppearTime++
             }
           })
@@ -116,7 +116,7 @@ class Commission {
           }
 
           //7. 当mci中有其他star时，如果star的时间戳比当前mci中时间戳最大的star多10s，不添加
-          const haveStarInMci = await this._haveStarInMci(mci)
+          const haveStarInMci = await this._haveStarInMci(value.mci)
           if (haveStarInMci) {
             const starTimestamp = value.timestamp
             const anotherTimestamp = haveStarInMci.timestamp
