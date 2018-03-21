@@ -13,6 +13,7 @@ const ip = require('ip')
 const publicIP = require('public-ip')
 const colors = require('colors')
 const _ = require('lodash')
+const isIp = require('is-ip')
 const Pushable = require('pull-pushable')
 const push = Pushable()
 const VARDA_HOME = process.env.VARDA_HOME || os.homedir() + '/.varda'
@@ -154,8 +155,10 @@ const runP2p = async sk => {
         pull.collect((err, array) => {
           if (err) console.log(err)
           if (publicIpsList.indexOf(array[0].addr) == -1) {
-            publicIpsList.push(array[0].addr)
-            emitter.emit('newPublicAddr', array[0].addr)
+            if (isIp(array[0].addr)) {
+              publicIpsList.push(array[0].addr)
+              emitter.emit('newPublicAddr', array[0].addr)
+            }
           }
         })
       )
@@ -174,8 +177,10 @@ const runP2p = async sk => {
         pull.collect(function(err, array) {
           array[0].addrs.map(v => {
             if (publicIpsList.indexOf(v) == -1) {
-              publicIpsList.push(v)
-              emitter.emit('newPublicAddr', v)
+              if (isIp(v)) {
+                publicIpsList.push(v)
+                emitter.emit('newPublicAddr', v)
+              }
             }
           })
         })
@@ -191,19 +196,6 @@ const runP2p = async sk => {
     })
 
     node.handle('/sync', async (protocol, conn) => {
-      // const data = await sync.getDataFromPeers(conn)
-      // const startMci = data[0]
-      // console.log(`in sync protocol, startMci is ${startMci}`)
-      // pull(push, conn)
-
-      // let stars = await sync.buildStarsForSync(startMci)
-
-      // const encodeStars = starProto.stars.encode({
-      //   stars: stars
-      // })
-      // console.log('I have prepare some stars：', encodeStars)
-      // console.log('and stars ：', stars)
-      // push.push(encodeStars)
       const data = await sync.getDataFromPeers(conn)
       const startMci = data[0]
       console.log(`in sync protocol, startMci is ${startMci}`)
@@ -218,21 +210,6 @@ const runP2p = async sk => {
     })
     // sendstar receive a unconfirm star, it should push to pool, to be confirm( for commissions) .
 
-    /*
-    node.handle('/t', (protocol, conn) => {
-      pull(conn, pull.map(s => s.toString()), pull.log())
-    })
-
-    setInterval(() => {
-      let i = node.peerInfo.id.toB58String()
-      values(node.peerBook.getAll()).forEach(peer => {
-        node.dialProtocol(peer, '/t', (err, conn) => {
-          if (err) console.log(err)
-          pull(pull.values([`hello, this is a ${i} dialProtocol`]), conn)
-        })
-      })
-    }, 2000)
-*/
     if (peerPublicIp) {
       let id = node.peerInfo.id.toB58String()
       let addr = `/ip4/${peerPublicIp}/tcp/${config.Port}/ipfs/${id}`
