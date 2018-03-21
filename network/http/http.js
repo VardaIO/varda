@@ -5,7 +5,8 @@ const bodyparser = require('koa-bodyparser')
 const json = require('koa-json')
 var cors = require('koa2-cors')
 const router = require('./routes')
-
+const config = require(`${appRoot}/config.json`)
+const httpPort = config.HttpPort
 const httpServer = node => {
   app.use(async (ctx, next) => {
     this.node = node
@@ -30,8 +31,8 @@ const httpServer = node => {
 
   app.use(router.routes(), router.allowedMethods())
 
-  app.listen(3000)
-  console.log('Http Server listening on port 3000')
+  app.listen(httpPort)
+  console.log(`Http Server listening on port ${httpPort}`)
 
   return Promise.resolve()
 }
