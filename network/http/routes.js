@@ -51,6 +51,12 @@ router.post('/getBalance', async ctx => {
   ctx.body = { balance }
 })
 
+router.post('/getStar', async ctx => {
+  const starHash = ctx.request.body.starHash
+  const star = await new Star().getStar(starHash)
+  ctx.body = { star }
+})
+
 router.post('/getStars', async ctx => {
   const index = parseInt(ctx.request.body.index)
   if (index === 0) {
