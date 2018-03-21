@@ -47,6 +47,9 @@ class Transaction {
   async check(tx) {
     //first check address and signature
     // 1. get address and vailate address with pubkey
+    console.log(1, utils.genAddress(tx.senderPublicKey) !== tx.sender)
+    console.log(utils.genAddress(tx.senderPublicKey))
+    console.log(tx.sender)
     if (utils.genAddress(tx.senderPublicKey) !== tx.sender) {
       return false
     }
@@ -57,7 +60,7 @@ class Transaction {
 
     const account = new Account(tx.sender)
     const checkTransaction = await account.checkTransaction(tx.amount)
-
+    console.log(2, checkTransaction)
     if (!checkTransaction) {
       return false
     }

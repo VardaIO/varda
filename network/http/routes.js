@@ -1,5 +1,6 @@
 const router = require('koa-router')()
 const appRoot = require('app-root-path')
+const _ = require('lodash')
 
 const Wallet = require('../../components/wallet')
 const Utils = require('../../components/utils')
@@ -11,65 +12,20 @@ const pb = require('protocol-buffers')
 const starProto = pb(fs.readFileSync(`${appRoot}/network/protos/star.proto`))
 const sync = require('../../components/sync/sync')
 const HD = require('../../components/hd-wallet')
-
-router.get('/createAccount', ctx => {
-  const hd = new HD()
-  ctx.body = hd.genMnemonic()
-})
-
-router.post('/sendStar', async ctx => {
-  const request = ctx.request.body
-  const sk = request.sk
-  const to = request.to
-  const amount = request.amount
-  const wallet = new Wallet()
-  if (amount <= 0) {
-    ctx.body = {
-      message: 'amount is wrong'
-    }
-    return
-  }
-
-  let star = await wallet.pay(to, amount, sk)
-
-  global.n.pubsub.publish(
-    'sendStar',
-    Buffer.from(star.toString('hex')),
-    error => {
-      if (error) {
-        return Promise.reject(error)
-      }
-    }
-  )
-
-  ctx.body = starProto.star.decode(star)
-})
-
-router.post('/skToAddress', async ctx => {
-  const sk = ctx.request.body.sk
-  ctx.body = utils.getAddressFromSk(sk)
-})
-
-router.post('/getBalance', async ctx => {
-  const sk = ctx.request.body.sk
-  const pk = utils.getPub(sk)
-  const address = utils.genAddress(pk)
-  const account = new Account(address)
-  const balance = await account.getBalance()
-
-  ctx.body = { balance }
-})
-
-router.post('/getStar', async ctx => {
-  const index = ctx.request.body.index
-  const stars = await sync.buildStarsForSync(index)
-  ctx.body = {
-    stars
-  }
-})
+const Star = require('../../components/star')
+// router.get('/createAccount', ctx => {
+//   const hd = new HD()
+//   ctx.body = hd.genMnemonic()
+// })
 
 router.get('/genMnemonic', async ctx => {
-  ctx.body = new HD().genMnemonic()
+  ctx.body = { mnemonic: new HD().genMnemonic() }
+})
+
+router.post('/verifyMnemonic', async ctx => {
+  const mnemonic = ctx.request.body.mnemonic
+  const hd = new HD()
+  ctx.body = { result: hd.validateMnemonic(mnemonic) }
 })
 
 router.post('/mnemonicToSk', async ctx => {
@@ -77,13 +33,71 @@ router.post('/mnemonicToSk', async ctx => {
   const hd = new HD()
   const seed = hd.getSeed(mnemonic)
   const sk = hd.genKeypair(0, seed).secretKey
-  ctx.body = sk
+  ctx.body = { sk }
 })
 
-router.post('/verifyMnemonic', async ctx => {
-  const mnemonic = ctx.request.body.mnemonic
-  const hd = new HD()
-  ctx.body = hd.validateMnemonic(mnemonic)
+router.post('/skToAddress', async ctx => {
+  const sk = ctx.request.body.sk
+  ctx.body = { address: utils.getAddressFromSk(sk) }
+})
+
+router.post('/getBalance', async ctx => {
+  // const sk = ctx.request.body.sk
+  // const pk = utils.getPub(sk)
+  const address = ctx.request.body.address
+  const account = new Account(address)
+  const balance = await account.getBalance()
+
+  ctx.body = { balance }
+})
+
+router.post('/getStars', async ctx => {
+  const index = parseInt(ctx.request.body.index)
+  if (index === 0) {
+    ctx.body = {
+      stars: [new Star().getGenesis()]
+    }
+    return
+  }
+
+  const stars = await sync.buildStarsForSync(index)
+  ctx.body = {
+    stars
+  }
+})
+
+router.post('/payment', async ctx => {
+  const request = ctx.request.body
+  const sk = request.sk
+  const to = request.to
+  const amount = request.amount
+  const wallet = new Wallet()
+
+  if (amount <= 0) {
+    ctx.body = {
+      message: 'amount is wrong'
+    }
+    return
+  }
+
+  try {
+    let star = await wallet.pay(to, amount, sk)
+    console.log(star)
+
+    global.n.pubsub.publish(
+      'sendStar',
+      Buffer.from(star.toString('hex')),
+      error => {
+        if (error) {
+          return Promise.reject(error)
+        }
+      }
+    )
+
+    ctx.body = { message: 'send success' }
+  } catch (error) {
+    ctx.body = { message: error }
+  }
 })
 
 module.exports = router

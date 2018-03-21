@@ -21,8 +21,6 @@ class Wallet {
     })
     let star = await prepareStar(transaction)
     return star
-    // console.log(star)
-    // broadcastStar()
   }
 }
 
