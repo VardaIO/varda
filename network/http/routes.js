@@ -53,6 +53,13 @@ router.post('/getBalance', async ctx => {
 
 router.post('/getStar', async ctx => {
   const starHash = ctx.request.body.starHash
+  const genesis = new Star().getGenesis()
+  
+  if (_.isEqual(starHash, genesis.star_hash)) {
+    ctx.body = { star: genesis }
+    return
+  }
+
   const star = await new Star().getStar(starHash)
   ctx.body = { star }
 })
