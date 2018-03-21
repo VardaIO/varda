@@ -47,10 +47,7 @@ class Transaction {
   async check(tx) {
     //first check address and signature
     // 1. get address and vailate address with pubkey
-    console.log(1, utils.genAddress(tx.senderPublicKey) !== tx.sender)
-    console.log(utils.genAddress(tx.senderPublicKey))
-    console.log(tx.sender)
-    if (utils.genAddress(tx.senderPublicKey) !== tx.sender) {
+    if (!_.isEqual(utils.genAddress(tx.senderPublicKey), tx.sender)) {
       return false
     }
 
