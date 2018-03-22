@@ -27,6 +27,14 @@ npm run init
 p2p通信端口默认为4002，可以更改`Port`的值来改变端口
 http服务的默认端口为3000，可以更改`HttpPort`的值来改变端口
 
+## 启动
+
+```
+node index.js
+// or 
+npm run start
+```
+
 ## http api
 
 ### GET /genMnemonic
@@ -238,5 +246,24 @@ http://localhost:3000/payment
 ```
 {
   "message": "error message"
+}
+```
+
+### GET /getLastMci
+获取最新的主链序号
+
+例如：
+
+```
+curl -X GET \
+http://localhost:3000/getLastMci
+
+```
+
+返回：
+
+```
+{
+  "lastMci": 1
 }
 ```

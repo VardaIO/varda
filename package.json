@@ -7,7 +7,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "start": "node index",
+    "start": "node index.js",
     "test": "ava ./test --verbose",
     "fix": "node node_modules/prettier/bin-prettier.js --config .prettierrc --write {components,database,network}/**/*.js *.js",
     "init": "node init"
