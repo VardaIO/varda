@@ -172,6 +172,7 @@ const runP2p = async sk => {
         conn,
         pull.map(ip => {
           try {
+            console.log('in getPubIpAddr handle', msg.addr.decode(ip))
             return msg.addr.decode(ip)
           } catch (error) {
             console.log('receive a wrong protobuf')
@@ -179,6 +180,7 @@ const runP2p = async sk => {
         }),
         pull.collect((err, array) => {
           if (err) console.log(err)
+          console.log(array)
           try {
             if (publicIpsList.indexOf(array[0].addr) == -1) {
               publicIpsList.push(array[0].addr)
@@ -197,12 +199,14 @@ const runP2p = async sk => {
         conn,
         pull.map(v => {
           try {
+            console.log('in getAddrList handle', msg.addrs.decode(v))
             return msg.addrs.decode(v)
           } catch (error) {
             console.log('receive a wrong protobuf')
           }
         }),
         pull.collect(function(err, array) {
+          console.log(array)
           array[0].addrs.map(v => {
             if (publicIpsList.indexOf(v) == -1) {
               if (isIp(v)) {
@@ -247,7 +251,7 @@ const runP2p = async sk => {
       })
 
       setInterval(() => {
-        console.log('broadcast Addr')
+        // console.log('broadcast Addr')
         values(node.peerBook.getAll()).forEach(peer => {
           node.dialProtocol(peer, '/getPubIpAddr', (err, conn) => {
             if (err) console.log(err)
@@ -259,13 +263,13 @@ const runP2p = async sk => {
     }
 
     setInterval(() => {
-      console.log(publicIpsList)
+      // console.log(publicIpsList)
 
       if (publicIpsList.length != 0) {
         values(node.peerBook.getAll()).forEach(peer => {
           node.dialProtocol(peer, '/getAddrList', (err, conn) => {
             if (err) console.log(err)
-            console.log('dial /getAddrList now')
+            // console.log('dial /getAddrList now')
             pull(pull.values([encodePublicIps(publicIpsList)]), conn)
           })
         })
