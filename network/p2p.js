@@ -113,7 +113,8 @@ const runP2p = async sk => {
     console.log('listening on:')
     node.peerInfo.multiaddrs.forEach(ma => console.log(ma.toString()))
 
-    emitter.addListener('newPublicAddr', addr => {
+    const newPublicAddr = addr => {
+      console.log('newPublicAddr working')
       const ma = multiaddr(addr)
       const id = peerId.createFromB58String(ma.getPeerId())
       let peer = new PeerInfo(id)
@@ -125,7 +126,21 @@ const runP2p = async sk => {
           })
         }
       })
-    })
+    }
+
+    // emitter.addListener('newPublicAddr', addr => {
+    //   const ma = multiaddr(addr)
+    //   const id = peerId.createFromB58String(ma.getPeerId())
+    //   let peer = new PeerInfo(id)
+    //   peer.multiaddrs.add(ma)
+    //   node.dialProtocol(peer, (err, conn) => {
+    //     if (err) {
+    //       _.remove(publicIpsList, n => {
+    //         return n == addr
+    //       })
+    //     }
+    //   })
+    // })
 
     // when discovery a peer, try to dialProtocol to this peer,if it can reply,
     // peers will connect with each other
@@ -166,8 +181,9 @@ const runP2p = async sk => {
           if (err) console.log(err)
           try {
             if (publicIpsList.indexOf(array[0].addr) == -1) {
-                publicIpsList.push(array[0].addr)
-                emitter.emit('newPublicAddr', array[0].addr)
+              publicIpsList.push(array[0].addr)
+              // emitter.emit('newPublicAddr', array[0].addr)
+              newPublicAddr(array[0].addr)
             }
           } catch (error) {
             console.log('addr is wrong')
@@ -191,7 +207,8 @@ const runP2p = async sk => {
             if (publicIpsList.indexOf(v) == -1) {
               if (isIp(v)) {
                 publicIpsList.push(v)
-                emitter.emit('newPublicAddr', v)
+                newPublicAddr(v)
+                // emitter.emit('newPublicAddr', v)
               }
             }
           })
@@ -237,7 +254,7 @@ const runP2p = async sk => {
             pull(pull.values([buf]), conn)
           })
         })
-      // }, 1000 * 60)
+        // }, 1000 * 60)
       }, 1000 * 2)
     }
 
@@ -253,9 +270,8 @@ const runP2p = async sk => {
           })
         })
       }
-    // }, 1000 * 30)
-  }, 1000 * 2)
-    
+      // }, 1000 * 30)
+    }, 1000 * 2)
 
     // For commissions:
     let commissionAddress
