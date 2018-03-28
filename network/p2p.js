@@ -178,11 +178,11 @@ const runP2p = async sk => {
         }),
         pull.collect((err, array) => {
           if (err) console.log(err)
-          console.log('in getPubIpAddr handle')
-          console.log(array[0].addr)
+          // console.log('in getPubIpAddr handle')
+          // console.log(array[0].addr)
           try {
             if (publicIpsList.indexOf(array[0].addr) == -1) {
-              console.log('push', array[0].addr)
+              // console.log('push', array[0].addr)
               publicIpsList.push(array[0].addr)
               // emitter.emit('newPublicAddr', array[0].addr)
               newPublicAddr(array[0].addr)            }
@@ -205,12 +205,12 @@ const runP2p = async sk => {
           }
         }),
         pull.collect(function(err, array) {
-          console.log('in getAddrList handle')
+          // console.log('in getAddrList handle')
           // console.log(array)
           array[0].addrs.map(v => {
             if (publicIpsList.indexOf(v) == -1) {
               if (isIp(v)) {
-                console.log('push', v)
+                // console.log('push', v)
                 publicIpsList.push(v)
                 newPublicAddr(v)
                 // emitter.emit('newPublicAddr', v)
