@@ -162,15 +162,10 @@ const runP2p = async sk => {
         }),
         pull.collect((err, array) => {
           if (err) console.log(err)
-          // console.log('in getPubIpAddr handle')
-          // console.log(array[0].addr)
           try {
             if (publicIpsList.indexOf(array[0].addr) == -1) {
               // console.log('push', array[0].addr)
               publicIpsList.push(array[0].addr)
-              console.log(array[0].addr, 'hhhhhhhhhhhhh')
-              // emitter.emit('newPublicAddr', array[0].addr)
-              // newPublicAddr(array[0].addr)
               const ma = multiaddr(array[0].addr)
               console.log(ma)
               const id = peerId.createFromB58String(ma.getPeerId())
@@ -181,40 +176,6 @@ const runP2p = async sk => {
           } catch (error) {
             console.log('addr is wrong')
           }
-        })
-      )
-    })
-
-    node.handle('/getAddrList', (protocol, conn) => {
-      pull(
-        conn,
-        pull.map(v => {
-          try {
-            return msg.addrs.decode(v)
-          } catch (error) {
-            console.log('receive a wrong protobuf')
-          }
-        }),
-        pull.collect(function(err, array) {
-          // console.log('in getAddrList handle')
-          // console.log(array)
-          array[0].addrs.map(v => {
-            if (publicIpsList.indexOf(v) == -1) {
-              if (isIp(v)) {
-                console.log(v, 'hhhhhhhhhhhhhhvvvvvvvvvvvv')
-                // console.log('push', v)
-                publicIpsList.push(v)
-                // newPublicAddr(v)
-                const ma = multiaddr(v)
-                console.log(ma)
-                const id = peerId.createFromB58String(ma.getPeerId())
-                let peer = new PeerInfo(id)
-                peer.multiaddrs.add(ma)
-                node.dial(peer, (err, conn) => {})
-                // emitter.emit('newPublicAddr', v)
-              }
-            }
-          })
         })
       )
     })
@@ -300,20 +261,6 @@ const runP2p = async sk => {
         })
       })
     }, 1000 * 2)
-
-    // setInterval(() => {
-    //   // console.log(publicIpsList)
-
-    //   if (publicIpsList.length !== 0) {
-    //     values(node.peerBook.getAll()).forEach(peer => {
-    //       node.dialProtocol(peer, '/getAddrList', (err, conn) => {
-    //         if (err) console.log(err)
-    //         pull(pull.values([encodePublicIps(publicIpsList)]), conn)
-    //       })
-    //     })
-    //   }
-    //   // }, 1000 * 30)
-    // }, 1000 * 2)
 
     // For commissions:
     let commissionAddress
