@@ -261,7 +261,7 @@ const runP2p = async sk => {
       }, 1000 * 2)
     }
 
-    node.handle('/t', async (protocol, conn) => {
+    node.handle('/peerListSync', async (protocol, conn) => {
       pull(
         conn,
         pull.map(v => {
@@ -272,7 +272,7 @@ const runP2p = async sk => {
             // console.log(array[0])
             let list = array[0].addrs
             list.forEach(value => {
-              console.log(value)
+              // console.log(value)
               const ma = multiaddr(value)
               const id = peerId.createFromB58String(ma.getPeerId())
               let p = new PeerInfo(id)
@@ -292,7 +292,7 @@ const runP2p = async sk => {
 
     setInterval(() => {
       values(node.peerBook.getAll()).forEach(peer => {
-        node.dialProtocol(peer, '/t', (err, conn) => {
+        node.dialProtocol(peer, '/peerListSync', (err, conn) => {
           if (err) {
             console.log(err)
           }
@@ -301,19 +301,19 @@ const runP2p = async sk => {
       })
     }, 1000 * 2)
 
-    setInterval(() => {
-      // console.log(publicIpsList)
+    // setInterval(() => {
+    //   // console.log(publicIpsList)
 
-      if (publicIpsList.length !== 0) {
-        values(node.peerBook.getAll()).forEach(peer => {
-          node.dialProtocol(peer, '/getAddrList', (err, conn) => {
-            if (err) console.log(err)
-            pull(pull.values([encodePublicIps(publicIpsList)]), conn)
-          })
-        })
-      }
-      // }, 1000 * 30)
-    }, 1000 * 2)
+    //   if (publicIpsList.length !== 0) {
+    //     values(node.peerBook.getAll()).forEach(peer => {
+    //       node.dialProtocol(peer, '/getAddrList', (err, conn) => {
+    //         if (err) console.log(err)
+    //         pull(pull.values([encodePublicIps(publicIpsList)]), conn)
+    //       })
+    //     })
+    //   }
+    //   // }, 1000 * 30)
+    // }, 1000 * 2)
 
     // For commissions:
     let commissionAddress
