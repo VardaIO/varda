@@ -6,5 +6,6 @@
     ],
     "signal":  "/ip4/106.75.148.236/tcp/9090/ws/p2p-websocket-star/",
     "enablePublicIp": false,
-    "commission": false
+    "commission": false,
+    "mnemonic": ""
 }
