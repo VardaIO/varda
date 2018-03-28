@@ -20,7 +20,7 @@ Varda engine is the sea of stars' origin of power, at the same time, it will inj
 * [x] make rules for adding stars to DAG network
 * [x] write consensus
 * [x] commission
-* [ ] commission commit number
+* [x] commission commit number
 
   ## Note:
 

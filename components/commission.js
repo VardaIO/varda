@@ -205,6 +205,7 @@ class Commission {
             return
           } else if (receiver[property].broadcast == true) {
             console.log('have commit')
+            console.log(receiver[property].commissionsList)
             return
           }
 
