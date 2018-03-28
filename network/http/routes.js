@@ -13,6 +13,8 @@ const starProto = pb(fs.readFileSync(`${appRoot}/network/protos/star.proto`))
 const sync = require('../../components/sync/sync')
 const HD = require('../../components/hd-wallet')
 const Star = require('../../components/star')
+
+router.prefix('/api')
 // router.get('/createAccount', ctx => {
 //   const hd = new HD()
 //   ctx.body = hd.genMnemonic()
