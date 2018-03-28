@@ -95,7 +95,7 @@ const start = async () => {
       const mciFromPeers = await sync.getLastMciFromPeers()
       console.log(mciFromPeers)
       sync.sync(mciFromPeers)
-    }, 1000 * 2)
+    }, 1000 * 20)
   } catch (error) {
     console.log(error)
   }

@@ -72,9 +72,6 @@ const createNode = async () => {
     .then(async peerInfo => {
       let peerPublicIP = await getPublicIp()
 
-      console.log(colors.green(`my ip is ${peerPublicIP}`))
-      console.log(`!peerPublicIP, ${!peerPublicIP}`)
-
       if (!peerPublicIP) {
         if (config.signal) {
           console.log(`using config.signal ${config.signal}`)
@@ -154,7 +151,7 @@ const runP2p = async sk => {
               // console.log('push', array[0].addr)
               publicIpsList.push(array[0].addr)
               const ma = multiaddr(array[0].addr)
-              console.log(ma)
+              // console.log(ma)
               const id = peerId.createFromB58String(ma.getPeerId())
               let peer = new PeerInfo(id)
               peer.multiaddrs.add(ma)
@@ -237,8 +234,7 @@ const runP2p = async sk => {
             pull(pull.values([buf]), conn)
           })
         })
-        // }, 1000 * 60)
-      }, 1000 * 2)
+      }, 1000 * 30)
     }
 
     setInterval(() => {
@@ -250,7 +246,7 @@ const runP2p = async sk => {
           pull(pull.values([encodePublicIps(publicIpsList)]), conn)
         })
       })
-    }, 1000 * 2)
+    }, 1000 * 60)
 
     // For commissions:
     let commissionAddress
@@ -374,8 +370,5 @@ const runP2p = async sk => {
     return node
   })
 }
-// setInterval(()=>{
-//   console.log(commission.)
-// }, 1000*2)
-// runP2p()
+
 module.exports = runP2p
