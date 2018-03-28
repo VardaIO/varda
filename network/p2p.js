@@ -113,19 +113,6 @@ const runP2p = async sk => {
     console.log('listening on:')
     node.peerInfo.multiaddrs.forEach(ma => console.log(ma.toString()))
 
-    const newPublicAddr = addr => {
-      const ma = multiaddr(addr)
-      const id = peerId.createFromB58String(ma.getPeerId())
-      let peer = new PeerInfo(id)
-      peer.multiaddrs.add(ma)
-      node.dial(peer, (err, conn) => {
-        if (err) {
-          // _.remove(publicIpsList, n => {
-          //   return n == addr
-          // })
-        }
-      })
-    }
     // when discovery a peer, try to dialProtocol to this peer,if it can reply,
     // peers will connect with each other
     node.on('peer:discovery', peerInfo => {
@@ -180,6 +167,38 @@ const runP2p = async sk => {
       )
     })
 
+    node.handle('/peerListSync', async (protocol, conn) => {
+      pull(
+        conn,
+        pull.map(v => {
+          try {
+            return msg.addrs.decode(v)
+          } catch (error) {
+            console.log(error)
+          }
+        }),
+        pull.collect(function(err, array) {
+          if (!_.isEmpty(array)) {
+            // console.log(array[0])
+            let list = array[0].addrs
+            list.forEach(value => {
+              // console.log(value)
+              const ma = multiaddr(value)
+              const id = peerId.createFromB58String(ma.getPeerId())
+              let p = new PeerInfo(id)
+              p.multiaddrs.add(ma)
+
+              node.dial(p, (err, conn) => {
+                if (err) {
+                  console.log(err)
+                }
+              })
+            })
+          }
+        })
+      )
+    })
+
     node.handle('/getLastMci', async (protocol, conn) => {
       // pull(push, conn)
       // push.push(`${lastMci}`)
@@ -221,35 +240,6 @@ const runP2p = async sk => {
         // }, 1000 * 60)
       }, 1000 * 2)
     }
-
-    node.handle('/peerListSync', async (protocol, conn) => {
-      pull(
-        conn,
-        pull.map(v => {
-          return msg.addrs.decode(v)
-        }),
-        pull.collect(function(err, array) {
-          if (!_.isEmpty(array)) {
-            // console.log(array[0])
-            let list = array[0].addrs
-            list.forEach(value => {
-              // console.log(value)
-              const ma = multiaddr(value)
-              const id = peerId.createFromB58String(ma.getPeerId())
-              let p = new PeerInfo(id)
-              p.multiaddrs.add(ma)
-
-              node.dial(p, (err, conn) => {
-                if (err) {
-                  console.log(err)
-                }
-                console.log('conn')
-              })
-            })
-          }
-        })
-      )
-    })
 
     setInterval(() => {
       values(node.peerBook.getAll()).forEach(peer => {
