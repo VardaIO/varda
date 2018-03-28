@@ -164,7 +164,7 @@ const runP2p = async sk => {
         conn,
         pull.map(ip => {
           try {
-            msg.addr.decode(ip)
+            return msg.addr.decode(ip)
             console.log(msg.addr.decode(ip))
           } catch (error) {
             console.log('receive a wrong protobuf')
@@ -191,7 +191,7 @@ const runP2p = async sk => {
         conn,
         pull.map(v => {
           try {
-            msg.addrs.decode(v)
+            return msg.addrs.decode(v)
           } catch (error) {
             console.log('receive a wrong protobuf')
           }
@@ -257,9 +257,7 @@ const runP2p = async sk => {
           })
         })
       }
-    // }, 1000 * 30)
-  }, 1000 * 3)
-    
+    }, 1000 * 30)
 
     // For commissions:
     let commissionAddress
