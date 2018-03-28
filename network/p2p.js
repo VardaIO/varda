@@ -173,11 +173,10 @@ const runP2p = async sk => {
           if (err) console.log(err)
 
           try {
+            console.log(array[0])
             if (publicIpsList.indexOf(array[0].addr) == -1) {
-              if (isIp(array[0].addr)) {
                 publicIpsList.push(array[0].addr)
                 emitter.emit('newPublicAddr', array[0].addr)
-              }
             }
           } catch (error) {
             console.log('addr is wrong')
