@@ -118,7 +118,6 @@ const runP2p = async sk => {
       const id = peerId.createFromB58String(ma.getPeerId())
       let peer = new PeerInfo(id)
       peer.multiaddrs.add(ma)
-      console.log(peer)
       node.dial(peer, (err, conn) => {
         if (err) {
           // _.remove(publicIpsList, n => {
@@ -170,8 +169,14 @@ const runP2p = async sk => {
               // console.log('push', array[0].addr)
               publicIpsList.push(array[0].addr)
               // emitter.emit('newPublicAddr', array[0].addr)
-              newPublicAddr(array[0].addr)            }
-
+              // newPublicAddr(array[0].addr)
+              const ma = multiaddr(array[0].addr)
+              console.log(ma)
+              const id = peerId.createFromB58String(ma.getPeerId())
+              let peer = new PeerInfo(id)
+              peer.multiaddrs.add(ma)
+              node.dial(peer, (err, conn) => {})
+            }
           } catch (error) {
             console.log('addr is wrong')
           }
@@ -197,7 +202,13 @@ const runP2p = async sk => {
               if (isIp(v)) {
                 // console.log('push', v)
                 publicIpsList.push(v)
-                newPublicAddr(v)
+                // newPublicAddr(v)
+                const ma = multiaddr(v)
+                console.log(ma)
+                const id = peerId.createFromB58String(ma.getPeerId())
+                let peer = new PeerInfo(id)
+                peer.multiaddrs.add(ma)
+                node.dial(peer, (err, conn) => {})
                 // emitter.emit('newPublicAddr', v)
               }
             }
