@@ -265,17 +265,18 @@ const runP2p = async sk => {
       pull(
         conn,
         pull.map(v => {
-            return msg.addrs.decode(v)
+          return msg.addrs.decode(v)
         }),
         pull.collect(function(err, array) {
-          console.log(array)
+          let list = array[0].addrs
+          console.log('list',list)
         })
       )
     })
 
     setInterval(() => {
       values(node.peerBook.getAll()).forEach(peer => {
-        node.dialProtocol(peer, '/t', (err, conn) => {
+        node.dialProtocol(peer, 't', (err, conn) => {
           if (err) {
             console.log(err)
           }
