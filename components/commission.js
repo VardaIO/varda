@@ -167,6 +167,18 @@ class Commission {
           return
         }
 
+        // validate signature address 
+
+        if (value.commissionAddress !== new Utils().genAddress(value.commissionPublicKey)) {
+          return
+        }
+
+        //validate whether it is in commissionList
+        
+        if(commissionsList.indexOf(value.commissionAddress) == -1) {
+          return
+        }
+
         if (!new Vailidate().vailidateStarWithoutTransaction(value)) {
           return
         }
@@ -196,7 +208,14 @@ class Commission {
             return
           }
 
+          if( receiver[property].commissionsList.indexOf(value.commissionAddress) ) {
+            // commissionAddress
+            console.log('this commission has commit')
+            return
+          }
+
           const utils = new Utils()
+
           receiver[property].count++
           this._broadcastWaitingStar(
             starProto.commissionStar.encode({
@@ -213,6 +232,8 @@ class Commission {
         if (!await this.haveStar(property)) {
           receiver[property] = value
           receiver[property].count = 0
+          receiver[property].commissionsList = []
+          receiver[property].commissionsList.push(utils.getAddressFromSk(this.sk))
 
           const utils = new Utils()
           this._broadcastWaitingStar(
