@@ -222,13 +222,15 @@ const runP2p = async sk => {
     })
     // sendstar receive a unconfirm star, it should push to pool, to be confirm( for commissions) .
 
-    if (peerPublicIp) {
+    if (peerPublicIp !== null) {
       let id = node.peerInfo.id.toB58String()
       let addr = `/ip4/${peerPublicIp}/tcp/${config.Port}/ipfs/${id}`
       const buf = msg.addr.encode({
         addr: addr
       })
+
       setInterval(() => {
+        console.log('broadcast Addr')
         values(node.peerBook.getAll()).forEach(peer => {
           node.dialProtocol(peer, '/getPubIpAddr', (err, conn) => {
             if (err) console.log(err)
@@ -239,10 +241,13 @@ const runP2p = async sk => {
     }
 
     setInterval(() => {
+      console.log(publicIpsList)
+
       if (publicIpsList.length != 0) {
         values(node.peerBook.getAll()).forEach(peer => {
           node.dialProtocol(peer, '/getAddrList', (err, conn) => {
             if (err) console.log(err)
+            console.log('dial /getAddrList now')
             pull(pull.values([encodePublicIps(publicIpsList)]), conn)
           })
         })
