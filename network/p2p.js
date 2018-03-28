@@ -119,7 +119,7 @@ const runP2p = async sk => {
       const id = peerId.createFromB58String(ma.getPeerId())
       let peer = new PeerInfo(id)
       peer.multiaddrs.add(ma)
-      node.dialProtocol(peer, (err, conn) => {
+      node.dial(peer, (err, conn) => {
         if (err) {
           _.remove(publicIpsList, n => {
             return n == addr
@@ -166,10 +166,6 @@ const runP2p = async sk => {
     let peerPublicIp = await getPublicIp()
 
     // Handler:
-    node.handle('', (protocol, conn) => {
-      console.log('23333')
-    })
-
     node.handle('/getPubIpAddr', (protocol, conn) => {
       pull(
         conn,
