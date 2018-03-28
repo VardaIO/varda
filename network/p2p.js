@@ -252,7 +252,9 @@ const runP2p = async sk => {
           })
         })
       }
-    }, 1000 * 30)
+    // }, 1000 * 30)
+  }, 1000 * 2)
+    
 
     // For commissions:
     let commissionAddress
