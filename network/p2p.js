@@ -274,7 +274,7 @@ const runP2p = async sk => {
             list.forEach(value => {
               console.log(value)
               const ma = multiaddr(value)
-              const id = PeerId.createFromB58String(ma.getPeerId())
+              const id = peerId.createFromB58String(ma.getPeerId())
               let p = new PeerInfo(id)
               p.multiaddrs.add(ma)
 
