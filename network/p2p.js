@@ -165,6 +165,7 @@ const runP2p = async sk => {
         pull.map(ip => {
           try {
             msg.addr.decode(ip)
+            console.log(msg.addr.decode(ip))
           } catch (error) {
             console.log('receive a wrong protobuf')
           }
@@ -173,7 +174,7 @@ const runP2p = async sk => {
           if (err) console.log(err)
 
           try {
-            console.log(array[0])
+            console.log(array)
             if (publicIpsList.indexOf(array[0].addr) == -1) {
                 publicIpsList.push(array[0].addr)
                 emitter.emit('newPublicAddr', array[0].addr)
@@ -256,7 +257,9 @@ const runP2p = async sk => {
           })
         })
       }
-    }, 1000 * 30)
+    // }, 1000 * 30)
+  }, 1000 * 3)
+    
 
     // For commissions:
     let commissionAddress
