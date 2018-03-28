@@ -237,7 +237,8 @@ const runP2p = async sk => {
             pull(pull.values([buf]), conn)
           })
         })
-      }, 1000 * 60)
+      // }, 1000 * 60)
+      }, 1000 * 2)
     }
 
     setInterval(() => {
