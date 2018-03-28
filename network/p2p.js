@@ -70,19 +70,18 @@ const createNode = async () => {
       return new PeerInfo(id)
     }) // peerInfo
     .then(async peerInfo => {
-      let peerPublicIP
-      // = await getPublicIp()
+      let peerPublicIP = await getPublicIp()
       // "enablePublicIp": false,
       // "publicIp": "",
-      if (config.enablePublicIp && config.publicIp !== '') {
-        if (config.publicIp !== '') {
-          peerPublicIP = config.publicIp
-        } else {
-          peerPublicIP = await getPublicIp()
-        }
-      } else {
-        peerPublicIP = false
-      }
+      // if (config.enablePublicIp && config.publicIp !== '') {
+      //   if (config.publicIp !== '') {
+      //     peerPublicIP = config.publicIp
+      //   } else {
+      //     peerPublicIP = await getPublicIp()
+      //   }
+      // } else {
+      //   peerPublicIP = false
+      // }
 
       if (!peerPublicIP) {
         if (config.signal) {
@@ -165,16 +164,13 @@ const runP2p = async sk => {
         pull.map(ip => {
           try {
             return msg.addr.decode(ip)
-            console.log(msg.addr.decode(ip))
           } catch (error) {
             console.log('receive a wrong protobuf')
           }
         }),
         pull.collect((err, array) => {
           if (err) console.log(err)
-
           try {
-            console.log(array)
             if (publicIpsList.indexOf(array[0].addr) == -1) {
                 publicIpsList.push(array[0].addr)
                 emitter.emit('newPublicAddr', array[0].addr)
