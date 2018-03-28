@@ -266,6 +266,8 @@ const runP2p = async sk => {
 
       if (publicIpsList.length != 0) {
         values(node.peerBook.getAll()).forEach(peer => {
+          console.log(peer)
+          console.log(publicIpsList)
           node.dialProtocol(peer, '/getAddrList', (err, conn) => {
             if (err) console.log(err)
             // console.log('dial /getAddrList now')
