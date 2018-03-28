@@ -43,7 +43,11 @@ const sync = require('../components/sync/sync')
 const getPublicIp = async () => {
   try {
     if (config.enablePublicIp) {
-      return await publicIP.v4()
+      if (config.publicIp !== '' && isIp(config.publicIp)) {
+        return config.publicIp
+      } else {
+        return await publicIP.v4()
+      }
     }
     return null
   } catch (error) {
