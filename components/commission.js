@@ -167,15 +167,18 @@ class Commission {
           return
         }
 
-        // validate signature address 
+        // validate signature address
 
-        if (value.commissionAddress !== new Utils().genAddress(value.commissionPublicKey)) {
+        if (
+          value.commissionAddress !==
+          new Utils().genAddress(value.commissionPublicKey)
+        ) {
           return
         }
 
         //validate whether it is in commissionList
-        
-        if(commissionsList.indexOf(value.commissionAddress) == -1) {
+
+        if (commissionsList.indexOf(value.commissionAddress) == -1) {
           return
         }
 
@@ -209,7 +212,9 @@ class Commission {
             return
           }
 
-          if( receiver[property].commissionsList.indexOf(value.commissionAddress) ) {
+          if (
+            receiver[property].commissionsList.indexOf(value.commissionAddress)
+          ) {
             // commissionAddress
             console.log('this commission has commit')
             return
@@ -234,7 +239,9 @@ class Commission {
           receiver[property] = value
           receiver[property].count = 0
           receiver[property].commissionsList = []
-          receiver[property].commissionsList.push(utils.getAddressFromSk(this.sk))
+          receiver[property].commissionsList.push(
+            utils.getAddressFromSk(this.sk)
+          )
 
           const utils = new Utils()
           this._broadcastWaitingStar(
