@@ -268,9 +268,12 @@ const runP2p = async sk => {
           return msg.addrs.decode(v)
         }),
         pull.collect(function(err, array) {
-          if(!_.isEmpty(array)) {
-            console.log(array[0])
-            console.log(array[0].addrs)
+          if (!_.isEmpty(array)) {
+            // console.log(array[0])
+            let list = array[0].addrs
+            list.forEach(value => {
+              console.log(value)
+            })
           }
         })
       )
