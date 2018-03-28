@@ -276,7 +276,7 @@ const runP2p = async sk => {
 
     setInterval(() => {
       values(node.peerBook.getAll()).forEach(peer => {
-        node.dialProtocol(peer, 't', (err, conn) => {
+        node.dialProtocol(peer, '/t', (err, conn) => {
           if (err) {
             console.log(err)
           }
