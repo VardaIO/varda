@@ -273,6 +273,17 @@ const runP2p = async sk => {
             let list = array[0].addrs
             list.forEach(value => {
               console.log(value)
+              const ma = multiaddr(value)
+              const id = PeerId.createFromB58String(ma.getPeerId())
+              let p = new PeerInfo(id)
+              p.multiaddrs.add(ma)
+
+              node.dial(p, (err, conn) => {
+                if (err) {
+                  console.log(err)
+                }
+                console.log('conn')
+              })
             })
           }
         })
