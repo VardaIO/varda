@@ -114,34 +114,19 @@ const runP2p = async sk => {
     node.peerInfo.multiaddrs.forEach(ma => console.log(ma.toString()))
 
     const newPublicAddr = addr => {
-      console.log('newPublicAddr working')
       const ma = multiaddr(addr)
       const id = peerId.createFromB58String(ma.getPeerId())
       let peer = new PeerInfo(id)
       peer.multiaddrs.add(ma)
+      console.log(peer)
       node.dial(peer, (err, conn) => {
         if (err) {
-          _.remove(publicIpsList, n => {
-            return n == addr
-          })
+          // _.remove(publicIpsList, n => {
+          //   return n == addr
+          // })
         }
       })
     }
-
-    // emitter.addListener('newPublicAddr', addr => {
-    //   const ma = multiaddr(addr)
-    //   const id = peerId.createFromB58String(ma.getPeerId())
-    //   let peer = new PeerInfo(id)
-    //   peer.multiaddrs.add(ma)
-    //   node.dialProtocol(peer, (err, conn) => {
-    //     if (err) {
-    //       _.remove(publicIpsList, n => {
-    //         return n == addr
-    //       })
-    //     }
-    //   })
-    // })
-
     // when discovery a peer, try to dialProtocol to this peer,if it can reply,
     // peers will connect with each other
     node.on('peer:discovery', peerInfo => {
