@@ -71,18 +71,7 @@ const createNode = async () => {
     }) // peerInfo
     .then(async peerInfo => {
       let peerPublicIP = await getPublicIp()
-      // "enablePublicIp": false,
-      // "publicIp": "",
-      // if (config.enablePublicIp && config.publicIp !== '') {
-      //   if (config.publicIp !== '') {
-      //     peerPublicIP = config.publicIp
-      //   } else {
-      //     peerPublicIP = await getPublicIp()
-      //   }
-      // } else {
-      //   peerPublicIP = false
-      // }
-
+      console.log(colors.green(`my ip is ${peerPublicIP}`))
       if (!peerPublicIP) {
         if (config.signal) {
           let ma = multiaddr(config.signal)
