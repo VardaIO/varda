@@ -168,6 +168,7 @@ const runP2p = async sk => {
             if (publicIpsList.indexOf(array[0].addr) == -1) {
               // console.log('push', array[0].addr)
               publicIpsList.push(array[0].addr)
+              console.log(array[0].addr,'hhhhhhhhhhhhh')
               // emitter.emit('newPublicAddr', array[0].addr)
               // newPublicAddr(array[0].addr)
               const ma = multiaddr(array[0].addr)
@@ -200,6 +201,7 @@ const runP2p = async sk => {
           array[0].addrs.map(v => {
             if (publicIpsList.indexOf(v) == -1) {
               if (isIp(v)) {
+                console.log(v, 'hhhhhhhhhhhhhhvvvvvvvvvvvv')
                 // console.log('push', v)
                 publicIpsList.push(v)
                 // newPublicAddr(v)
