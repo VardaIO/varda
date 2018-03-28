@@ -71,13 +71,18 @@ const createNode = async () => {
     }) // peerInfo
     .then(async peerInfo => {
       let peerPublicIP = await getPublicIp()
+
       console.log(colors.green(`my ip is ${peerPublicIP}`))
+      console.log(`!peerPublicIP, ${!peerPublicIP}`)
+
       if (!peerPublicIP) {
         if (config.signal) {
+          console.log(`using config.signal ${config.signal}`)
           let ma = multiaddr(config.signal)
           peerInfo.multiaddrs.add(ma)
         }
       }
+
       let addr = `/ip4/0.0.0.0/tcp/${config.Port}`
       let ma = multiaddr(addr)
       peerInfo.multiaddrs.add(ma)
