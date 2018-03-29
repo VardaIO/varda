@@ -72,6 +72,7 @@ class Commission {
           const authorLastMci = await this._findLastMci(property.authorAdress)
 
           // a star should have at least one on star'main chain index - 1
+          /*
           if (authorLastMci) {
             if (value.mci - authorLastMci < 6) {
               console.log(
@@ -80,7 +81,8 @@ class Commission {
               return
             }
           }
-
+          */
+         
           // 5. a star should have at least one on star'main chain index - 1
           const starsFromLastMci = await this._getStarHashByMci(value.mci - 1)
           // _.isArray(starsFromLastMci)
@@ -180,13 +182,13 @@ class Commission {
         const existKey = _.has(receiver, property)
         //1.1存在：查看key中的count，若大于三分之二则commit并广播(在receiver[property].broadcas不存在时)，不大于则继续计数
         if (existKey) {
-          if (
-            receiver[property].commissionsList.indexOf(value.commissionAddress)
-          ) {
-            // commissionAddress
-            console.log("this commission's have been broadcast")
-            return
-          }
+          // if (
+          //   receiver[property].commissionsList.indexOf(value.commissionAddress)
+          // ) {
+          //   // commissionAddress
+          //   console.log("this commission's have been broadcast")
+          //   return
+          // }
 
           if (
             receiver[property].count >= Math.floor(commissionNumber / 3) * 2 &&
@@ -232,7 +234,7 @@ class Commission {
           receiver[property].commissionsList = []
           console.log(colors.green(value.commissionAddress))
           receiver[property].commissionsList.push(value.commissionAddress)
-
+          console.log('memory receiver[property].commissionsList',receiver[property].commissionsList)
           const utils = new Utils()
           this._broadcastWaitingStar(
             starProto.commissionStar.encode({
