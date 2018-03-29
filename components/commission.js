@@ -156,8 +156,8 @@ class Commission {
           receiver[property].count = 0
           receiver[property].commissionsList = []
 
-          console.log(colors.green(value.commissionAddress))
-          receiver[property].commissionsList.push(value.commissionAddress)
+          // console.log(colors.green(value.commissionAddress))
+          receiver[property].commissionsList.push(utils.getAddressFromSk(this.sk))
           console.log(
             'memory receiver[property].commissionsList',
             receiver[property].commissionsList
@@ -192,6 +192,7 @@ class Commission {
         //1.1存在：查看key中的count，若大于三分之二则commit并广播(在receiver[property].broadcas不存在时)，不大于则继续计数
         console.log('1.1', existKey)
         if (existKey) {
+          
           if (
             !_.isEmpty(
               receiver[property].commissionsList.indexOf(
@@ -236,6 +237,8 @@ class Commission {
           const utils = new Utils()
 
           receiver[property].count++
+          receiver[property].commissionsList.push(value.commissionAddress)
+
           this._broadcastWaitingStar(
             starProto.commissionStar.encode({
               star: value,
