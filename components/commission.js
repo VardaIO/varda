@@ -169,11 +169,16 @@ class Commission {
 
         // validate signature address
 
-        if (
-          value.commissionAddress !==
-          new Utils().genAddress(value.commissionPublicKey)
-        ) {
-          return
+        try {
+          console.log(value)
+          if (
+            value.commissionAddress !==
+            new Utils().genAddress(value.commissionPublicKey)
+          ) {
+            return
+          }
+        } catch (error) {
+          console.log(error)
         }
 
         //validate whether it is in commissionList
