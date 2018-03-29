@@ -155,7 +155,13 @@ const runP2p = async sk => {
               const id = peerId.createFromB58String(ma.getPeerId())
               let peer = new PeerInfo(id)
               peer.multiaddrs.add(ma)
-              node.dial(peer, (err, conn) => {})
+              node.dial(peer, (err, conn) => {
+                if (err) {
+                  _.remove(publicIpsList, n => {
+                    return n == addr
+                  })
+                }
+              })
             }
           } catch (error) {
             console.log('addr is wrong')
@@ -187,6 +193,9 @@ const runP2p = async sk => {
 
               node.dial(p, (err, conn) => {
                 if (err) {
+                  _.remove(publicIpsList, n => {
+                    return n == addr
+                  })
                   console.log(err)
                 }
               })
