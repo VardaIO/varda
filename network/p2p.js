@@ -328,6 +328,7 @@ const runP2p = async sk => {
             }
 
             if (verify) {
+              star.commissionAddress = tobeConfirm.commissionAddress
               commission.waitingPool[star.star_hash] = star
             }
           } catch (error) {

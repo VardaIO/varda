@@ -181,6 +181,14 @@ class Commission {
         //1.1存在：查看key中的count，若大于三分之二则commit并广播(在receiver[property].broadcas不存在时)，不大于则继续计数
         if (existKey) {
           if (
+            receiver[property].commissionsList.indexOf(value.commissionAddress)
+          ) {
+            // commissionAddress
+            console.log("this commission's have been broadcast")
+            return
+          }
+
+          if (
             receiver[property].count >= Math.floor(commissionNumber / 3) * 2 &&
             !receiver[property].broadcast
           ) {
@@ -203,14 +211,6 @@ class Commission {
             return
           }
 
-          // if (
-          //   receiver[property].commissionsList.indexOf(value.commissionAddress)
-          // ) {
-          //   // commissionAddress
-          //   console.log('this commission has commit')
-          //   return
-          // }
-
           const utils = new Utils()
 
           receiver[property].count++
@@ -229,10 +229,9 @@ class Commission {
         if (!await this.haveStar(property)) {
           receiver[property] = value
           receiver[property].count = 0
-          // receiver[property].commissionsList = []
-          // receiver[property].commissionsList.push(
-          //   utils.getAddressFromSk(this.sk)
-          // )
+          receiver[property].commissionsList = []
+          console.log(colors.green(value.commissionAddress))
+          receiver[property].commissionsList.push(value.commissionAddress)
 
           const utils = new Utils()
           this._broadcastWaitingStar(
