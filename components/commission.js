@@ -211,6 +211,8 @@ class Commission {
             }
           }
 
+          console.log(receiver[property].count)
+          
           if (
             receiver[property].count >= Math.floor(commissionNumber / 3) * 2 &&
             !receiver[property].broadcast
@@ -237,6 +239,8 @@ class Commission {
           const utils = new Utils()
 
           receiver[property].count++
+          console.log(receiver[property].count)
+          console.log(value.commissionAddress)
           receiver[property].commissionsList.push(value.commissionAddress)
 
           this._broadcastWaitingStar(
