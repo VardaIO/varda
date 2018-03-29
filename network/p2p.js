@@ -30,8 +30,8 @@ const emitter = require('../components/event')
 
 const Utils = require('../components/utils')
 const utils = new Utils()
-const { addStarFromBroadcast } = require('../components/addStar')
 const pool = require('../database/pool')
+const { addStarFromBroadcast } = require('../components/addStar')
 
 const sync = require('../components/sync/sync')
 /**
@@ -305,7 +305,9 @@ const runP2p = async sk => {
             }
 
             const verify = () => {
-              const genAddress = utils.genAddress(tobeConfirm.commissionPublicKey)
+              const genAddress = utils.genAddress(
+                tobeConfirm.commissionPublicKey
+              )
               const addressVerify = genAddress == genAddress ? true : false
 
               if (!addressVerify) {
@@ -320,7 +322,7 @@ const runP2p = async sk => {
 
               if (!sigVerify || !addressVerify) {
                 return false
-              } 
+              }
 
               return true
             }
@@ -328,7 +330,6 @@ const runP2p = async sk => {
             if (verify) {
               commission.waitingPool[star.star_hash] = star
             }
-
           } catch (error) {
             console.log('receive a wrong protobuf')
             console.log(error)
