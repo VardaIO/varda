@@ -329,8 +329,8 @@ const runP2p = async sk => {
             }
 
             if (verify) {
-              star.commissionAddress = tobeConfirm.commissionAddress
               commission.waitingPool[star.star_hash] = star
+              commission.waitingPool[star.star_hash].commissionAddress = tobeConfirm.commissionAddress
             }
           } catch (error) {
             console.log('receive a wrong protobuf')

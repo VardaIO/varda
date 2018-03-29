@@ -155,9 +155,7 @@ class Commission {
 
         if (
           !_.isEmpty(
-            receiver[property].commissionsList.indexOf(
-              value.commissionAddress
-            )
+            receiver[property].commissionsList
           )
         ) {
           if (
@@ -170,7 +168,7 @@ class Commission {
             return
           }
         }
-        
+
         // if from local
         if (value['starFrom'] && value['starFrom'] == 'local') {
           receiver[property] = value
