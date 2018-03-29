@@ -294,6 +294,7 @@ const runP2p = async sk => {
         'waitingStar',
         msg => {
           try {
+            console.log(colors.green('waitingStar subscribe is working'))
             const tobeConfirm = starProto.commissionStar.decode(
               Buffer.from(msg.data.toString(), 'hex')
             )

@@ -154,6 +154,15 @@ class Commission {
         if (value['starFrom'] && value['starFrom'] == 'local') {
           receiver[property] = value
           receiver[property].count = 0
+          receiver[property].commissionsList = []
+
+          console.log(colors.green(value.commissionAddress))
+          receiver[property].commissionsList.push(value.commissionAddress)
+          console.log(
+            'memory receiver[property].commissionsList',
+            receiver[property].commissionsList
+          )
+
           delete this.preparePool[property]
           //如果是自己发出的则不管
           const utils = new Utils()
@@ -183,13 +192,23 @@ class Commission {
         //1.1存在：查看key中的count，若大于三分之二则commit并广播(在receiver[property].broadcas不存在时)，不大于则继续计数
         console.log('1.1', existKey)
         if (existKey) {
-          // if (
-          //   receiver[property].commissionsList.indexOf(value.commissionAddress)
-          // ) {
-          //   // commissionAddress
-          //   console.log("this commission's have been broadcast")
-          //   return
-          // }
+          if (
+            !_.isEmpty(
+              receiver[property].commissionsList.indexOf(
+                value.commissionAddress
+              )
+            )
+          ) {
+            if (
+              receiver[property].commissionsList.indexOf(
+                value.commissionAddress
+              )
+            ) {
+              // commissionAddress
+              console.log("this commission's have been broadcast")
+              return
+            }
+          }
 
           if (
             receiver[property].count >= Math.floor(commissionNumber / 3) * 2 &&
@@ -236,7 +255,10 @@ class Commission {
           receiver[property].commissionsList = []
           console.log(colors.green(value.commissionAddress))
           receiver[property].commissionsList.push(value.commissionAddress)
-          console.log('memory receiver[property].commissionsList',receiver[property].commissionsList)
+          console.log(
+            'memory receiver[property].commissionsList',
+            receiver[property].commissionsList
+          )
           const utils = new Utils()
           this._broadcastWaitingStar(
             starProto.commissionStar.encode({
