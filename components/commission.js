@@ -38,6 +38,7 @@ class Commission {
   prepare() {
     return {
       set: async (receiver, property, value) => {
+        console.log('preparePool value is',value)
         try {
           // 来自普通用户
           // 判断是否在waiting中
@@ -146,6 +147,7 @@ class Commission {
   waiting() {
     return {
       set: async (receiver, property, value) => {
+        console.log('value is:', value)
         // 0.验证
         if (!property || !value) {
           return
@@ -212,7 +214,7 @@ class Commission {
           }
 
           console.log(receiver[property].count)
-          
+
           if (
             receiver[property].count >= Math.floor(commissionNumber / 3) * 2 &&
             !receiver[property].broadcast
