@@ -303,13 +303,17 @@ const runP2p = async sk => {
             )
             //判断是否是自己发出的
             const star = tobeConfirm.star
-            
-            if(utils.getAddressFromSk(sk) === tobeConfirm.commissionAddress) {
+
+            if (utils.getAddressFromSk(sk) === tobeConfirm.commissionAddress) {
               return
             }
 
-            if(commissionsCache.hasOwnProperty(star.star_hash)) {
-              if(commission[star.star_hash].indexOf(tobeConfirm.commissionAddress) !== -1) {
+            if (commissionsCache.hasOwnProperty(star.star_hash)) {
+              if (
+                commissionsCache[star.star_hash].indexOf(
+                  tobeConfirm.commissionAddress
+                ) !== -1
+              ) {
                 return
               }
             } else {
@@ -344,8 +348,10 @@ const runP2p = async sk => {
             }
 
             if (verify) {
-              // hasOwnProperty("key") 
-              commissionsCache[star.star_hash].push(tobeConfirm.commissionsCache)
+              // hasOwnProperty("key")
+              commissionsCache[star.star_hash].push(
+                tobeConfirm.commissionsCache
+              )
               commission.waitingPool[star.star_hash] = star
             }
           } catch (error) {

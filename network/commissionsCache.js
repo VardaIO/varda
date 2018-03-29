@@ -1,5 +1,3 @@
-let commissions = {
-
-}
+let commissions = {}
 
 module.exports = commissions

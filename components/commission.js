@@ -38,7 +38,6 @@ class Commission {
   prepare() {
     return {
       set: async (receiver, property, value) => {
-        console.log('preparePool value is', value)
         try {
           // 来自普通用户
           // 判断是否在waiting中
@@ -147,7 +146,6 @@ class Commission {
   waiting() {
     return {
       set: async (receiver, property, value) => {
-        console.log('value is:', value)
         // 0.验证
         if (!property || !value) {
           return
@@ -227,7 +225,7 @@ class Commission {
           console.log('1.2')
           receiver[property] = value
           receiver[property].count = 0
-          
+
           const utils = new Utils()
           this._broadcastWaitingStar(
             starProto.commissionStar.encode({
