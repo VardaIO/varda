@@ -177,10 +177,7 @@ class Commission {
         //1. 判断key（star hash）是否存在
         const existKey = _.has(receiver, property)
         //1.1存在：查看key中的count，若大于三分之二则commit并广播(在receiver[property].broadcas不存在时)，不大于则继续计数
-        console.log('1.1', existKey)
         if (existKey) {
-          console.log(receiver[property].count)
-
           if (
             receiver[property].count >= Math.floor(commissionNumber / 3) * 2 &&
             !receiver[property].broadcast
@@ -206,8 +203,6 @@ class Commission {
           const utils = new Utils()
 
           receiver[property].count++
-          console.log(receiver[property].count)
-          console.log(value.commissionAddress)
 
           this._broadcastWaitingStar(
             starProto.commissionStar.encode({
@@ -222,7 +217,6 @@ class Commission {
         }
         // 1.2 不存在：查看数据库中是否有，没有则添加
         if (!await this.haveStar(property)) {
-          console.log('1.2')
           receiver[property] = value
           receiver[property].count = 0
 
@@ -329,11 +323,9 @@ class Commission {
       let stars = client
         .prepare(`SELECT * FROM stars WHERE main_chain_index=${mci}`)
         .all()
-      // console.log(stars)
       if (_.isEmpty(stars)) {
         return null
       }
-      // console.log(stars)
       // return stars
       stars = _.sortBy(stars, star => {
         return star.timestamp
