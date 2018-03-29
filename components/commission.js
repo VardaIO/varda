@@ -152,6 +152,25 @@ class Commission {
         if (!property || !value) {
           return
         }
+
+        if (
+          !_.isEmpty(
+            receiver[property].commissionsList.indexOf(
+              value.commissionAddress
+            )
+          )
+        ) {
+          if (
+            receiver[property].commissionsList.indexOf(
+              value.commissionAddress
+            )
+          ) {
+            // commissionAddress
+            console.log("this commission's have been broadcast")
+            return
+          }
+        }
+        
         // if from local
         if (value['starFrom'] && value['starFrom'] == 'local') {
           receiver[property] = value
@@ -195,23 +214,7 @@ class Commission {
         console.log('1.1', existKey)
         if (existKey) {
 
-          if (
-            !_.isEmpty(
-              receiver[property].commissionsList.indexOf(
-                value.commissionAddress
-              )
-            )
-          ) {
-            if (
-              receiver[property].commissionsList.indexOf(
-                value.commissionAddress
-              )
-            ) {
-              // commissionAddress
-              console.log("this commission's have been broadcast")
-              return
-            }
-          }
+         
 
           console.log(receiver[property].count)
 
