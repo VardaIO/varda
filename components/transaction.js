@@ -66,6 +66,8 @@ class Transaction {
     if (type.indexOf(tx.type) == -1) {
       return false
     }
+
+    // metadata is a max size is 15000 byte
     // console.log(2, checkTransaction)
     if (!checkTransaction) {
       return false
