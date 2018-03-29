@@ -38,7 +38,7 @@ class Commission {
   prepare() {
     return {
       set: async (receiver, property, value) => {
-        console.log('preparePool value is',value)
+        console.log('preparePool value is', value)
         try {
           // 来自普通用户
           // 判断是否在waiting中
@@ -153,20 +153,16 @@ class Commission {
           return
         }
 
-        if (
-          !_.isEmpty(
-            receiver[property].commissionsList
-          )
-        ) {
+        try {
           if (
-            receiver[property].commissionsList.indexOf(
-              value.commissionAddress
-            )
+            receiver[property].commissionsList.indexOf(value.commissionAddress)
           ) {
             // commissionAddress
             console.log("this commission's have been broadcast")
             return
           }
+        } catch (error) {
+          console.log(error)
         }
 
         // if from local
@@ -176,7 +172,9 @@ class Commission {
           receiver[property].commissionsList = []
 
           // console.log(colors.green(value.commissionAddress))
-          receiver[property].commissionsList.push(new Utils().getAddressFromSk(this.sk))
+          receiver[property].commissionsList.push(
+            new Utils().getAddressFromSk(this.sk)
+          )
           console.log(
             'memory receiver[property].commissionsList',
             receiver[property].commissionsList
@@ -211,9 +209,6 @@ class Commission {
         //1.1存在：查看key中的count，若大于三分之二则commit并广播(在receiver[property].broadcas不存在时)，不大于则继续计数
         console.log('1.1', existKey)
         if (existKey) {
-
-         
-
           console.log(receiver[property].count)
 
           if (
