@@ -167,25 +167,11 @@ class Commission {
           return
         }
 
-        // validate signature address
-
-        try {
-          console.log(value)
-          if (
-            value.commissionAddress !==
-            new Utils().genAddress(value.commissionPublicKey)
-          ) {
-            return
-          }
-        } catch (error) {
-          console.log(error)
-        }
-
         //validate whether it is in commissionList
 
-        if (commissionsList.indexOf(value.commissionAddress) == -1) {
-          return
-        }
+        // if (commissionsList.indexOf(value.commissionAddress) == -1) {
+        //   return
+        // }
 
         if (!new Vailidate().vailidateStarWithoutTransaction(value)) {
           return
@@ -213,17 +199,17 @@ class Commission {
             return
           } else if (receiver[property].broadcast == true) {
             console.log('have commit')
-            console.log(receiver[property].commissionsList)
+            // console.log(receiver[property].commissionsList)
             return
           }
 
-          if (
-            receiver[property].commissionsList.indexOf(value.commissionAddress)
-          ) {
-            // commissionAddress
-            console.log('this commission has commit')
-            return
-          }
+          // if (
+          //   receiver[property].commissionsList.indexOf(value.commissionAddress)
+          // ) {
+          //   // commissionAddress
+          //   console.log('this commission has commit')
+          //   return
+          // }
 
           const utils = new Utils()
 
@@ -243,10 +229,10 @@ class Commission {
         if (!await this.haveStar(property)) {
           receiver[property] = value
           receiver[property].count = 0
-          receiver[property].commissionsList = []
-          receiver[property].commissionsList.push(
-            utils.getAddressFromSk(this.sk)
-          )
+          // receiver[property].commissionsList = []
+          // receiver[property].commissionsList.push(
+          //   utils.getAddressFromSk(this.sk)
+          // )
 
           const utils = new Utils()
           this._broadcastWaitingStar(

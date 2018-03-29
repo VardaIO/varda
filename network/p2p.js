@@ -304,15 +304,31 @@ const runP2p = async sk => {
               return
             }
 
-            const verify = utils.sigVerify(
-              star.star_hash,
-              tobeConfirm.commissionSignature,
-              tobeConfirm.commissionPublicKey
-            )
+            const verify = () => {
+              const genAddress = utils.genAddress(tobeConfirm.commissionPublicKey)
+              const addressVerify = genAddress == genAddress ? true : false
+
+              if (!addressVerify) {
+                return false
+              }
+
+              const sigVerify = utils.sigVerify(
+                star.star_hash,
+                tobeConfirm.commissionSignature,
+                tobeConfirm.commissionPublicKey
+              )
+
+              if (!sigVerify || !addressVerify) {
+                return false
+              } 
+
+              return true
+            }
 
             if (verify) {
               commission.waitingPool[star.star_hash] = star
             }
+
           } catch (error) {
             console.log('receive a wrong protobuf')
             console.log(error)
