@@ -82,7 +82,7 @@ class Commission {
             }
           }
           */
-         
+
           // 5. a star should have at least one on star'main chain index - 1
           const starsFromLastMci = await this._getStarHashByMci(value.mci - 1)
           // _.isArray(starsFromLastMci)
@@ -181,6 +181,7 @@ class Commission {
         //1. 判断key（star hash）是否存在
         const existKey = _.has(receiver, property)
         //1.1存在：查看key中的count，若大于三分之二则commit并广播(在receiver[property].broadcas不存在时)，不大于则继续计数
+        console.log('1.1', existKey)
         if (existKey) {
           // if (
           //   receiver[property].commissionsList.indexOf(value.commissionAddress)
@@ -229,6 +230,7 @@ class Commission {
         }
         // 1.2 不存在：查看数据库中是否有，没有则添加
         if (!await this.haveStar(property)) {
+          console.log('1.2')
           receiver[property] = value
           receiver[property].count = 0
           receiver[property].commissionsList = []
