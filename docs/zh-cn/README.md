@@ -20,9 +20,11 @@ npm run init
 
 配置文件在config.json中
 
-如果节点是议会节点，将`commission`项更改为`true`
+如果节点是议会节点，将`commission`项更改为`true`，并在`mnemonic`中填入你的密语
+如果`mnemonic`为空，那么程序将会在启动时，在命令行终端中向你询问密语
 
-如果你拥有公网IP记得将`enablePublicIp`项更改为`true`
+如果你拥有公网IP记得将`enablePublicIp`项更改为`true`,另外不要忘记将公网IP填入`publicIp`中以防程序不能自动获取服务器的IP
+
 
 p2p通信端口默认为4002，可以更改`Port`的值来改变端口
 http服务的默认端口为3000，可以更改`HttpPort`的值来改变端口
@@ -37,6 +39,10 @@ npm run start
 
 ## http api
 
+```
+/api/xxxxxx
+```
+
 ### GET /genMnemonic
 这将返回一个符合BIP39规范的，包含12个单词的密语
 
@@ -44,7 +50,7 @@ npm run start
 
 ```
 curl -X GET \
-http://localhost:3000/genMnemonic
+http://localhost:3000/api/genMnemonic
 
 ```
 
@@ -67,7 +73,7 @@ http://localhost:3000/genMnemonic
 curl -X POST \
 -H "Content-Type: application/json" \
 -d '{ "mnemonic": "arena sport insane shadow dune winner mercy analyst impulse supreme situate achieve" }' \
-http://localhost:3000/verifyMnemonic
+http://localhost:3000/api/verifyMnemonic
 ```
 
 返回：
@@ -87,7 +93,7 @@ http://localhost:3000/verifyMnemonic
 curl -X POST \
 -H "Content-Type: application/json" \
 -d '{ "mnemonic": "arena sport insane shadow dune winner mercy analyst impulse supreme situate achieve" }' \
-http://localhost:3000/mnemonicToSk
+http://localhost:3000/api/mnemonicToSk
 ```
 返回：
 
@@ -108,7 +114,7 @@ http://localhost:3000/mnemonicToSk
 curl -X POST \
 -H "Content-Type: application/json" \
 -d '{ "sk": "1446399d6543d970aa8674b62eb3c94a8dee410b21b5fd3ec8ada8a87f6f0c10f2807617de0ad8b35b4974dcf5efe0ebbee0815740f113895d7f96b9bef75762" }' \
-http://localhost:3000/skToAddress
+http://localhost:3000/api/skToAddress
 ```
 
 返回： 
@@ -130,7 +136,7 @@ http://localhost:3000/skToAddress
 curl -X POST \
 -H "Content-Type: application/json" \
 -d '{ "starHash": "zyVnC0HQUrU2CbWt2PZrn0vBL/csjrtygwKU7Lk971s=" }' \
-http://localhost:3000/getStar
+http://localhost:3000/api/getStar
 ```
 
 返回：
@@ -169,7 +175,7 @@ http://localhost:3000/getStar
 curl -X POST \
 -H "Content-Type: application/json" \
 -d '{ "index": 0 }' \
-http://localhost:3000/getStars
+http://localhost:3000/api/getStars
 ```
 
 返回：
@@ -207,7 +213,7 @@ http://localhost:3000/getStars
 curl -X POST \
 -H "Content-Type: application/json" \
 -d '{ "address": "V2XM2QWFDDN5KHM2MISLUJPLOUMJQ" }' \
-http://localhost:3000/getBalance
+http://localhost:3000/api/getBalance
 ```
 
 返回：
@@ -229,7 +235,7 @@ http://localhost:3000/getBalance
 curl -X POST \
 -H "Content-Type: application/json" \
 -d '{ "sk": "1446399d6543d970aa8674b62eb3c94a8dee410b21b5fd3ec8ada8a87f6f0c10f2807617de0ad8b35b4974dcf5efe0ebbee0815740f113895d7f96b9bef75762", "to": "V2XM2QWFDDN5KHM2MISLUJPLOUMJS", "amount": 0 }' \
-http://localhost:3000/payment
+http://localhost:3000/api/payment
 
 ```
 
@@ -256,7 +262,7 @@ http://localhost:3000/payment
 
 ```
 curl -X GET \
-http://localhost:3000/getLastMci
+http://localhost:3000/api/getLastMci
 
 ```
 
