@@ -153,32 +153,10 @@ class Commission {
           return
         }
 
-        try {
-          if (
-            receiver[property].commissionsList.indexOf(value.commissionAddress)
-          ) {
-            // commissionAddress
-            console.log("this commission's have been broadcast")
-            return
-          }
-        } catch (error) {
-          console.log(error)
-        }
-
         // if from local
         if (value['starFrom'] && value['starFrom'] == 'local') {
           receiver[property] = value
           receiver[property].count = 0
-          receiver[property].commissionsList = []
-
-          // console.log(colors.green(value.commissionAddress))
-          receiver[property].commissionsList.push(
-            new Utils().getAddressFromSk(this.sk)
-          )
-          console.log(
-            'memory receiver[property].commissionsList',
-            receiver[property].commissionsList
-          )
 
           delete this.preparePool[property]
           //如果是自己发出的则不管
@@ -194,12 +172,6 @@ class Commission {
           )
           return
         }
-
-        //validate whether it is in commissionList
-
-        // if (commissionsList.indexOf(value.commissionAddress) == -1) {
-        //   return
-        // }
 
         if (!new Vailidate().vailidateStarWithoutTransaction(value)) {
           return
@@ -230,7 +202,6 @@ class Commission {
             return
           } else if (receiver[property].broadcast == true) {
             console.log('have commit')
-            // console.log(receiver[property].commissionsList)
             return
           }
 
@@ -239,7 +210,6 @@ class Commission {
           receiver[property].count++
           console.log(receiver[property].count)
           console.log(value.commissionAddress)
-          receiver[property].commissionsList.push(value.commissionAddress)
 
           this._broadcastWaitingStar(
             starProto.commissionStar.encode({
@@ -257,13 +227,7 @@ class Commission {
           console.log('1.2')
           receiver[property] = value
           receiver[property].count = 0
-          receiver[property].commissionsList = []
-          console.log(colors.green(value.commissionAddress))
-          receiver[property].commissionsList.push(value.commissionAddress)
-          console.log(
-            'memory receiver[property].commissionsList',
-            receiver[property].commissionsList
-          )
+          
           const utils = new Utils()
           this._broadcastWaitingStar(
             starProto.commissionStar.encode({
