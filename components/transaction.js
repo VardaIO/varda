@@ -27,10 +27,10 @@ class Transaction {
     return createKeccakHash('sha3-256')
       .update(
         this.type +
-          this.sender +
-          this.amount +
-          this.recpient +
-          this.senderPublicKey
+        this.sender +
+        this.amount +
+        this.recpient +
+        this.senderPublicKey
       )
       .digest('hex')
   }
@@ -56,8 +56,17 @@ class Transaction {
     // 2. if sender amount > his have, return false
 
     const account = new Account(tx.sender)
-    const checkTransaction = await account.checkTransaction(tx.amount)
-    console.log(2, checkTransaction)
+    const type = [0, 1, 2]
+    let checkTransaction
+
+    if (tx.type === 1) {
+      checkTransaction = await account.checkTransaction(tx.amount)
+    }
+
+    if (type.indexOf(tx.type) == -1) {
+      return false
+    }
+    // console.log(2, checkTransaction)
     if (!checkTransaction) {
       return false
     }
