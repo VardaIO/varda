@@ -158,7 +158,7 @@ const runP2p = async sk => {
               node.dial(peer, (err, conn) => {
                 if (err) {
                   _.remove(publicIpsList, n => {
-                    return n == addr
+                    return n == array[0].addr
                   })
                 }
               })
@@ -194,7 +194,7 @@ const runP2p = async sk => {
               node.dial(p, (err, conn) => {
                 if (err) {
                   _.remove(publicIpsList, n => {
-                    return n == addr
+                    return n == value
                   })
                   console.log(err)
                 }
