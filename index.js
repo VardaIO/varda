@@ -114,7 +114,7 @@ const start = async () => {
     const checkPeersValue = () => {
       console.log(_.values(global.n.peerBook.getAll()).length)
       setTimeout(() => {
-        if (_.values(global.n.peerBook.getAll()).length > 0) {
+        if (_.values(global.n.peerBook.getAll()).length > 1) {
           syncStars()
           console.log('em')
           return

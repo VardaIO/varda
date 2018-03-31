@@ -170,23 +170,33 @@ const addStarFromPeer = star => {
 
 const sync = async mciFromPeers => {
   if (mciFromPeers === 0 || mciFromPeers === '0') return
-  
+
   if (!isFinite(mciFromPeers)) return
   console.log('wanna to sync now, and mci is:', mciFromPeers)
   let startMci = await getLastMci()
+
+  if (startMci === mciFromPeers) {
+    console.log('sync finished')
+    return
+  }
+
   // const dValue = await getLastMciFromPeers() - lastMciInLocal
-  while (startMci <= mciFromPeers) {
+  while (startMci < mciFromPeers) {
     if (parseInt(startMci) == 0) {
       startMci = 1
     }
     const peers = _shuffle(values(global.n.peerBook.getAll()))
     let peerA = peers[0]
     let peerB = peers[1]
+    let starsA
+    let starsB
+    try {
+      starsA = await getStarsFromPeer(peerA, startMci)
+      starsB = await getStarsFromPeer(peerB, startMci)
+    } catch (error) {
+      console.log(error)
+    }
 
-    console.log(startMci)
-
-    let starsA = await getStarsFromPeer(peerA, startMci)
-    let starsB = await getStarsFromPeer(peerB, startMci)
     console.log(starsA)
     console.log(starsB)
 
