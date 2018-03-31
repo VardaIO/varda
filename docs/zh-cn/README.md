@@ -273,3 +273,7 @@ http://localhost:3000/api/getLastMci
   "lastMci": 1
 }
 ```
+
+## 注意：
+
+payload_hash 的计算方式为交易信息的hash + 时间戳的哈希值，具体方法见components/star.js `buildStar`
