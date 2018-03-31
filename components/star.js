@@ -60,11 +60,19 @@ class Star {
       mci: joi.number().required()
     })
 
-    const result = joi.validate(star, schema)
-
     if (result.error !== null || result.value === undefined) {
       return false
     }
+
+    const truePayloadHash = createKeccakHash('sha3-256')
+    .update(
+      star.payload_hash + star.timestamp
+    )
+    .digest('hex')
+
+    star.payload_hash = truePayloadHash
+    
+    const result = joi.validate(star, schema)
 
     let parents = ''
 
