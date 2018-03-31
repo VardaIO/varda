@@ -2,6 +2,7 @@ const fs = require('fs-extra')
 const figlet = require('figlet')
 const inquirer = require('inquirer')
 const colors = require('colors')
+const _ = require('lodash')
 
 const init = require('./first-start')
 
@@ -91,11 +92,38 @@ const start = async () => {
     await httpServer()
     const sync = require('./components/sync/sync')
 
-    setTimeout(async () => {
-      const mciFromPeers = await sync.getLastMciFromPeers()
-      console.log(mciFromPeers)
-      sync.sync(mciFromPeers)
-    }, 1000 * 20)
+    const syncStars = () => {
+      //   try {
+      //     setTimeout(async () => {
+      //       const mciFromPeers = await sync.getLastMciFromPeers()
+      //       console.log(mciFromPeers)
+      //       sync.sync(mciFromPeers)
+      //     }, 1000 * 30)
+      //   } catch (error) {
+      //     console.log(error)
+      //   } finally {
+      //     setImmediate(syncStars())
+      //   }
+      setInterval(async () => {
+        const mciFromPeers = await sync.getLastMciFromPeers()
+        console.log(mciFromPeers)
+        sync.sync(mciFromPeers)
+      }, 1000 * 5)
+    }
+
+    const checkPeersValue = () => {
+      console.log(_.values(global.n.peerBook.getAll()).length)
+      setTimeout(() => {
+        if (_.values(global.n.peerBook.getAll()).length > 0) {
+          syncStars()
+          console.log('em')
+          return
+        } else {
+          checkPeersValue()
+        }
+      }, 1000 * 5)
+    }
+    checkPeersValue()
   } catch (error) {
     console.log(error)
   }

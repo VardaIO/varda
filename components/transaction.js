@@ -27,10 +27,10 @@ class Transaction {
     return createKeccakHash('sha3-256')
       .update(
         this.type +
-        this.sender +
-        this.amount +
-        this.recpient +
-        this.senderPublicKey
+          this.sender +
+          this.amount +
+          this.recpient +
+          this.senderPublicKey
       )
       .digest('hex')
   }
