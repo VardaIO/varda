@@ -169,13 +169,9 @@ const addStarFromPeer = star => {
 }
 
 const sync = async mciFromPeers => {
-  console.log('1')
-  console.log(mciFromPeers === 0 || mciFromPeers === '0')
   if (mciFromPeers === 0 || mciFromPeers === '0') return
-  console.log('2')
-  console.log(mciFromPeers)
-  console.log(isFinite(mciFromPeers))
-  if (isFinite(mciFromPeers)) return
+  
+  if (!isFinite(mciFromPeers)) return
   console.log('wanna to sync now, and mci is:', mciFromPeers)
   let startMci = await getLastMci()
   // const dValue = await getLastMciFromPeers() - lastMciInLocal
