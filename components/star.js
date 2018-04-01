@@ -60,6 +60,8 @@ class Star {
       mci: joi.number().required()
     })
 
+    const result = joi.validate(star, schema)
+
     if (result.error !== null || result.value === undefined) {
       return false
     }
@@ -69,8 +71,6 @@ class Star {
       .digest('hex')
 
     star.payload_hash = truePayloadHash
-
-    const result = joi.validate(star, schema)
 
     let parents = ''
 
