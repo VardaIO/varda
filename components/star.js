@@ -65,13 +65,11 @@ class Star {
     }
 
     const truePayloadHash = createKeccakHash('sha3-256')
-    .update(
-      star.payload_hash + star.timestamp
-    )
-    .digest('hex')
+      .update(star.payload_hash + star.timestamp)
+      .digest('hex')
 
     star.payload_hash = truePayloadHash
-    
+
     const result = joi.validate(star, schema)
 
     let parents = ''

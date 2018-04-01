@@ -10,17 +10,35 @@ const VARDA_HOME = process.env.VARDA_HOME || os.homedir() + '/.varda'
 // Db.defaults.store = { db: require("leveldown") }
 // Db.dbPath = VARDA_HOME + '/data'
 // module.exports = Db
-const factory = {
-  create: function() {
-    return new Db(`${VARDA_HOME}/varda.sqlite`)
-  },
-  destroy: function(client) {
-    client.close()
+const factory = dbFilePath => {
+  return {
+    create: function() {
+      return new Db(dbFilePath)
+    },
+    destroy: function(client) {
+      client.close()
+    }
   }
 }
+
 const options = {
   max: 5,
   min: 2
 }
-const Pool = genericPool.createPool(factory, options)
+
+const Pool = (dbFilePath = null) => {
+  try {
+    if (dbFilePath !== null) {
+      return genericPool.createPool(factory(dbFilePath), options)
+    } else {
+      return genericPool.createPool(
+        factory(`${VARDA_HOME}/varda.sqlite`),
+        options
+      )
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 module.exports = Pool
