@@ -131,7 +131,7 @@ const initVarda = () => {
 
             console.log('added a genesis star ')
           }
-          pool.release(client)
+          pool().release(client)
           return Promise.resolve()
         })
         .catch(error => {

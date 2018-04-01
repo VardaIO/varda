@@ -242,17 +242,17 @@ class Commission {
   }
 
   haveStar(star_hash) {
-    return pool.acquire().then(client => {
+    return pool().acquire().then(client => {
       if (
         client
           .prepare(`SELECT star FROM stars WHERE star='${star_hash}'`)
           .get() === undefined
       ) {
-        pool.release(client)
+        pool().release(client)
         return false
       }
 
-      pool.release(client)
+      pool().release(client)
       return true
     })
   }
@@ -286,18 +286,18 @@ class Commission {
   }
 
   _findLastMci(author) {
-    return pool.acquire().then(client => {
+    return pool().acquire().then(client => {
       const mci = client
         .prepare(
           `SELECT main_chain_index AS mci FROM stars WHERE author_address='${author}' ORDER BY main_chain_index DESC LIMIT 1`
         )
         .get()
       if (mci === undefined) {
-        pool.release(client)
+        pool().release(client)
         return null
       }
 
-      pool.release(client)
+      pool().release(client)
       return mci.mci
     })
   }
@@ -309,11 +309,11 @@ class Commission {
         const stars = client
           .prepare(`SELECT * FROM stars WHERE main_chain_index='${mci}'`)
           .all()
-        pool.release(client)
+        pool().release(client)
         return Promise.resolve(stars)
       })
       .catch(error => {
-        pool.release(client)
+        pool().release(client)
         return Promise.reject(error)
       })
   }
@@ -321,7 +321,7 @@ class Commission {
   async _haveStarInMci(mci) {
     // if not have, return null
     // if have, return the bigest timestamp
-    const client = await pool.acquire()
+    const client = await pool().acquire()
     try {
       let stars = client
         .prepare(`SELECT * FROM stars WHERE main_chain_index=${mci}`)
@@ -337,7 +337,7 @@ class Commission {
     } catch (error) {
       console.log(error)
     } finally {
-      pool.release(client)
+      pool().release(client)
     }
   }
 }

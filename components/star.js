@@ -106,7 +106,7 @@ class Star {
   }
 
   getStar(starHash) {
-    return pool.acquire().then(client => {
+    return pool().acquire().then(client => {
       let star = client
         .prepare(
           `SELECT star AS star_hash, main_chain_index AS mci, timestamp, payload_hash, author_address AS authorAddress, signature  FROM stars WHERE star='${starHash}'`
@@ -135,7 +135,7 @@ class Star {
           `SELECT pk  FROM account_pks WHERE address='${star.authorAddress}'`
         )
         .get().pk
-      pool.release(client)
+      pool().release(client)
       star.parentStars = parents
       transaction.senderPublicKey = pk
       transaction.payload_hash = star.payload_hash

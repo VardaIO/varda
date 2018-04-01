@@ -290,7 +290,7 @@ function getParents(client) {
 const prepareStar = transaction => {
   if (!transaction) return null
 
-  return pool.acquire().then(async client => {
+  return pool().acquire().then(async client => {
     const senderAddress = transaction.sender
     // const account = new Account(senderAddress)
     const lastMci = client
@@ -323,7 +323,7 @@ const prepareStar = transaction => {
 
 const addStar = async star => {
   try {
-    const client = await pool.acquire()
+    const client = await pool().acquire()
     const begin = client.prepare('BEGIN')
     const commit = client.prepare('COMMIT')
     const rollback = client.prepare('ROLLBACK')
@@ -389,12 +389,12 @@ const addStar = async star => {
     } finally {
       if (client.inTransaction) {
         rollback.run()
-        pool.release(client)
+        pool().release(client)
         // reject()
         console.log('client is inTransaction, sqlite will rollback it')
         return
       }
-      pool.release(client)
+      pool().release(client)
       // resolve()
     }
   } catch (error) {
@@ -472,10 +472,10 @@ const ABACKFUNCTION_addStar = star => {
         } finally {
           if (client.inTransaction) {
             rollback.run()
-            pool.release(client)
+            pool().release(client)
             reject()
           }
-          pool.release(client)
+          pool().release(client)
           resolve()
         }
       })

@@ -377,7 +377,7 @@ const runP2p = async sk => {
           )
           const star = tobeCommit.star
 
-          const checkExist = pool.acquire().then(async client => {
+          const checkExist = pool().acquire().then(async client => {
             try {
               if (
                 !client
@@ -390,7 +390,7 @@ const runP2p = async sk => {
             } catch (error) {
               console.log(error)
             } finally {
-              pool.release(client)
+              pool().release(client)
             }
           })
 

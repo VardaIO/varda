@@ -6,7 +6,7 @@ class Account {
   }
 
   getBalance() {
-    return pool.acquire().then(client => {
+    return pool().acquire().then(client => {
       try {
         if (this.address == null || this.address == undefined) {
           return
@@ -35,13 +35,13 @@ class Account {
       } catch (error) {
         return Promise.reject(error)
       } finally {
-        pool.release(client)
+        pool().release(client)
       }
     })
   }
 
   getPk() {
-    return pool.acquire().then(client => {
+    return pool().acquire().then(client => {
       try {
         if (this.address == null || this.address == undefined) {
           return
@@ -58,7 +58,7 @@ class Account {
       } catch (error) {
         return Promise.reject(error)
       } finally {
-        pool.release(client)
+        pool().release(client)
       }
     })
   }

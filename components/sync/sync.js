@@ -17,7 +17,7 @@ const config = require('../../config.json')
 // const push = Pushable()
 
 const getLastMci = async () => {
-  const client = await pool.acquire()
+  const client = await pool().acquire()
   try {
     const lastMci = client
       .prepare(
@@ -28,7 +28,7 @@ const getLastMci = async () => {
   } catch (error) {
     console.log(error)
   } finally {
-    pool.release(client)
+    pool().release(client)
   }
 }
 
@@ -84,7 +84,7 @@ const buildStarsForSync = async index => {
   }
   console.log('buildStarsForSync index is:', index)
 
-  const client = await pool.acquire()
+  const client = await pool().acquire()
   try {
     let starHashList = client
       .prepare(`SELECT star FROM stars WHERE main_chain_index=${index}`)
@@ -107,7 +107,7 @@ const buildStarsForSync = async index => {
   } catch (error) {
     console.log(error)
   } finally {
-    pool.release(client)
+    pool().release(client)
   }
 }
 
