@@ -377,22 +377,26 @@ const runP2p = async sk => {
           )
           const star = tobeCommit.star
 
-          const checkExist = pool().acquire().then(async client => {
-            try {
-              if (
-                !client
-                  .prepare(`SELECT * FROM stars WHERE star='${star.star_hash}'`)
-                  .get()
-              ) {
-                return true
+          const checkExist = pool()
+            .acquire()
+            .then(async client => {
+              try {
+                if (
+                  !client
+                    .prepare(
+                      `SELECT * FROM stars WHERE star='${star.star_hash}'`
+                    )
+                    .get()
+                ) {
+                  return true
+                }
+                return false
+              } catch (error) {
+                console.log(error)
+              } finally {
+                pool().release(client)
               }
-              return false
-            } catch (error) {
-              console.log(error)
-            } finally {
-              pool().release(client)
-            }
-          })
+            })
 
           if (await checkExist) {
             await addStarFromBroadcast(star)

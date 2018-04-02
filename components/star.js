@@ -105,44 +105,47 @@ class Star {
     return aStar
   }
 
-  getStar(starHash) {
-    return pool().acquire().then(client => {
-      let star = client
-        .prepare(
-          `SELECT star AS star_hash, main_chain_index AS mci, timestamp, payload_hash, author_address AS authorAddress, signature  FROM stars WHERE star='${starHash}'`
-        )
-        .get()
+  getStar(starHash, dbFilePath = null) {
+    return pool(dbFilePath)
+      .acquire()
+      .then(client => {
+        let star = client
+          .prepare(
+            `SELECT star AS star_hash, main_chain_index AS mci, timestamp, payload_hash, author_address AS authorAddress, signature  FROM stars WHERE star='${starHash}'`
+          )
+          .get()
 
-      if (star === undefined) {
-        return null
-      }
+        if (star === undefined) {
+          return null
+        }
 
-      let transaction = client
-        .prepare(
-          `SELECT type, sender, amount, recpient FROM transactions WHERE star='${starHash}'`
-        )
-        .get()
-      const parents = client
-        .prepare(
-          `SELECT parent_star FROM parenthoods WHERE child_star='${starHash}'  ORDER BY parent_index DESC`
-        )
-        .all()
-        .map(v => {
-          return v['parent_star']
-        })
-      const pk = client
-        .prepare(
-          `SELECT pk  FROM account_pks WHERE address='${star.authorAddress}'`
-        )
-        .get().pk
-      pool().release(client)
-      star.parentStars = parents
-      transaction.senderPublicKey = pk
-      transaction.payload_hash = star.payload_hash
-      star.transaction = transaction
-      return star
-    })
+        let transaction = client
+          .prepare(
+            `SELECT type, sender, amount, recpient FROM transactions WHERE star='${starHash}'`
+          )
+          .get()
+        const parents = client
+          .prepare(
+            `SELECT parent_star FROM parenthoods WHERE child_star='${starHash}'  ORDER BY parent_index DESC`
+          )
+          .all()
+          .map(v => {
+            return v['parent_star']
+          })
+        const pk = client
+          .prepare(
+            `SELECT pk  FROM account_pks WHERE address='${star.authorAddress}'`
+          )
+          .get().pk
+        pool().release(client)
+        star.parentStars = parents
+        transaction.senderPublicKey = pk
+        transaction.payload_hash = star.payload_hash
+        star.transaction = transaction
+        return star
+      })
   }
+  
 }
 
 module.exports = Star

@@ -290,35 +290,37 @@ function getParents(client) {
 const prepareStar = transaction => {
   if (!transaction) return null
 
-  return pool().acquire().then(async client => {
-    const senderAddress = transaction.sender
-    // const account = new Account(senderAddress)
-    const lastMci = client
-      .prepare(
-        'SELECT main_chain_index FROM stars ORDER BY main_chain_index DESC LIMIT 1'
-      )
-      .get().main_chain_index
+  return pool()
+    .acquire()
+    .then(async client => {
+      const senderAddress = transaction.sender
+      // const account = new Account(senderAddress)
+      const lastMci = client
+        .prepare(
+          'SELECT main_chain_index FROM stars ORDER BY main_chain_index DESC LIMIT 1'
+        )
+        .get().main_chain_index
 
-    const checkTransaction = await new Transaction().check(transaction)
+      const checkTransaction = await new Transaction().check(transaction)
 
-    if (!checkTransaction) {
-      return Promise.reject('Transaction is wrong')
-    }
+      if (!checkTransaction) {
+        return Promise.reject('Transaction is wrong')
+      }
 
-    const { parents, move } = getParents(client)
-    const mci = lastMci + move
+      const { parents, move } = getParents(client)
+      const mci = lastMci + move
 
-    const star = aStar.buildStar({
-      timestamp: Math.floor(Date.now() / 1000),
-      parentStars: parents,
-      payload_hash: transaction.payload_hash,
-      transaction: transaction,
-      authorAddress: transaction.sender,
-      mci: mci
+      const star = aStar.buildStar({
+        timestamp: Math.floor(Date.now() / 1000),
+        parentStars: parents,
+        payload_hash: transaction.payload_hash,
+        transaction: transaction,
+        authorAddress: transaction.sender,
+        mci: mci
+      })
+
+      return starProto.star.encode(star)
     })
-
-    return starProto.star.encode(star)
-  })
 }
 
 const addStar = async star => {

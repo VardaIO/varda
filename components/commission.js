@@ -242,19 +242,21 @@ class Commission {
   }
 
   haveStar(star_hash) {
-    return pool().acquire().then(client => {
-      if (
-        client
-          .prepare(`SELECT star FROM stars WHERE star='${star_hash}'`)
-          .get() === undefined
-      ) {
-        pool().release(client)
-        return false
-      }
+    return pool()
+      .acquire()
+      .then(client => {
+        if (
+          client
+            .prepare(`SELECT star FROM stars WHERE star='${star_hash}'`)
+            .get() === undefined
+        ) {
+          pool().release(client)
+          return false
+        }
 
-      pool().release(client)
-      return true
-    })
+        pool().release(client)
+        return true
+      })
   }
 
   validate(star) {
@@ -286,20 +288,22 @@ class Commission {
   }
 
   _findLastMci(author) {
-    return pool().acquire().then(client => {
-      const mci = client
-        .prepare(
-          `SELECT main_chain_index AS mci FROM stars WHERE author_address='${author}' ORDER BY main_chain_index DESC LIMIT 1`
-        )
-        .get()
-      if (mci === undefined) {
-        pool().release(client)
-        return null
-      }
+    return pool()
+      .acquire()
+      .then(client => {
+        const mci = client
+          .prepare(
+            `SELECT main_chain_index AS mci FROM stars WHERE author_address='${author}' ORDER BY main_chain_index DESC LIMIT 1`
+          )
+          .get()
+        if (mci === undefined) {
+          pool().release(client)
+          return null
+        }
 
-      pool().release(client)
-      return mci.mci
-    })
+        pool().release(client)
+        return mci.mci
+      })
   }
 
   _getStarHashByMci(mci) {
