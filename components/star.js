@@ -145,7 +145,6 @@ class Star {
         return star
       })
   }
-  
 }
 
 module.exports = Star
