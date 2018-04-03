@@ -17,7 +17,16 @@ const spawn = require('child_process').spawn
 class Container {
   constructor(path) {
     this.path = path
-    this.apis = ['star', 'account', 'broadcast', 'sync', 'commission', 'db', 'model', 'utils']
+    this.apis = [
+      'star',
+      'account',
+      'broadcast',
+      'sync',
+      'commission',
+      'db',
+      'model',
+      'utils'
+    ]
     this.api = {
       star: require('./api/stars'),
       account: require('./api/account'),
@@ -44,7 +53,7 @@ class Container {
         reject('message is wrong')
       }
 
-      if(this.apis.indexOf(apiName) === -1) {
+      if (this.apis.indexOf(apiName) === -1) {
         reject(`the is no api named ${apiName}`)
       }
 

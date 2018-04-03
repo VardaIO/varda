@@ -2,10 +2,9 @@
  * √ 1. vailidate balance should be biger than amount
  * √ 2. star author should be equal with transaction sender 
  * √ 3. star signature should be vailidate
- * √ 4. the same address should not appear in interval 6 main chain index
- * √ 5. a star should have at least one on star'main chain index - 1
- * √ 6. in one mci, the same should appear only once
- * √ if a star confirmed with 2/3 , broadcast this star to the network at once
+ * √ 4. a star should have at least one on star'main chain index - 1
+ * √ 5. in one mci, the same should appear only once
+ * √ 6. if a star confirmed with 2/3 , broadcast this star to the network at once
  */
 
 /* todao 
@@ -39,7 +38,11 @@ class Commission {
     return {
       set: async (receiver, property, value) => {
         try {
-          // 来自普通用户
+          /**
+           * Todo:
+           * 1.check parent hash
+           * 2.check hash
+           */
           // 判断是否在waiting中
           if (_.has(receiver, property)) {
             return
@@ -83,6 +86,22 @@ class Commission {
           }
           */
 
+          // check parent hash
+
+          if (_.isArray(value.parentStars) && value.parentStars.length === 0) {
+            return
+          }
+
+          let checkParent = Promise.all(
+            value.parentStars.map(async starHash => {
+              return await this.haveStar(starHash)
+            })
+          )
+
+          if (checkParent.indexOf(false) !== -1) {
+            return
+          }
+          
           // 5. a star should have at least one on star'main chain index - 1
           const starsFromLastMci = await this._getStarHashByMci(value.mci - 1)
           // _.isArray(starsFromLastMci)
