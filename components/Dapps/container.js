@@ -1,6 +1,16 @@
 // const cp = require('child_process');
 const spawn = require('child_process').spawn
 
+const Star = require('./api/stars')
+/**
+ * star,
+ * account,
+ * util,
+ * commission,
+ * verify
+ * db
+ */
+
 class Container {
   constructor(path) {
       this.path = path
@@ -12,6 +22,15 @@ class Container {
     })
 
     container.on('message', message => {
+      /**
+       * message style:
+       * 
+       * {
+       *  module: <module name>,
+       *  method: <method name>,
+       *  args: <method arg>
+       * }
+       */
       console.log('father client receive message ', message)
     })
 
