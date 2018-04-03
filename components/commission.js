@@ -20,6 +20,8 @@ const emitter = require('./event')
 const fs = require('fs')
 const pb = require('protocol-buffers')
 const appRoot = require('app-root-path')
+const createKeccakHash = require('keccak')
+
 const starProto = pb(fs.readFileSync(`${appRoot}/network/protos/star.proto`))
 const Utils = require('./utils')
 
@@ -101,7 +103,22 @@ class Commission {
           if (checkParent.indexOf(false) !== -1) {
             return
           }
-          
+
+          // check hash
+          const beforeHash =
+            value.timestamp +
+            value.parentStars +
+            value.payload_hash +
+            value.authorAddress +
+            value.mci
+
+          const hashForCheck = createKeccakHash('sha3-256')
+            .update(beforeHash)
+            .digest('base64')
+
+          if (value.star_hash !== hashForCheck) {
+            return
+          }
           // 5. a star should have at least one on star'main chain index - 1
           const starsFromLastMci = await this._getStarHashByMci(value.mci - 1)
           // _.isArray(starsFromLastMci)
