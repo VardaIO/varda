@@ -2,10 +2,11 @@
 const spawn = require('child_process').spawn
 
 const Star = require('./api/stars')
+
 /**
  * star,
  * account,
- * util,
+ * utils,
  * commission,
  * verify
  * db
