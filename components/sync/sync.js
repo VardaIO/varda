@@ -62,6 +62,24 @@ const _prepareDataForgetLastMci = peer => {
   })
 }
 
+const findCurrentMciFromPeers = (mcis) => {
+  const length = mcis.length
+  const lastMci = Math.max(...count)
+
+  let number = 0
+  mcis.forEach(mci => {
+    if (lastMci === mci) num++
+  })
+
+  if (number <= length / 2) {
+      const lastMciIndex = mcis.indexOf(lastMci)
+      mcis = _.drop(lastMciIndex, mcis)
+      findCurrentMciFromPeers(mcis)
+  } else {
+    return lastMci
+  }
+}
+
 const getLastMciFromPeers = async () => {
   // two pub sub,计数器
   const count = []
@@ -77,9 +95,11 @@ const getLastMciFromPeers = async () => {
   }
   console.log(count)
   // get the bigest
-  const lastMci = Math.max(...count)
+  // 如果最大的占一半，则可以相信
+  const lastMci = findCurrentMciFromPeers(count)
 
   return Promise.resolve(lastMci)
+
 }
 
 const buildStarsForSync = async index => {
