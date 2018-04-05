@@ -94,7 +94,7 @@ class Commission {
             return
           }
 
-          let checkParent = Promise.all(
+          let checkParent = await Promise.all(
             value.parentStars.map(async starHash => {
               return await this.haveStar(starHash)
             })
