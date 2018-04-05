@@ -29,7 +29,7 @@ const initVarda = () => {
     .then(() => {
       const Star = require('./components/star')
       const pool = require('./database/pool')
-      pool
+      pool()
         .acquire()
         .then(client => {
           client
