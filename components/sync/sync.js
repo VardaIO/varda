@@ -64,7 +64,7 @@ const _prepareDataForgetLastMci = peer => {
 
 const findCurrentMciFromPeers = (mcis) => {
   const length = mcis.length
-  const lastMci = Math.max(...count)
+  const lastMci = Math.max(...mcis)
 
   let number = 0
   mcis.forEach(mci => {
