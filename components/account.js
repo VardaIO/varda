@@ -85,9 +85,20 @@ class Account {
       }
     }
   }
+ 
+  async checkTransaction(address = null, amount, dbFilePath = null) {
+    if (
+      this.address === null ||
+      (this.address === undefined && address === null)
+    ) {
+      return
+    }
 
-  async checkTransaction(amount) {
-    const balance = await this.getBalance()
+    if (address === null) {
+      address = this.address
+    }
+
+    const balance = await this.getBalance(address, dbFilePath)
 
     if (balance - amount < 0) {
       return false

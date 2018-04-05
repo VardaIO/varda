@@ -60,7 +60,7 @@ class Transaction {
     let checkTransaction
 
     if (tx.type === 1) {
-      checkTransaction = await account.checkTransaction(tx.amount)
+      checkTransaction = await account.checkTransaction(tx.sender, tx.amount)
     }
 
     if (type.indexOf(tx.type) == -1) {

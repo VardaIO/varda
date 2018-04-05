@@ -504,7 +504,7 @@ const addStarFromBroadcast = star => {
     )
     // 3. vailidate amount
     const account = new Account(transaction.sender)
-    const checkTransaction = await account.checkTransaction(transaction.amount)
+    const checkTransaction = await account.checkTransaction(transaction.sender, transaction.amount)
     if (!checkTransaction) {
       reject('amount bigger than balance')
     }
