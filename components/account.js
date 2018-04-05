@@ -85,7 +85,7 @@ class Account {
       }
     }
   }
- 
+
   async checkTransaction(address = null, amount, dbFilePath = null) {
     if (
       this.address === null ||

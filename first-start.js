@@ -131,7 +131,10 @@ const initVarda = () => {
 
             console.log('added a genesis star ')
           }
-          pool().release(client)
+          const loan = new Map().get(client)
+          if (loan !== undefined) {
+            pool().release(client)
+          }
           return Promise.resolve()
         })
         .catch(error => {
