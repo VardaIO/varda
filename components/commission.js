@@ -357,7 +357,7 @@ class Commission {
   }
 
   _getStarHashByMci(mci) {
-    return pool
+    return pool()
       .acquire()
       .then(client => {
         const stars = client
