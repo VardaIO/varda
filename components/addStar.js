@@ -481,10 +481,16 @@ const ABACKFUNCTION_addStar = star => {
         } finally {
           if (client.inTransaction) {
             rollback.run()
-            pool().release(client)
+            const loan = new Map().get(client)
+            if (loan !== undefined) {
+              pool().release(client)
+            }
             reject()
           }
-          pool().release(client)
+          const loan = new Map().get(client)
+          if (loan !== undefined) {
+            pool().release(client)
+          }
           resolve()
         }
       })

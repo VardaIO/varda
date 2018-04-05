@@ -288,11 +288,17 @@ class Commission {
             .prepare(`SELECT star FROM stars WHERE star='${star_hash}'`)
             .get() === undefined
         ) {
-          pool().release(client)
+          const loan = new Map().get(client)
+          if (loan !== undefined) {
+            pool().release(client)
+          }
           return false
         }
 
-        pool().release(client)
+        const loan = new Map().get(client)
+        if (loan !== undefined) {
+          pool().release(client)
+        }
         return true
       })
   }
@@ -335,11 +341,17 @@ class Commission {
           )
           .get()
         if (mci === undefined) {
-          pool().release(client)
+          const loan = new Map().get(client)
+          if (loan !== undefined) {
+            pool().release(client)
+          }
           return null
         }
 
-        pool().release(client)
+        const loan = new Map().get(client)
+        if (loan !== undefined) {
+          pool().release(client)
+        }
         return mci.mci
       })
   }
@@ -351,11 +363,17 @@ class Commission {
         const stars = client
           .prepare(`SELECT * FROM stars WHERE main_chain_index='${mci}'`)
           .all()
-        pool().release(client)
+        const loan = new Map().get(client)
+        if (loan !== undefined) {
+          pool().release(client)
+        }
         return Promise.resolve(stars)
       })
       .catch(error => {
-        pool().release(client)
+        const loan = new Map().get(client)
+        if (loan !== undefined) {
+          pool().release(client)
+        }
         return Promise.reject(error)
       })
   }
@@ -379,7 +397,10 @@ class Commission {
     } catch (error) {
       console.log(error)
     } finally {
-      pool().release(client)
+      const loan = new Map().get(client)
+      if (loan !== undefined) {
+        pool().release(client)
+      }
     }
   }
 }

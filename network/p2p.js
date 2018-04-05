@@ -400,7 +400,10 @@ const runP2p = async sk => {
               } catch (error) {
                 console.log(error)
               } finally {
-                pool().release(client)
+                const loan = new Map().get(client)
+                if (loan !== undefined) {
+                  pool().release(client)
+                }
               }
             })
 

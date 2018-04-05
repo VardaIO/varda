@@ -7,6 +7,7 @@ const PeerInfo = require('peer-info')
 const peerId = require('peer-id')
 const colors = require('colors')
 const pull = require('pull-stream')
+const _ = require('lodash')
 
 const pool = require('../../database/pool')
 const Star = require('../star')
@@ -17,30 +18,6 @@ const config = require('../../config.json')
 // const push = Pushable()
 
 const getLastMci = async () => {
-  // try {
-  //   return pool()
-  //   .acquire()
-  //   .then(client => {
-  //     try {
-  //       const lastMci = client
-  //         .prepare(
-  //           'SELECT main_chain_index FROM stars ORDER BY main_chain_index DESC LIMIT 1'
-  //         )
-  //         .get().main_chain_index
-  //       return Promise.resolve(lastMci)
-  //     } catch (error) {
-  //       return Promise.reject(error)
-  //     } finally {
-  //       pool().release(client)
-  //     }
-  //   })
-  //   .catch(error => {
-  //     console.log(error)
-  //   })
-  // } catch (error) {
-  //   console.log(error)
-  // }
-
   const client = await pool().acquire()
 
   try {
@@ -135,7 +112,10 @@ const buildStarsForSync = async index => {
   } catch (error) {
     console.log(error)
   } finally {
-    pool().release(client)
+    const loan = new Map().get(client)
+    if (loan !== undefined) {
+      pool().release(client)
+    }
   }
 }
 
@@ -153,7 +133,14 @@ const _getStarsFromPeer = (peer, startMci) => {
         }),
         pull.collect((error, array) => {
           if (error) reject(error)
-          resolve(array[0].stars)
+          let stars
+          try {
+            if (_.isEmpty(array[0])) return
+            stars = array[0].stars
+            resolve(stars)
+          } catch (error) {
+            reject(error)
+          }
         })
       )
     })
@@ -163,8 +150,12 @@ const _getStarsFromPeer = (peer, startMci) => {
 const getStarsFromPeer = async (peer, startMci) => {
   console.log(`in getStarsFromPeer, startMci is ${startMci}`)
 
-  let stars = await _getStarsFromPeer(peer, startMci)
-  return stars
+  try {
+    let stars = await _getStarsFromPeer(peer, startMci)
+    return Promise.resolve(stars)
+  } catch (error) {
+    return Promise.reject(error)
+  }
 }
 
 const getAPeer = () => {
