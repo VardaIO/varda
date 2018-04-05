@@ -64,6 +64,9 @@ const _prepareDataForgetLastMci = peer => {
 
 const findCurrentMciFromPeers = mcis => {
   if (_.isEmpty(mcis)) return 0
+  mcis = _.map(mcis, mci => {
+    return parseInt(mci)
+  })
 
   const length = mcis.length
   const lastMci = Math.max(...mcis)
@@ -97,7 +100,7 @@ const getLastMciFromPeers = async () => {
   console.log(count)
   // get the bigest
   // 如果最大的占一半，则可以相信
-  let lastMci 
+  let lastMci
   try {
     lastMci = findCurrentMciFromPeers(count)
   } catch (error) {
