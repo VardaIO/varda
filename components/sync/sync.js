@@ -79,7 +79,7 @@ const findCurrentMciFromPeers = mcis => {
     mcis = _.filter(mcis, mci => {
       return mci !== lastMci
     })
-    findCurrentMciFromPeers(mcis)
+    return findCurrentMciFromPeers(mcis)
   }
   return lastMci
 }
