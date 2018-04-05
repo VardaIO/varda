@@ -97,8 +97,9 @@ const getLastMciFromPeers = async () => {
   console.log(count)
   // get the bigest
   // 如果最大的占一半，则可以相信
+  let lastMci 
   try {
-    const lastMci = findCurrentMciFromPeers(count)
+    lastMci = findCurrentMciFromPeers(count)
   } catch (error) {
     return Promise.reject(error)
   }
