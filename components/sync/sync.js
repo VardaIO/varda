@@ -65,19 +65,18 @@ const _prepareDataForgetLastMci = peer => {
 const findCurrentMciFromPeers = (mcis) => {
   const length = mcis.length
   const lastMci = Math.max(...mcis)
-
   let number = 0
   mcis.forEach(mci => {
-    if (lastMci === mci) num++
+    if (lastMci === mci) number++
   })
 
   if (number <= length / 2) {
-      const lastMciIndex = mcis.indexOf(lastMci)
-      mcis = _.drop(lastMciIndex, mcis)
+      mcis = _.filter(mcis, mci => {
+         return mci !== lastMci
+      })
       findCurrentMciFromPeers(mcis)
-  } else {
+  } 
     return lastMci
-  }
 }
 
 const getLastMciFromPeers = async () => {
