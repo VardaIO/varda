@@ -211,7 +211,13 @@ const runP2p = async sk => {
     node.handle('/getLastMci', async (protocol, conn) => {
       // pull(push, conn)
       // push.push(`${lastMci}`)
-      const lastMci = await sync.getLastMci()
+      let lastMci
+      try {
+        lastMci = await sync.getLastMci()
+      } catch (error) {
+        console.log(error)
+      }
+
       pull(pull.values([`${lastMci}`]), conn)
       console.log(`a peer wanna to get a last mci. and mci is ${lastMci}`)
     })

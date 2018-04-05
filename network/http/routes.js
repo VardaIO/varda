@@ -116,7 +116,12 @@ router.post('/payment', async ctx => {
 })
 
 router.get('/getLastMci', async ctx => {
-  const lastMci = await sync.getLastMci()
+  let lastMci
+  try {
+    lastMci = await sync.getLastMci()
+  } catch (error) {
+    console.log(error)
+  }
   ctx.body = { lastMci }
 })
 

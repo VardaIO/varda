@@ -103,7 +103,7 @@ class Commission {
           if (checkParent.indexOf(false) !== -1) {
             return
           }
-
+          console.log('parent hash is right √')
           // check hash
           const beforeHash =
             value.timestamp +
@@ -119,6 +119,8 @@ class Commission {
           if (value.star_hash !== hashForCheck) {
             return
           }
+
+          console.log('hash is right √')
           // 5. a star should have at least one on star'main chain index - 1
           const starsFromLastMci = await this._getStarHashByMci(value.mci - 1)
           // _.isArray(starsFromLastMci)

@@ -391,12 +391,19 @@ const addStar = async star => {
     } finally {
       if (client.inTransaction) {
         rollback.run()
-        pool().release(client)
+        const loan = new Map().get(client)
+        if (loan !== undefined) {
+          pool().release(client)
+        }
         // reject()
         console.log('client is inTransaction, sqlite will rollback it')
         return
       }
-      pool().release(client)
+
+      const loan = new Map().get(client)
+      if (loan !== undefined) {
+        pool().release(client)
+      }
       // resolve()
     }
   } catch (error) {

@@ -17,7 +17,32 @@ const config = require('../../config.json')
 // const push = Pushable()
 
 const getLastMci = async () => {
+  // try {
+  //   return pool()
+  //   .acquire()
+  //   .then(client => {
+  //     try {
+  //       const lastMci = client
+  //         .prepare(
+  //           'SELECT main_chain_index FROM stars ORDER BY main_chain_index DESC LIMIT 1'
+  //         )
+  //         .get().main_chain_index
+  //       return Promise.resolve(lastMci)
+  //     } catch (error) {
+  //       return Promise.reject(error)
+  //     } finally {
+  //       pool().release(client)
+  //     }
+  //   })
+  //   .catch(error => {
+  //     console.log(error)
+  //   })
+  // } catch (error) {
+  //   console.log(error)
+  // }
+
   const client = await pool().acquire()
+
   try {
     const lastMci = client
       .prepare(
@@ -28,7 +53,10 @@ const getLastMci = async () => {
   } catch (error) {
     console.log(error)
   } finally {
-    pool().release(client)
+    const loan = new Map().get(client)
+    if (loan !== undefined) {
+      pool().release(client)
+    }
   }
 }
 
@@ -173,7 +201,13 @@ const sync = async mciFromPeers => {
 
   if (!isFinite(mciFromPeers)) return
   console.log('wanna to sync now, and mci is:', mciFromPeers)
-  let startMci = await getLastMci()
+
+  let startMci
+  try {
+    startMci = await getLastMci()
+  } catch (error) {
+    console.log(error)
+  }
 
   if (startMci === mciFromPeers) {
     console.log('sync finished')
