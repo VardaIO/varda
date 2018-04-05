@@ -105,9 +105,13 @@ const start = async () => {
       //     setImmediate(syncStars())
       //   }
       setInterval(async () => {
-        const mciFromPeers = await sync.getLastMciFromPeers()
-        console.log(mciFromPeers)
-        sync.sync(mciFromPeers)
+        try {
+          const mciFromPeers = await sync.getLastMciFromPeers()
+          console.log(mciFromPeers)
+          sync.sync(mciFromPeers)
+        } catch (error) {
+          console.log(error)
+        }
       }, 1000 * 5)
     }
 

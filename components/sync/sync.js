@@ -62,7 +62,7 @@ const _prepareDataForgetLastMci = peer => {
   })
 }
 
-const findCurrentMciFromPeers = (mcis) => {
+const findCurrentMciFromPeers = mcis => {
   const length = mcis.length
   const lastMci = Math.max(...mcis)
   let number = 0
@@ -71,12 +71,12 @@ const findCurrentMciFromPeers = (mcis) => {
   })
 
   if (number <= length / 2) {
-      mcis = _.filter(mcis, mci => {
-         return mci !== lastMci
-      })
-      findCurrentMciFromPeers(mcis)
-  } 
-    return lastMci
+    mcis = _.filter(mcis, mci => {
+      return mci !== lastMci
+    })
+    findCurrentMciFromPeers(mcis)
+  }
+  return lastMci
 }
 
 const getLastMciFromPeers = async () => {
@@ -95,10 +95,12 @@ const getLastMciFromPeers = async () => {
   console.log(count)
   // get the bigest
   // 如果最大的占一半，则可以相信
-  const lastMci = findCurrentMciFromPeers(count)
-
+  try {
+    const lastMci = findCurrentMciFromPeers(count)
+  } catch (error) {
+    return Promise.reject(error)
+  }
   return Promise.resolve(lastMci)
-
 }
 
 const buildStarsForSync = async index => {
