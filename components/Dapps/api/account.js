@@ -2,7 +2,7 @@ const Utils = require('../../utils')
 const Wallet = require('../../hd-wallet')
 const accountFromComponent = require('../../account')
 
-class Account extends accountFromComponent {
+module.exports = class Account extends accountFromComponent {
   newAccount() {
     const utils = new Utils()
     const wallet = new Wallet()
@@ -17,16 +17,17 @@ class Account extends accountFromComponent {
   }
 }
 
-const a = new Account()
 
-let ac = a.newAccount()
+// const a = new Account()
 
-console.log(ac.address)
-setImmediate(async () => {
-  setInterval(async () => {
-    let b = await a.getBalance('VLRAJEAFXJBVYZQYT67YUQ3KJV53A')
-    console.log(`balance: ${b}`)
-    console.log(await a.getPk('VLRAJEAFXJBVYZQYT67YUQ3KJV53A'))
-    console.log(await a.checkTransaction('VLRAJEAFXJBVYZQYT67YUQ3KJV53A', 1000))
-  }, 1000)
-})
+// let ac = a.newAccount()
+
+// console.log(ac.address)
+// setImmediate(async () => {
+//   setInterval(async () => {
+//     let b = await a.getBalance('VLRAJEAFXJBVYZQYT67YUQ3KJV53A')
+//     console.log(`balance: ${b}`)
+//     console.log(await a.getPk('VLRAJEAFXJBVYZQYT67YUQ3KJV53A'))
+//     console.log(await a.checkTransaction('VLRAJEAFXJBVYZQYT67YUQ3KJV53A', 1000))
+//   }, 1000)
+// })

@@ -5,6 +5,7 @@ const bodyparser = require('koa-bodyparser')
 const json = require('koa-json')
 var cors = require('koa2-cors')
 const router = require('./routes')
+const dappsRouter = require('./routes-dapps')
 const config = require(`${appRoot}/config.json`)
 const httpPort = config.HttpPort
 const httpServer = node => {
@@ -30,6 +31,7 @@ const httpServer = node => {
   })
 
   app.use(router.routes(), router.allowedMethods())
+  app.use(dappsRouter.routes(), router.allowedMethods())
 
   app.listen(httpPort)
   console.log(`Http Server listening on port ${httpPort}`)

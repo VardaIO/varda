@@ -1,5 +1,3 @@
-import { resolve } from 'path'
-
 // const cp = require('child_process');
 const spawn = require('child_process').spawn
 
@@ -33,7 +31,6 @@ class Container {
       broadcast: require('./api/broadcast'),
       sync: require('./api/sync'),
       commission: require('./api/commission'),
-      db: require('./api/db'),
       model: require('./api/model'),
       utils: require('./api/utils')
     }
@@ -80,9 +77,12 @@ class Container {
     })
 
     container.send({ hello: 'world' })
+    return container
   }
 }
 
+module.exports = Container
+
 let c = new Container(`${require('app-root-path')}/Dapps/test`)
-// c.newContainer()
-c._parseMessage({})
+c.newContainer()
+// c._parseMessage({})
