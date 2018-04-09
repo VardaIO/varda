@@ -17,7 +17,6 @@ module.exports = class Account extends accountFromComponent {
   }
 }
 
-
 // const a = new Account()
 
 // let ac = a.newAccount()

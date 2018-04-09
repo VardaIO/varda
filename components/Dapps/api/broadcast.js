@@ -1,4 +1,4 @@
-module.exports =  class Broadcast {
+module.exports = class Broadcast {
   constructor(node) {
     this.node = node
   }
