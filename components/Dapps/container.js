@@ -83,6 +83,6 @@ class Container {
 
 module.exports = Container
 
-let c = new Container(`${require('app-root-path')}/Dapps/test`)
-c.newContainer()
+// let c = new Container(`${require('app-root-path')}/Dapps/test`)
+// c.newContainer()
 // c._parseMessage({})
