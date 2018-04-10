@@ -6,16 +6,22 @@ const fs = require('fs')
 class Dapps {
   loadDapps() {
     return new Promise((resolve, reject) => {
-      //   let c = new Container(`${require('app-root-path')}/Dapps/test`)
-      //   let cc = c.newContainer()
-      const dappsPath = fs.readdirSync(`${require('app-root-path')}/Dapps`);
+      const dappsPath = fs.readdirSync(`${require('app-root-path')}/Dapps`)
+      // todo: vailidate path
+      dappsPath.forEach(path => {
+        dappsCache[path] = new Container(
+          `${require('app-root-path')}/Dapps/${path}`
+        ).newContainer()
+      })
       resolve(dappsPath)
     })
   }
 }
 
-setImmediate(async() => {
-    let a = await new Dapps().loadDapps()
-    console.log(a)
+setImmediate(async () => {
+  let a = await new Dapps().loadDapps()
+  console.log(a)
+    console.log(dappsCache.test.send({ wwwwwwwwwww: 'world' }))
+  
 })
 module.exports = Dapps
