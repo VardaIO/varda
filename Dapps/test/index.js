@@ -3,8 +3,8 @@ process.on('message', (message) => {
   });
   
   // Causes the parent to print: PARENT got message: { foo: 'bar', baz: null }
-  let i = 0
-  setInterval(() => {
-    i++
-    process.send({ foo: 'bar', i});
-  }, 1000 )
+  // let i = 0
+  // setInterval(() => {
+  //   i++
+  //   process.send({ foo: 'bar', i});
+  // }, 1000 )

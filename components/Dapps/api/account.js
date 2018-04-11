@@ -2,7 +2,7 @@ const Utils = require('../../utils')
 const Wallet = require('../../hd-wallet')
 const accountFromComponent = require('../../account')
 
-module.exports = class Account extends accountFromComponent {
+class Account extends accountFromComponent {
   newAccount() {
     const utils = new Utils()
     const wallet = new Wallet()
@@ -17,7 +17,7 @@ module.exports = class Account extends accountFromComponent {
   }
 }
 
-// const a = new Account()
+module.exports = Account
 
 // let ac = a.newAccount()
 

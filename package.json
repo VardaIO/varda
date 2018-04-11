@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/Elvenisboy/varda#readme",
   "dependencies": {
+    "adonis-fold": "^3.0.3",
     "app-root-path": "^2.0.1",
     "base32.js": "^0.1.0",
     "better-sqlite3": "^4.1.0",
