@@ -18,15 +18,3 @@ class Account extends accountFromComponent {
 }
 
 module.exports = Account
-
-// let ac = a.newAccount()
-
-// console.log(ac.address)
-// setImmediate(async () => {
-//   setInterval(async () => {
-//     let b = await a.getBalance('VLRAJEAFXJBVYZQYT67YUQ3KJV53A')
-//     console.log(`balance: ${b}`)
-//     console.log(await a.getPk('VLRAJEAFXJBVYZQYT67YUQ3KJV53A'))
-//     console.log(await a.checkTransaction('VLRAJEAFXJBVYZQYT67YUQ3KJV53A', 1000))
-//   }, 1000)
-// })

@@ -1,3 +1,7 @@
+const Api = require('./api/api')
+
+console.log(new Api().account.newAccount())
+
 process.on('message', (message) => {
     console.log('client receive message: ', message);
   });

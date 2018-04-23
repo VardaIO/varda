@@ -53,7 +53,13 @@ class Container {
       if (this.apis.indexOf(apiName) === -1) {
         reject(`the is no api named ${apiName}`)
       }
-
+      const api = this.api[message.api]
+      // console.log('api is ', api)
+      const method = message.method
+      // console.log('method is ', method)
+      let a = new api()[method]()
+      // console.log(new api().newAccount())
+      console.log(a)
       // todo: check method
     })
   }
@@ -74,6 +80,7 @@ class Container {
        * }
        */
       console.log('father client receive message ', message)
+      this._dealMessage(message)
     })
 
     container.send({ hello: 'world' })

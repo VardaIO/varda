@@ -7,3 +7,5 @@ class Api {
         this.account = new Account(this.dbFilePath) 
     }
 }
+
+module.exports = Api
