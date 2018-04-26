@@ -100,7 +100,7 @@ class Commission {
             })
           )
 
-          if (checkParent.indexOf(false) !== -1) {
+          if (checkParent.includes(false)) {
             return
           }
           console.log('parent hash is right √')
@@ -130,7 +130,8 @@ class Commission {
           const includedStarFromLastMci = []
 
           value.parentStars.map(v => {
-            if (starHashesFromLastMci.indexOf(v) !== -1) {
+            // if (starHashesFromLastMci.indexOf(v) !== -1) {
+            if (starHashesFromLastMci.includes(v)) {
               includedStarFromLastMci.push(v)
             }
           })

@@ -63,7 +63,7 @@ class Transaction {
       checkTransaction = await account.checkTransaction(tx.sender, tx.amount)
     }
 
-    if (type.indexOf(tx.type) == -1) {
+    if (!type.includes(tx.type)) {
       return false
     }
 

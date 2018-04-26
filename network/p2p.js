@@ -150,7 +150,7 @@ const runP2p = async sk => {
         pull.collect((err, array) => {
           if (err) console.log(err)
           try {
-            if (publicIpsList.indexOf(array[0].addr) == -1) {
+            if (!publicIpsList.includes(array[0].addr)) {
               // console.log('push', array[0].addr)
               publicIpsList.push(array[0].addr)
               const ma = multiaddr(array[0].addr)
@@ -275,7 +275,7 @@ const runP2p = async sk => {
       commission = new Commission(sk)
     }
     // address should in commissions list
-    if (sk && commissions.indexOf(commissionAddress) !== -1) {
+    if (sk && commissions.includes(commissionAddress)) {
       // for commission
       node.pubsub.subscribe(
         'sendStar',
@@ -316,9 +316,9 @@ const runP2p = async sk => {
 
             if (commissionsCache.hasOwnProperty(star.star_hash)) {
               if (
-                commissionsCache[star.star_hash].indexOf(
+                commissionsCache[star.star_hash].includes(
                   tobeConfirm.commissionAddress
-                ) !== -1
+                )
               ) {
                 return
               }
@@ -326,7 +326,7 @@ const runP2p = async sk => {
               commissionsCache[star.star_hash] = []
             }
 
-            if (commissions.indexOf(tobeConfirm.commissionAddress) == -1) {
+            if (!commissions.includes(tobeConfirm.commissionAddress)) {
               return
             }
 

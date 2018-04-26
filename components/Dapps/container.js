@@ -50,7 +50,7 @@ class Container {
         reject('message is wrong')
       }
 
-      if (this.apis.indexOf(apiName) === -1) {
+      if (!this.apis.includes(apiName)) {
         reject(`the is no api named ${apiName}`)
       }
       const api = this.api[message.api]
