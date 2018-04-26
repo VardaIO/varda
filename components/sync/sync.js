@@ -135,7 +135,7 @@ const buildStarsForSync = async index => {
       let aStar = await star.getStar(starHashList[i].star)
       stars.push(aStar)
     }
-    
+
     return await stars
   } catch (error) {
     console.log(error)

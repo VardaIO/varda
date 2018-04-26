@@ -93,17 +93,6 @@ const start = async () => {
     const sync = require('./components/sync/sync')
 
     const syncStars = () => {
-      //   try {
-      //     setTimeout(async () => {
-      //       const mciFromPeers = await sync.getLastMciFromPeers()
-      //       console.log(mciFromPeers)
-      //       sync.sync(mciFromPeers)
-      //     }, 1000 * 30)
-      //   } catch (error) {
-      //     console.log(error)
-      //   } finally {
-      //     setImmediate(syncStars())
-      //   }
       setInterval(async () => {
         try {
           const mciFromPeers = await sync.getLastMciFromPeers()
