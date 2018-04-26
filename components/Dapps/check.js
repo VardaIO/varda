@@ -14,3 +14,5 @@ class Check {
   //check file
   //check dapp
 }
+
+module.exports = Check

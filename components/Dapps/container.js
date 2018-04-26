@@ -1,6 +1,7 @@
 // const cp = require('child_process');
 const spawn = require('child_process').spawn
-
+const Check = require('./check')
+const DappPrepare = require('./dappPrepare')
 // const Star = require('./api/stars')
 
 /**
@@ -64,7 +65,17 @@ class Container {
     })
   }
 
-  newContainer() {
+  async newContainer() {
+    const check = new Check(this.path)
+    const dappPrepare = new DappPrepare(this.path)
+    const dbExist = await check.checkDb()
+    console.log('lodaing dapp:', this.path)
+    console.log('dbExist',dbExist)
+    if (!dbExist) {
+      await dappPrepare.prepareDbFile()
+      await dappPrepare.prepareDb()
+    }
+
     let container = spawn('node', [`${this.path}/index.js`], {
       stdio: ['inherit', 'inherit', 'inherit', 'ipc']
     })

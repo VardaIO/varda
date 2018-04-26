@@ -7,11 +7,10 @@ const initDb = async (pool, dbFilePath) => {
 
   let client
   if (dbFilePath) {
-    client = await pool().acquire(dbFilePath)
+    client = await pool(dbFilePath).acquire()
   } else {
     client = await pool().acquire()
   }
-
   try {
     client
       .prepare(

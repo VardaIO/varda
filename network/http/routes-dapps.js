@@ -1,9 +1,11 @@
 const router = require('koa-router')()
 
 const _ = require('lodash')
-// const Container = require('../../components/Dapps/container')
-
+const Container = require('../../components/Dapps/container')
+const Dapps = require('../../components/Dapps/dapps')
 const fs = require('fs')
+
+// new Dapps().loadDapps()
 
 router.prefix('/dapps')
 

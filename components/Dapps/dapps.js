@@ -18,9 +18,9 @@ class Dapps {
   }
 }
 
-setImmediate(async () => {
-  let a = await new Dapps().loadDapps()
-  console.log(a)
-  console.log(dappsCache.test.send({ wwwwwwwwwww: 'world' }))
-})
+// setImmediate(async () => {
+//   let a = await new Dapps().loadDapps()
+//   console.log(a)
+//   console.log(dappsCache.test.send({ wwwwwwwwwww: 'world' }))
+// })
 module.exports = Dapps
