@@ -70,7 +70,7 @@ class Container {
     const dappPrepare = new DappPrepare(this.path)
     const dbExist = await check.checkDb()
     console.log('lodaing dapp:', this.path)
-    console.log('dbExist',dbExist)
+    console.log('dbExist', dbExist)
     if (!dbExist) {
       await dappPrepare.prepareDbFile()
       await dappPrepare.prepareDb()

@@ -59,6 +59,7 @@ const initDb = async (pool, dbFilePath) => {
           )`
       )
       .run()
+
     client
       .prepare('CREATE INDEX IF NOT EXISTS byStar ON transactions (star)')
       .run()
@@ -71,6 +72,7 @@ const initDb = async (pool, dbFilePath) => {
               )`
       )
       .run()
+
     client
       .prepare('CREATE INDEX IF NOT EXISTS byAddress ON account_pks (address)')
       .run()

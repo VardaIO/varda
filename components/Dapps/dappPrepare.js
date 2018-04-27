@@ -9,15 +9,14 @@ class Prepare {
 
   async prepareDbFile() {
     await fs.ensureFile(`${this.path}/chain.db`)
-    // return
+    return
   }
 
   async prepareDb() {
     const pool = require('../../database/pool')
     await prepareForStart.initDb(pool, this.dbFilePath)
-    // return
+    return
   }
-
 }
 
 module.exports = Prepare
