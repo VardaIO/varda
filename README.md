@@ -21,6 +21,8 @@ Varda engine is the sea of stars' origin of power, at the same time, it will inj
 * [x] write consensus
 * [x] commission
 * [x] commission commit number
+* [ ] add init and confirm function
+* [ ] allow peer can stop star's six confirms
 
   ## Note:
 
