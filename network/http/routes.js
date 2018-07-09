@@ -19,7 +19,11 @@ router.prefix('/api')
 //   const hd = new HD()
 //   ctx.body = hd.genMnemonic()
 // })
-
+ router.get('/genKeypair', async ctx => {
+  // genKeys
+  ctx.body = utils.genKeys()
+ })
+ 
 router.get('/genMnemonic', async ctx => {
   ctx.body = { mnemonic: new HD().genMnemonic() }
 })

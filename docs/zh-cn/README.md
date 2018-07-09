@@ -42,6 +42,25 @@ npm run start
 ```
 /api/xxxxxx
 ```
+### GET /genKeypair
+返回一个使用Ed25519算法生成的密钥对
+
+例如：
+
+```
+curl -X GET \
+http://localhost:3000/api/genKeypair
+
+```
+
+返回：
+
+```
+{
+  "secretKey": "b069b060d201096f53ee2b55b96ff6ea4d9641a847e97885d343b4d30f753824fa2bc2a1d3eb00c14b160646a128e30ed6054ffc82dc38701dc679e1e4208de4",
+  "publicKey": "fa2bc2a1d3eb00c14b160646a128e30ed6054ffc82dc38701dc679e1e4208de4"
+}
+```
 
 ### GET /genMnemonic
 这将返回一个符合BIP39规范的，包含12个单词的密语

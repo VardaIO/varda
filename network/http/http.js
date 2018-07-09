@@ -30,7 +30,6 @@ const httpServer = node => {
   })
 
   app.use(router.routes(), router.allowedMethods())
-  app.use(dappsRouter.routes(), router.allowedMethods())
 
   app.listen(httpPort)
   console.log(`Http Server listening on port ${httpPort}`)
