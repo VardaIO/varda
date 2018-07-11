@@ -21,6 +21,7 @@ class Transaction {
     this.senderPublicKey = null
     // this.signature = null
     this.sk = null
+    this.data = null
   }
 
   toHash() {
@@ -30,7 +31,8 @@ class Transaction {
           this.sender +
           this.amount +
           this.recpient +
-          this.senderPublicKey
+          this.senderPublicKey +
+          this.data
       )
       .digest('hex')
   }

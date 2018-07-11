@@ -357,7 +357,8 @@ const addStar = async star => {
         type: transaction.type,
         sender: transaction.sender,
         amount: transaction.amount,
-        recpient: transaction.recpient
+        recpient: transaction.recpient,
+        data: transaction.data
       })
       // parenthood
       let addParenthood = client.prepare(

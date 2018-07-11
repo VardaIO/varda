@@ -165,6 +165,11 @@ class Commission {
               return
             }
           }
+
+          //8. 检查data
+          if (value.data.length > 1000) {
+            return
+          }
           //methods from above is vailidate, now vailidate is finished.
 
           // add it!
