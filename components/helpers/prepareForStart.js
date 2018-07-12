@@ -54,6 +54,7 @@ const initDb = async (pool, dbFilePath) => {
                   star CHAR(44) PRIMARY KEY NOT NULL,
                   type INT NOT NULL,
                   sender CHAR(29) NOT NULL,
+                  data text NOT NULL,
                   amount BIGINT NOT NULL,
                   recpient CHAR(29)
           )`

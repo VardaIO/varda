@@ -8,8 +8,10 @@ COPY . /home/root/app
 
 WORKDIR /home/root/app
 
-RUN  npm install --registry=https://registry.npm.taobao.org 
-RUN  npm run init
+RUN  npm install --registry=https://registry.npm.taobao.org && rm -rf initialComplete
+RUN  node init
+
 EXPOSE 3000
+EXPOSE 4002
 
 CMD ["npm", "start"]  
