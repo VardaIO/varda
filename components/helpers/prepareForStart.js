@@ -116,14 +116,15 @@ const addGenesisStar = async (pool, Star) => {
       )
 
       let addGenesisTx = client.prepare(
-        'INSERT INTO transactions VALUES (@star, @type, @sender, @amount, @recpient)'
+        'INSERT INTO transactions VALUES (@star, @type, @sender, @amount, @recpient,＠data)'
       )
       addGenesisTx.run({
         star: genesis.star_hash,
         type: 0,
         sender: genesis.transaction.sender,
         amount: genesis.transaction.amount,
-        recpient: genesis.transaction.recpient
+        recpient: genesis.transaction.recpient,
+        data:''
       })
 
       console.log('added a genesis star ')
