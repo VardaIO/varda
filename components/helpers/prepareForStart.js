@@ -55,8 +55,7 @@ const initDb = async (pool, dbFilePath) => {
                   type INT NOT NULL,
                   sender CHAR(29) NOT NULL,
                   amount BIGINT NOT NULL,
-                  recpient CHAR(29),
-                  data TEXT
+                  recpient CHAR(29)
           )`
       )
       .run()
@@ -116,15 +115,14 @@ const addGenesisStar = async (pool, Star) => {
       )
 
       let addGenesisTx = client.prepare(
-        'INSERT INTO transactions VALUES (@star, @type, @sender, @amount, @recpient, @data)'
+        'INSERT INTO transactions VALUES (@star, @type, @sender, @amount, @recpient)'
       )
       addGenesisTx.run({
         star: genesis.star_hash,
         type: 0,
         sender: genesis.transaction.sender,
         amount: genesis.transaction.amount,
-        recpient: genesis.transaction.recpient,
-        data:''
+        recpient: genesis.transaction.recpient
       })
 
       console.log('added a genesis star ')

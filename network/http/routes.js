@@ -19,11 +19,11 @@ router.prefix('/api')
 //   const hd = new HD()
 //   ctx.body = hd.genMnemonic()
 // })
-router.get('/genKeypair', async ctx => {
+ router.get('/genKeypair', async ctx => {
   // genKeys
   ctx.body = utils.genKeys()
-})
-
+ })
+ 
 router.get('/genMnemonic', async ctx => {
   ctx.body = { mnemonic: new HD().genMnemonic() }
 })
@@ -89,7 +89,6 @@ router.post('/payment', async ctx => {
   const request = ctx.request.body
   const sk = request.sk
   const to = request.to
-  const data = request.data
   const amount = request.amount
   const wallet = new Wallet()
 
@@ -101,7 +100,7 @@ router.post('/payment', async ctx => {
   }
 
   try {
-    let star = await wallet.pay(to, amount, sk, data)
+    let star = await wallet.pay(to, amount, sk)
     console.log(star)
 
     global.n.pubsub.publish(

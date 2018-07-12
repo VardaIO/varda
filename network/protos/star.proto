@@ -5,7 +5,6 @@ message transaction {
     int64 amount = 4;
     string recpient = 5;
     string senderPublicKey = 6;
-    string data = 7;
 }
 
 message star {

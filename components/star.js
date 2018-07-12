@@ -121,7 +121,7 @@ class Star {
 
         let transaction = client
           .prepare(
-            `SELECT type, sender, amount, recpient, data FROM transactions WHERE star='${starHash}'`
+            `SELECT type, sender, amount, recpient FROM transactions WHERE star='${starHash}'`
           )
           .get()
         const parents = client

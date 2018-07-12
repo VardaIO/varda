@@ -6,21 +6,18 @@ const Utils = require('./utils')
 const utils = new Utils()
 
 class Wallet {
-  async pay(recpient, amount, sk, data) {
+  async pay(recpient, amount, sk) {
     const tx = new Transaction()
     const pk = utils.getPub(sk)
     const address = utils.genAddress(pk)
-    if (!data) {
-      data = ''
-    }
+
     const transaction = tx.newTransaction({
       type: 1,
       sender: address,
       amount: amount,
       recpient: recpient,
       senderPublicKey: pk,
-      sk: sk,
-      data: data
+      sk: sk
     })
     let star = await prepareStar(transaction)
     return star
